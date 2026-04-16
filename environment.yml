@@ -1,0 +1,26 @@
+name: casino
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - numpy
+  - pandas
+  - matplotlib
+  - scikit-learn
+  - tqdm
+  - pytorch
+  - pytorch-cuda=12.1
+  - pip:
+      - "transformers>=4.45,<5"
+      - accelerate
+      - sentencepiece
+      - safetensors
+      - huggingface_hub
+      - datasets
+      - "trl>=0.9"
+      - "peft>=0.11"
+      - bitsandbytes
