@@ -1,0 +1,9 @@
+{
+  "fold": 3,
+  "held_out_path": "sft_8b/results/cv/fold_3/dialogues_heldout.json",
+  "n_held_out_dialogues": 206,
+  "train_rows": 7412,
+  "train_dialogues_with_rows": 742,
+  "test_rows": 818,
+  "test_dialogues_with_rows": 82
+}

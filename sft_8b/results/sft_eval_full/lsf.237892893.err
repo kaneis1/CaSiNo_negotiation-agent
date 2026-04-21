@@ -1,0 +1,10 @@
+/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:07<00:23,  7.76s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:15<00:15,  7.68s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:24<00:08,  8.53s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:26<00:00,  5.95s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:26<00:00,  6.73s/it]
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:08<00:26,  8.90s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:17<00:17,  8.74s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:27<00:09,  9.11s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:29<00:00,  6.30s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:29<00:00,  7.27s/it]
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.

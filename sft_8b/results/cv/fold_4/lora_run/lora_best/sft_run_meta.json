@@ -1,0 +1,24 @@
+{
+  "base_model": "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct",
+  "train_file": "sft_8b/results/cv/fold_4/sft_data/sft_train_rows.jsonl",
+  "eval_file": "sft_8b/results/cv/fold_4/sft_data/sft_test_rows.jsonl",
+  "n_train_rows": 7412,
+  "n_eval_rows": 820,
+  "best_checkpoint": "sft_8b/results/cv/fold_4/lora_run/checkpoint-464",
+  "best_metric_name": "eval_loss",
+  "best_metric_value": 0.6858173608779907,
+  "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  }
+}

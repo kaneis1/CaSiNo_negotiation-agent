@@ -1,0 +1,117 @@
+{
+  "config": {
+    "data": "CaSiNo/data/split/casino_test.json",
+    "output_dir": "sft_8b/results/sft_eval_test",
+    "base_model": "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct",
+    "adapter": "sft_8b/results/lora_run/lora_best",
+    "no_adapter": false,
+    "max_dialogues": null,
+    "max_k": 5,
+    "checkpoint_every": 5,
+    "summary_every": 10,
+    "resume": true,
+    "max_new_tokens": 96,
+    "temperature": 0.0
+  },
+  "n_dialogues": 100,
+  "n_predictions": 1000,
+  "elapsed_seconds": 622.1856770515442,
+  "per_k_means": {
+    "ema": {
+      "1": 0.385,
+      "2": 0.495,
+      "3": 0.62,
+      "4": 0.655,
+      "5": 0.685
+    },
+    "top1": {
+      "1": 0.625,
+      "2": 0.775,
+      "3": 0.85,
+      "4": 0.875,
+      "5": 0.9
+    },
+    "ndcg": {
+      "1": 0.6892884295714247,
+      "2": 0.8144686980535656,
+      "3": 0.87077799558928,
+      "4": 0.8995872931249947,
+      "5": 0.9144686980535656
+    }
+  },
+  "per_k_counts": {
+    "1": 200,
+    "2": 200,
+    "3": 200,
+    "4": 200,
+    "5": 200
+  },
+  "kpenalty": {
+    "ema": 0.5173333333333333,
+    "top1": 0.7616666666666667,
+    "ndcg": 0.8020196140761854
+  },
+  "summary": {
+    "ema_k1": 0.385,
+    "top1_k1": 0.625,
+    "ndcg_k1": 0.6892884295714247,
+    "ema_k2": 0.495,
+    "top1_k2": 0.775,
+    "ndcg_k2": 0.8144686980535656,
+    "ema_k3": 0.62,
+    "top1_k3": 0.85,
+    "ndcg_k3": 0.87077799558928,
+    "ema_k4": 0.655,
+    "top1_k4": 0.875,
+    "ndcg_k4": 0.8995872931249947,
+    "ema_k5": 0.685,
+    "top1_k5": 0.9,
+    "ndcg_k5": 0.9144686980535656,
+    "ema_kpenalty": 0.5173333333333333,
+    "top1_kpenalty": 0.7616666666666667,
+    "ndcg_kpenalty": 0.8020196140761854
+  },
+  "satisfaction": {
+    "per_k_means": {
+      "sat_acc": {
+        "1": 0.46,
+        "2": 0.515,
+        "3": 0.52,
+        "4": 0.5,
+        "5": 0.525
+      },
+      "sat_mae": {
+        "1": 0.78,
+        "2": 0.715,
+        "3": 0.665,
+        "4": 0.71,
+        "5": 0.705
+      }
+    },
+    "per_k_counts": {
+      "1": 200,
+      "2": 200,
+      "3": 200,
+      "4": 200,
+      "5": 200
+    },
+    "kpenalty": {
+      "sat_acc": 0.49633333333333335,
+      "sat_mae": 0.7253333333333334
+    },
+    "summary": {
+      "sat_acc_k1": 0.46,
+      "sat_mae_k1": 0.78,
+      "sat_acc_k2": 0.515,
+      "sat_mae_k2": 0.715,
+      "sat_acc_k3": 0.52,
+      "sat_mae_k3": 0.665,
+      "sat_acc_k4": 0.5,
+      "sat_mae_k4": 0.71,
+      "sat_acc_k5": 0.525,
+      "sat_mae_k5": 0.705,
+      "sat_acc_kpenalty": 0.49633333333333335,
+      "sat_mae_kpenalty": 0.7253333333333334
+    }
+  }
+}

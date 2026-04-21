@@ -1,0 +1,1676 @@
+Sender: LSF System <lsfadmin@lg02e11>
+Subject: Job 237816711: <hybrid_oppmod> in cluster <chimera> Done
+
+Job <hybrid_oppmod> was submitted from host <lg03a01> by user <cuiz02> in cluster <chimera> at Sat Apr 18 16:12:34 2026
+Job was executed on host(s) <4*lg02e11>, in queue <gpu>, as user <cuiz02> in cluster <chimera> at Sat Apr 18 16:27:57 2026
+</hpc/users/cuiz02> was used as the home directory.
+</sc/arion/projects/lin_lab/complexbehavior/CaSino> was used as the working directory.
+Started at Sat Apr 18 16:27:57 2026
+Terminated at Sun Apr 19 06:12:56 2026
+Results reported at Sun Apr 19 06:12:56 2026
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/bash
+#BSUB -J hybrid_oppmod
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=2"
+# Minerva uses boolean resource tags (h100nvl, l40s, a100, b200, …) instead
+# of the generic gpu_model= predicate. Llama-3.3-70B in bf16 needs ≈140 GB
+# of VRAM total; 2×H100-NVL (2×80 = 160 GB) is the cheapest fit and the
+# fastest in practice on Minerva (HBM3 bandwidth + NVLink between the two
+# cards beats L40S × 4 by ~3× per-token thanks to GDDR6 + PCIe-only links).
+# device_map="auto" inside HF Transformers shards the 80 layers across both
+# cards automatically — no torchrun / accelerate launch required.
+#
+# Quicker swaps if availability changes (just edit the next two lines):
+#   #BSUB -gpu "num=2"
+#   #BSUB -R "a10080g rusage[mem=40000] span[hosts=1]"        # 2×80 GB A100
+#   #BSUB -R "(h100nvl||a10080g) rusage[mem=40000] span[hosts=1]"   # either
+#   #BSUB -gpu "num=4"
+#   #BSUB -R "l40s rusage[mem=40000] span[hosts=1]"           # 4×48 GB L40S (slow)
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 24:00
+#BSUB -o opponent_model/results/hybrid_eval/lsf.%J.out
+#BSUB -e opponent_model/results/hybrid_eval/lsf.%J.err
+#BSUB -L /bin/bash
+
+# ── Hybrid Bayesian opponent model on the full 1030-dialogue CaSiNo set ──
+#
+# Hardware notes
+#   * Llama-3.3-70B in bf16 ≈ 140 GB params + ~10 GB activations/KV cache.
+#   * 2×H100-NVL (2×80 = 160 GB HBM3, NVLink) is the recommended config.
+#     Per-dialogue throughput observed: ~50 s/dialogue ⇒ full 1030-dialogue
+#     run in ~14 h, comfortably inside -W 24:00.
+#   * Fallbacks: 2×A100-80GB (a10080g) is similar speed; 4×L40S (l40s) works
+#     but is ~3× slower (GDDR6 + PCIe). See -BSUB header for swap snippets.
+#   * device_map="auto" inside LlamaClient handles the model-parallel split
+#     across however many GPUs are visible; no torchrun / accelerate needed.
+#
+# Resumability
+#   * Checkpoints every 10 dialogues at <output-dir>/checkpoint.json.
+#   * Add --resume to pick up after a wall-time kill.
+#   * SQLite LLM cache means even a clean restart only re-pays for the
+#     prompts that were never persisted.
+#
+# Submit:
+#   bsub < opponent_model/scripts/run_hybrid_eval.lsf
+#
+# Watch live:
+#   tail -f opponent_model/results/hybrid_eval/eval.log
+
+
+(... more ...)
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   49699.00 sec.
+    Max Memory :                                 1510 MB
+    Average Memory :                             1287.80 MB
+    Total Requested Memory :                     160000.00 MB
+    Delta Memory :                               158490.00 MB
+    Max Swap :                                   -
+    Max Processes :                              6
+    Max Threads :                                14
+    Run time :                                   49499 sec.
+    Turnaround time :                            50422 sec.
+
+The output (if any) follows:
+
+=== job 237816711 on lg02e11 at Sat Apr 18 16:28:00 EDT 2026 ===
+Interpreter: /sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+python /sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+numpy  2.4.3 /sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/numpy/__init__.py
+GPUs visible:
+index, name, memory.total [MiB]
+0, NVIDIA H100 80GB HBM3, 81559 MiB
+1, NVIDIA H100 80GB HBM3, 81559 MiB
+Loading text-generation pipeline: /sc/arion/scratch/cuiz02/hf_cache/transformers/models--meta-llama--Llama-3.3-70B-Instruct/snapshots/6f6073b423013f6a7d4d9f39144961bfbfbc386b
+Pipeline ready.
+2026-04-18 16:32:49 | INFO    | [1/1030] dialogue 0 done in 53.0s  (0.02 dial/s, ETA 908.8 min)
+2026-04-18 16:33:40 | INFO    | [2/1030] dialogue 1 done in 51.6s  (0.02 dial/s, ETA 896.1 min)
+2026-04-18 16:34:29 | INFO    | [3/1030] dialogue 2 done in 48.4s  (0.02 dial/s, ETA 873.2 min)
+2026-04-18 16:35:15 | INFO    | [4/1030] dialogue 3 done in 46.3s  (0.02 dial/s, ETA 852.1 min)
+2026-04-18 16:36:02 | INFO    | [5/1030] dialogue 4 done in 46.9s  (0.02 dial/s, ETA 841.2 min)
+2026-04-18 16:37:00 | INFO    | [6/1030] dialogue 5 done in 57.7s  (0.02 dial/s, ETA 864.3 min)
+2026-04-18 16:37:48 | INFO    | [7/1030] dialogue 6 done in 48.3s  (0.02 dial/s, ETA 857.8 min)
+2026-04-18 16:38:32 | INFO    | [8/1030] dialogue 7 done in 44.4s  (0.02 dial/s, ETA 844.5 min)
+2026-04-18 16:39:24 | INFO    | [9/1030] dialogue 8 done in 51.3s  (0.02 dial/s, ETA 847.0 min)
+2026-04-18 16:40:09 | INFO    | [10/1030] dialogue 9 done in 45.2s  (0.02 dial/s, ETA 838.3 min)
+2026-04-18 16:40:09 | INFO    |   llm cache: 200 hits / 100 misses (rate 66.67%, size 100)
+2026-04-18 16:40:09 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 16:40:54 | INFO    | [11/1030] dialogue 10 done in 45.6s  (0.02 dial/s, ETA 831.7 min)
+2026-04-18 16:41:43 | INFO    | [12/1030] dialogue 11 done in 48.2s  (0.02 dial/s, ETA 829.8 min)
+2026-04-18 16:42:30 | INFO    | [13/1030] dialogue 12 done in 47.5s  (0.02 dial/s, ETA 827.2 min)
+2026-04-18 16:43:15 | INFO    | [14/1030] dialogue 13 done in 45.0s  (0.02 dial/s, ETA 821.7 min)
+2026-04-18 16:44:04 | INFO    | [15/1030] dialogue 14 done in 48.4s  (0.02 dial/s, ETA 820.8 min)
+2026-04-18 16:44:58 | INFO    | [16/1030] dialogue 15 done in 54.8s  (0.02 dial/s, ETA 826.6 min)
+2026-04-18 16:45:50 | INFO    | [17/1030] dialogue 16 done in 51.6s  (0.02 dial/s, ETA 828.5 min)
+2026-04-18 16:46:35 | INFO    | [18/1030] dialogue 17 done in 44.6s  (0.02 dial/s, ETA 823.5 min)
+2026-04-18 16:47:25 | INFO    | [19/1030] dialogue 18 done in 50.0s  (0.02 dial/s, ETA 823.7 min)
+2026-04-18 16:48:13 | INFO    | [20/1030] dialogue 19 done in 48.7s  (0.02 dial/s, ETA 822.8 min)
+2026-04-18 16:48:13 | INFO    |   llm cache: 400 hits / 200 misses (rate 66.67%, size 200)
+2026-04-18 16:48:13 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 16:49:04 | INFO    | [21/1030] dialogue 20 done in 50.2s  (0.02 dial/s, ETA 823.0 min)
+2026-04-18 16:49:48 | INFO    | [22/1030] dialogue 21 done in 44.9s  (0.02 dial/s, ETA 819.1 min)
+2026-04-18 16:50:42 | INFO    | [23/1030] dialogue 22 done in 54.1s  (0.02 dial/s, ETA 822.2 min)
+2026-04-18 16:51:27 | INFO    | [24/1030] dialogue 23 done in 44.1s  (0.02 dial/s, ETA 818.0 min)
+2026-04-18 16:52:13 | INFO    | [25/1030] dialogue 24 done in 46.0s  (0.02 dial/s, ETA 815.3 min)
+2026-04-18 16:52:13 | INFO    |   running summary @ 25 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.180    0.320    0.420    0.360    0.360    0.301
+top1        0.460    0.600    0.740    0.720    0.740    0.607
+ndcg        0.612    0.704    0.781    0.783    0.793    0.705
+
+snapshot counts: k=1:50, k=2:50, k=3:50, k=4:50, k=5:50
+2026-04-18 16:53:05 | INFO    | [26/1030] dialogue 25 done in 52.4s  (0.02 dial/s, ETA 816.8 min)
+2026-04-18 16:53:51 | INFO    | [27/1030] dialogue 26 done in 45.9s  (0.02 dial/s, ETA 814.2 min)
+2026-04-18 16:54:40 | INFO    | [28/1030] dialogue 27 done in 48.9s  (0.02 dial/s, ETA 813.5 min)
+2026-04-18 16:55:26 | INFO    | [29/1030] dialogue 28 done in 46.2s  (0.02 dial/s, ETA 811.2 min)
+2026-04-18 16:56:13 | INFO    | [30/1030] dialogue 29 done in 46.7s  (0.02 dial/s, ETA 809.3 min)
+2026-04-18 16:56:13 | INFO    |   llm cache: 600 hits / 300 misses (rate 66.67%, size 300)
+2026-04-18 16:56:13 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 16:57:00 | INFO    | [31/1030] dialogue 30 done in 47.1s  (0.02 dial/s, ETA 807.7 min)
+2026-04-18 16:57:49 | INFO    | [32/1030] dialogue 31 done in 49.8s  (0.02 dial/s, ETA 807.6 min)
+2026-04-18 16:58:37 | INFO    | [33/1030] dialogue 32 done in 47.6s  (0.02 dial/s, ETA 806.3 min)
+2026-04-18 16:59:25 | INFO    | [34/1030] dialogue 33 done in 48.0s  (0.02 dial/s, ETA 805.3 min)
+2026-04-18 17:00:09 | INFO    | [35/1030] dialogue 34 done in 44.3s  (0.02 dial/s, ETA 802.5 min)
+2026-04-18 17:00:57 | INFO    | [36/1030] dialogue 35 done in 47.1s  (0.02 dial/s, ETA 801.1 min)
+2026-04-18 17:01:45 | INFO    | [37/1030] dialogue 36 done in 48.3s  (0.02 dial/s, ETA 800.3 min)
+2026-04-18 17:02:30 | INFO    | [38/1030] dialogue 37 done in 44.9s  (0.02 dial/s, ETA 798.0 min)
+2026-04-18 17:03:16 | INFO    | [39/1030] dialogue 38 done in 46.0s  (0.02 dial/s, ETA 796.2 min)
+2026-04-18 17:04:03 | INFO    | [40/1030] dialogue 39 done in 47.3s  (0.02 dial/s, ETA 795.0 min)
+2026-04-18 17:04:03 | INFO    |   llm cache: 800 hits / 400 misses (rate 66.67%, size 400)
+2026-04-18 17:04:03 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 17:04:54 | INFO    | [41/1030] dialogue 40 done in 50.5s  (0.02 dial/s, ETA 795.2 min)
+2026-04-18 17:05:40 | INFO    | [42/1030] dialogue 41 done in 46.0s  (0.02 dial/s, ETA 793.5 min)
+2026-04-18 17:06:27 | INFO    | [43/1030] dialogue 42 done in 47.0s  (0.02 dial/s, ETA 792.3 min)
+2026-04-18 17:07:17 | INFO    | [44/1030] dialogue 43 done in 50.4s  (0.02 dial/s, ETA 792.3 min)
+2026-04-18 17:08:09 | INFO    | [45/1030] dialogue 44 done in 52.2s  (0.02 dial/s, ETA 793.0 min)
+2026-04-18 17:08:59 | INFO    | [46/1030] dialogue 45 done in 49.9s  (0.02 dial/s, ETA 792.7 min)
+2026-04-18 17:09:39 | INFO    | [47/1030] dialogue 46 done in 40.0s  (0.02 dial/s, ETA 789.0 min)
+2026-04-18 17:10:25 | INFO    | [48/1030] dialogue 47 done in 46.1s  (0.02 dial/s, ETA 787.5 min)
+2026-04-18 17:11:14 | INFO    | [49/1030] dialogue 48 done in 48.7s  (0.02 dial/s, ETA 786.9 min)
+2026-04-18 17:11:59 | INFO    | [50/1030] dialogue 49 done in 44.9s  (0.02 dial/s, ETA 785.1 min)
+2026-04-18 17:11:59 | INFO    |   llm cache: 1001 hits / 499 misses (rate 66.73%, size 499)
+2026-04-18 17:11:59 | INFO    |   running summary @ 50 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.210    0.280    0.410    0.420    0.400    0.309
+top1        0.450    0.590    0.760    0.770    0.770    0.613
+ndcg        0.600    0.686    0.786    0.802    0.802    0.700
+
+snapshot counts: k=1:100, k=2:100, k=3:100, k=4:100, k=5:100
+2026-04-18 17:11:59 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 17:12:44 | INFO    | [51/1030] dialogue 50 done in 45.4s  (0.02 dial/s, ETA 783.4 min)
+2026-04-18 17:13:31 | INFO    | [52/1030] dialogue 51 done in 46.9s  (0.02 dial/s, ETA 782.3 min)
+2026-04-18 17:14:18 | INFO    | [53/1030] dialogue 52 done in 46.2s  (0.02 dial/s, ETA 780.9 min)
+2026-04-18 17:15:09 | INFO    | [54/1030] dialogue 53 done in 51.4s  (0.02 dial/s, ETA 781.2 min)
+2026-04-18 17:15:56 | INFO    | [55/1030] dialogue 54 done in 46.7s  (0.02 dial/s, ETA 780.0 min)
+2026-04-18 17:16:45 | INFO    | [56/1030] dialogue 55 done in 49.6s  (0.02 dial/s, ETA 779.6 min)
+2026-04-18 17:17:34 | INFO    | [57/1030] dialogue 56 done in 48.6s  (0.02 dial/s, ETA 779.0 min)
+2026-04-18 17:18:25 | INFO    | [58/1030] dialogue 57 done in 51.6s  (0.02 dial/s, ETA 779.2 min)
+2026-04-18 17:19:15 | INFO    | [59/1030] dialogue 58 done in 49.4s  (0.02 dial/s, ETA 778.8 min)
+2026-04-18 17:20:07 | INFO    | [60/1030] dialogue 59 done in 52.3s  (0.02 dial/s, ETA 779.1 min)
+2026-04-18 17:20:07 | INFO    |   llm cache: 1201 hits / 599 misses (rate 66.72%, size 599)
+2026-04-18 17:20:07 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 17:20:59 | INFO    | [61/1030] dialogue 60 done in 51.3s  (0.02 dial/s, ETA 779.1 min)
+2026-04-18 17:21:45 | INFO    | [62/1030] dialogue 61 done in 46.7s  (0.02 dial/s, ETA 777.9 min)
+2026-04-18 17:22:33 | INFO    | [63/1030] dialogue 62 done in 47.4s  (0.02 dial/s, ETA 776.9 min)
+2026-04-18 17:23:24 | INFO    | [64/1030] dialogue 63 done in 51.0s  (0.02 dial/s, ETA 776.8 min)
+2026-04-18 17:24:11 | INFO    | [65/1030] dialogue 64 done in 47.8s  (0.02 dial/s, ETA 775.9 min)
+2026-04-18 17:25:03 | INFO    | [66/1030] dialogue 65 done in 51.1s  (0.02 dial/s, ETA 775.8 min)
+2026-04-18 17:25:53 | INFO    | [67/1030] dialogue 66 done in 50.2s  (0.02 dial/s, ETA 775.4 min)
+2026-04-18 17:26:41 | INFO    | [68/1030] dialogue 67 done in 48.3s  (0.02 dial/s, ETA 774.6 min)
+2026-04-18 17:27:25 | INFO    | [69/1030] dialogue 68 done in 44.4s  (0.02 dial/s, ETA 772.9 min)
+2026-04-18 17:28:12 | INFO    | [70/1030] dialogue 69 done in 46.4s  (0.02 dial/s, ETA 771.7 min)
+2026-04-18 17:28:12 | INFO    |   llm cache: 1401 hits / 699 misses (rate 66.71%, size 699)
+2026-04-18 17:28:12 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 17:29:01 | INFO    | [71/1030] dialogue 70 done in 49.2s  (0.02 dial/s, ETA 771.1 min)
+2026-04-18 17:29:52 | INFO    | [72/1030] dialogue 71 done in 50.7s  (0.02 dial/s, ETA 770.9 min)
+2026-04-18 17:30:36 | INFO    | [73/1030] dialogue 72 done in 44.2s  (0.02 dial/s, ETA 769.2 min)
+2026-04-18 17:31:23 | INFO    | [74/1030] dialogue 73 done in 46.6s  (0.02 dial/s, ETA 768.0 min)
+2026-04-18 17:32:10 | INFO    | [75/1030] dialogue 74 done in 47.0s  (0.02 dial/s, ETA 767.0 min)
+2026-04-18 17:32:10 | INFO    |   running summary @ 75 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.200    0.287    0.380    0.400    0.400    0.299
+top1        0.460    0.593    0.720    0.733    0.740    0.603
+ndcg        0.594    0.684    0.760    0.771    0.777    0.687
+
+snapshot counts: k=1:150, k=2:150, k=3:150, k=4:150, k=5:150
+2026-04-18 17:32:58 | INFO    | [76/1030] dialogue 75 done in 48.5s  (0.02 dial/s, ETA 766.2 min)
+2026-04-18 17:33:47 | INFO    | [77/1030] dialogue 76 done in 48.6s  (0.02 dial/s, ETA 765.5 min)
+2026-04-18 17:34:36 | INFO    | [78/1030] dialogue 77 done in 49.1s  (0.02 dial/s, ETA 764.9 min)
+2026-04-18 17:35:23 | INFO    | [79/1030] dialogue 78 done in 47.5s  (0.02 dial/s, ETA 763.9 min)
+2026-04-18 17:36:14 | INFO    | [80/1030] dialogue 79 done in 50.7s  (0.02 dial/s, ETA 763.6 min)
+2026-04-18 17:36:14 | INFO    |   llm cache: 1602 hits / 798 misses (rate 66.75%, size 798)
+2026-04-18 17:36:14 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 17:37:03 | INFO    | [81/1030] dialogue 80 done in 49.0s  (0.02 dial/s, ETA 763.0 min)
+2026-04-18 17:37:49 | INFO    | [82/1030] dialogue 81 done in 46.0s  (0.02 dial/s, ETA 761.7 min)
+2026-04-18 17:38:36 | INFO    | [83/1030] dialogue 82 done in 47.0s  (0.02 dial/s, ETA 760.7 min)
+2026-04-18 17:39:19 | INFO    | [84/1030] dialogue 83 done in 43.0s  (0.02 dial/s, ETA 758.9 min)
+2026-04-18 17:40:08 | INFO    | [85/1030] dialogue 84 done in 48.4s  (0.02 dial/s, ETA 758.2 min)
+2026-04-18 17:40:56 | INFO    | [86/1030] dialogue 85 done in 48.1s  (0.02 dial/s, ETA 757.4 min)
+2026-04-18 17:41:46 | INFO    | [87/1030] dialogue 86 done in 50.1s  (0.02 dial/s, ETA 756.9 min)
+2026-04-18 17:42:26 | INFO    | [88/1030] dialogue 87 done in 40.0s  (0.02 dial/s, ETA 754.7 min)
+2026-04-18 17:43:13 | INFO    | [89/1030] dialogue 88 done in 46.9s  (0.02 dial/s, ETA 753.7 min)
+2026-04-18 17:43:57 | INFO    | [90/1030] dialogue 89 done in 44.5s  (0.02 dial/s, ETA 752.2 min)
+2026-04-18 17:43:57 | INFO    |   llm cache: 1804 hits / 896 misses (rate 66.81%, size 896)
+2026-04-18 17:43:57 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 17:44:45 | INFO    | [91/1030] dialogue 90 done in 47.9s  (0.02 dial/s, ETA 751.4 min)
+2026-04-18 17:45:35 | INFO    | [92/1030] dialogue 91 done in 49.6s  (0.02 dial/s, ETA 750.9 min)
+2026-04-18 17:46:17 | INFO    | [93/1030] dialogue 92 done in 42.7s  (0.02 dial/s, ETA 749.2 min)
+2026-04-18 17:47:05 | INFO    | [94/1030] dialogue 93 done in 47.6s  (0.02 dial/s, ETA 748.3 min)
+2026-04-18 17:47:51 | INFO    | [95/1030] dialogue 94 done in 46.5s  (0.02 dial/s, ETA 747.3 min)
+2026-04-18 17:48:39 | INFO    | [96/1030] dialogue 95 done in 48.1s  (0.02 dial/s, ETA 746.5 min)
+2026-04-18 17:49:25 | INFO    | [97/1030] dialogue 96 done in 45.2s  (0.02 dial/s, ETA 745.3 min)
+2026-04-18 17:50:13 | INFO    | [98/1030] dialogue 97 done in 48.3s  (0.02 dial/s, ETA 744.5 min)
+2026-04-18 17:50:59 | INFO    | [99/1030] dialogue 98 done in 46.2s  (0.02 dial/s, ETA 743.4 min)
+2026-04-18 17:51:42 | INFO    | [100/1030] dialogue 99 done in 43.3s  (0.02 dial/s, ETA 741.9 min)
+2026-04-18 17:51:42 | INFO    |   llm cache: 2006 hits / 994 misses (rate 66.87%, size 994)
+2026-04-18 17:51:42 | INFO    |   running summary @ 100 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.215    0.290    0.365    0.370    0.385    0.297
+top1        0.490    0.610    0.715    0.725    0.745    0.615
+ndcg        0.610    0.687    0.755    0.766    0.778    0.691
+
+snapshot counts: k=1:200, k=2:200, k=3:200, k=4:200, k=5:200
+2026-04-18 17:51:42 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 17:52:33 | INFO    | [101/1030] dialogue 100 done in 51.1s  (0.02 dial/s, ETA 741.6 min)
+2026-04-18 17:53:22 | INFO    | [102/1030] dialogue 101 done in 48.2s  (0.02 dial/s, ETA 740.9 min)
+2026-04-18 17:54:09 | INFO    | [103/1030] dialogue 102 done in 46.9s  (0.02 dial/s, ETA 739.9 min)
+2026-04-18 17:55:00 | INFO    | [104/1030] dialogue 103 done in 51.1s  (0.02 dial/s, ETA 739.6 min)
+2026-04-18 17:55:48 | INFO    | [105/1030] dialogue 104 done in 48.7s  (0.02 dial/s, ETA 738.9 min)
+2026-04-18 17:56:39 | INFO    | [106/1030] dialogue 105 done in 51.2s  (0.02 dial/s, ETA 738.6 min)
+2026-04-18 17:57:27 | INFO    | [107/1030] dialogue 106 done in 48.0s  (0.02 dial/s, ETA 737.8 min)
+2026-04-18 17:58:11 | INFO    | [108/1030] dialogue 107 done in 43.1s  (0.02 dial/s, ETA 736.3 min)
+2026-04-18 17:58:52 | INFO    | [109/1030] dialogue 108 done in 41.6s  (0.02 dial/s, ETA 734.6 min)
+2026-04-18 17:59:46 | INFO    | [110/1030] dialogue 109 done in 53.4s  (0.02 dial/s, ETA 734.6 min)
+2026-04-18 17:59:46 | INFO    |   llm cache: 2208 hits / 1092 misses (rate 66.91%, size 1092)
+2026-04-18 17:59:46 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 18:00:30 | INFO    | [111/1030] dialogue 110 done in 44.4s  (0.02 dial/s, ETA 733.3 min)
+2026-04-18 18:01:16 | INFO    | [112/1030] dialogue 111 done in 46.2s  (0.02 dial/s, ETA 732.3 min)
+2026-04-18 18:02:00 | INFO    | [113/1030] dialogue 112 done in 43.4s  (0.02 dial/s, ETA 730.9 min)
+2026-04-18 18:02:46 | INFO    | [114/1030] dialogue 113 done in 46.8s  (0.02 dial/s, ETA 730.0 min)
+2026-04-18 18:03:37 | INFO    | [115/1030] dialogue 114 done in 50.8s  (0.02 dial/s, ETA 729.6 min)
+2026-04-18 18:04:25 | INFO    | [116/1030] dialogue 115 done in 47.4s  (0.02 dial/s, ETA 728.7 min)
+2026-04-18 18:05:15 | INFO    | [117/1030] dialogue 116 done in 50.0s  (0.02 dial/s, ETA 728.2 min)
+2026-04-18 18:06:07 | INFO    | [118/1030] dialogue 117 done in 52.7s  (0.02 dial/s, ETA 728.0 min)
+2026-04-18 18:06:56 | INFO    | [119/1030] dialogue 118 done in 48.6s  (0.02 dial/s, ETA 727.3 min)
+2026-04-18 18:07:47 | INFO    | [120/1030] dialogue 119 done in 51.1s  (0.02 dial/s, ETA 726.9 min)
+2026-04-18 18:07:47 | INFO    |   llm cache: 2410 hits / 1190 misses (rate 66.94%, size 1190)
+2026-04-18 18:07:47 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 18:08:39 | INFO    | [121/1030] dialogue 120 done in 52.4s  (0.02 dial/s, ETA 726.7 min)
+2026-04-18 18:09:27 | INFO    | [122/1030] dialogue 121 done in 47.3s  (0.02 dial/s, ETA 725.8 min)
+2026-04-18 18:10:13 | INFO    | [123/1030] dialogue 122 done in 45.9s  (0.02 dial/s, ETA 724.7 min)
+2026-04-18 18:11:02 | INFO    | [124/1030] dialogue 123 done in 49.5s  (0.02 dial/s, ETA 724.1 min)
+2026-04-18 18:11:51 | INFO    | [125/1030] dialogue 124 done in 48.5s  (0.02 dial/s, ETA 723.4 min)
+2026-04-18 18:11:51 | INFO    |   running summary @ 125 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.232    0.312    0.372    0.392    0.404    0.314
+top1        0.504    0.624    0.704    0.724    0.732    0.621
+ndcg        0.616    0.698    0.752    0.771    0.778    0.697
+
+snapshot counts: k=1:250, k=2:250, k=3:250, k=4:250, k=5:250
+2026-04-18 18:12:37 | INFO    | [126/1030] dialogue 125 done in 46.4s  (0.02 dial/s, ETA 722.4 min)
+2026-04-18 18:13:21 | INFO    | [127/1030] dialogue 126 done in 44.4s  (0.02 dial/s, ETA 721.2 min)
+2026-04-18 18:14:13 | INFO    | [128/1030] dialogue 127 done in 51.8s  (0.02 dial/s, ETA 720.8 min)
+2026-04-18 18:15:01 | INFO    | [129/1030] dialogue 128 done in 48.1s  (0.02 dial/s, ETA 720.1 min)
+2026-04-18 18:15:51 | INFO    | [130/1030] dialogue 129 done in 50.0s  (0.02 dial/s, ETA 719.5 min)
+2026-04-18 18:15:51 | INFO    |   llm cache: 2610 hits / 1290 misses (rate 66.92%, size 1290)
+2026-04-18 18:15:51 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 18:16:43 | INFO    | [131/1030] dialogue 130 done in 51.7s  (0.02 dial/s, ETA 719.1 min)
+2026-04-18 18:17:29 | INFO    | [132/1030] dialogue 131 done in 45.5s  (0.02 dial/s, ETA 718.0 min)
+2026-04-18 18:18:19 | INFO    | [133/1030] dialogue 132 done in 50.1s  (0.02 dial/s, ETA 717.5 min)
+2026-04-18 18:19:07 | INFO    | [134/1030] dialogue 133 done in 48.6s  (0.02 dial/s, ETA 716.7 min)
+2026-04-18 18:19:52 | INFO    | [135/1030] dialogue 134 done in 45.0s  (0.02 dial/s, ETA 715.6 min)
+2026-04-18 18:20:38 | INFO    | [136/1030] dialogue 135 done in 45.9s  (0.02 dial/s, ETA 714.6 min)
+2026-04-18 18:21:18 | INFO    | [137/1030] dialogue 136 done in 40.3s  (0.02 dial/s, ETA 713.0 min)
+2026-04-18 18:22:06 | INFO    | [138/1030] dialogue 137 done in 47.1s  (0.02 dial/s, ETA 712.1 min)
+2026-04-18 18:22:53 | INFO    | [139/1030] dialogue 138 done in 47.1s  (0.02 dial/s, ETA 711.2 min)
+2026-04-18 18:23:41 | INFO    | [140/1030] dialogue 139 done in 48.1s  (0.02 dial/s, ETA 710.4 min)
+2026-04-18 18:23:41 | INFO    |   llm cache: 2811 hits / 1389 misses (rate 66.93%, size 1389)
+2026-04-18 18:23:41 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 18:24:31 | INFO    | [141/1030] dialogue 140 done in 50.5s  (0.02 dial/s, ETA 709.9 min)
+2026-04-18 18:25:24 | INFO    | [142/1030] dialogue 141 done in 52.8s  (0.02 dial/s, ETA 709.6 min)
+2026-04-18 18:26:16 | INFO    | [143/1030] dialogue 142 done in 52.1s  (0.02 dial/s, ETA 709.2 min)
+2026-04-18 18:27:08 | INFO    | [144/1030] dialogue 143 done in 51.4s  (0.02 dial/s, ETA 708.8 min)
+2026-04-18 18:27:53 | INFO    | [145/1030] dialogue 144 done in 45.5s  (0.02 dial/s, ETA 707.7 min)
+2026-04-18 18:28:42 | INFO    | [146/1030] dialogue 145 done in 48.8s  (0.02 dial/s, ETA 707.0 min)
+2026-04-18 18:29:29 | INFO    | [147/1030] dialogue 146 done in 47.0s  (0.02 dial/s, ETA 706.1 min)
+2026-04-18 18:30:17 | INFO    | [148/1030] dialogue 147 done in 47.7s  (0.02 dial/s, ETA 705.3 min)
+2026-04-18 18:31:07 | INFO    | [149/1030] dialogue 148 done in 50.0s  (0.02 dial/s, ETA 704.7 min)
+2026-04-18 18:31:55 | INFO    | [150/1030] dialogue 149 done in 47.9s  (0.02 dial/s, ETA 703.9 min)
+2026-04-18 18:31:55 | INFO    |   llm cache: 3011 hits / 1489 misses (rate 66.91%, size 1489)
+2026-04-18 18:31:55 | INFO    |   running summary @ 150 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.250    0.333    0.397    0.413    0.423    0.335
+top1        0.500    0.620    0.707    0.727    0.730    0.619
+ndcg        0.616    0.705    0.760    0.778    0.782    0.701
+
+snapshot counts: k=1:300, k=2:300, k=3:300, k=4:300, k=5:300
+2026-04-18 18:31:55 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 18:32:42 | INFO    | [151/1030] dialogue 150 done in 47.4s  (0.02 dial/s, ETA 703.0 min)
+2026-04-18 18:33:24 | INFO    | [152/1030] dialogue 151 done in 41.8s  (0.02 dial/s, ETA 701.6 min)
+2026-04-18 18:34:13 | INFO    | [153/1030] dialogue 152 done in 49.2s  (0.02 dial/s, ETA 701.0 min)
+2026-04-18 18:34:55 | INFO    | [154/1030] dialogue 153 done in 41.6s  (0.02 dial/s, ETA 699.6 min)
+2026-04-18 18:35:44 | INFO    | [155/1030] dialogue 154 done in 49.8s  (0.02 dial/s, ETA 698.9 min)
+2026-04-18 18:36:34 | INFO    | [156/1030] dialogue 155 done in 49.7s  (0.02 dial/s, ETA 698.3 min)
+2026-04-18 18:37:24 | INFO    | [157/1030] dialogue 156 done in 49.7s  (0.02 dial/s, ETA 697.7 min)
+2026-04-18 18:38:14 | INFO    | [158/1030] dialogue 157 done in 50.3s  (0.02 dial/s, ETA 697.1 min)
+2026-04-18 18:39:04 | INFO    | [159/1030] dialogue 158 done in 50.5s  (0.02 dial/s, ETA 696.5 min)
+2026-04-18 18:39:52 | INFO    | [160/1030] dialogue 159 done in 47.1s  (0.02 dial/s, ETA 695.6 min)
+2026-04-18 18:39:52 | INFO    |   llm cache: 3213 hits / 1587 misses (rate 66.94%, size 1587)
+2026-04-18 18:39:52 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 18:40:43 | INFO    | [161/1030] dialogue 160 done in 51.1s  (0.02 dial/s, ETA 695.1 min)
+2026-04-18 18:41:30 | INFO    | [162/1030] dialogue 161 done in 47.5s  (0.02 dial/s, ETA 694.3 min)
+2026-04-18 18:42:14 | INFO    | [163/1030] dialogue 162 done in 44.0s  (0.02 dial/s, ETA 693.1 min)
+2026-04-18 18:43:02 | INFO    | [164/1030] dialogue 163 done in 47.3s  (0.02 dial/s, ETA 692.3 min)
+2026-04-18 18:43:45 | INFO    | [165/1030] dialogue 164 done in 43.6s  (0.02 dial/s, ETA 691.1 min)
+2026-04-18 18:44:34 | INFO    | [166/1030] dialogue 165 done in 48.8s  (0.02 dial/s, ETA 690.4 min)
+2026-04-18 18:45:23 | INFO    | [167/1030] dialogue 166 done in 48.8s  (0.02 dial/s, ETA 689.6 min)
+2026-04-18 18:46:04 | INFO    | [168/1030] dialogue 167 done in 41.3s  (0.02 dial/s, ETA 688.3 min)
+2026-04-18 18:46:48 | INFO    | [169/1030] dialogue 168 done in 43.6s  (0.02 dial/s, ETA 687.1 min)
+2026-04-18 18:47:31 | INFO    | [170/1030] dialogue 169 done in 42.8s  (0.02 dial/s, ETA 685.9 min)
+2026-04-18 18:47:31 | INFO    |   llm cache: 3416 hits / 1684 misses (rate 66.98%, size 1684)
+2026-04-18 18:47:31 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 18:48:21 | INFO    | [171/1030] dialogue 170 done in 50.4s  (0.02 dial/s, ETA 685.3 min)
+2026-04-18 18:49:08 | INFO    | [172/1030] dialogue 171 done in 47.4s  (0.02 dial/s, ETA 684.5 min)
+2026-04-18 18:49:58 | INFO    | [173/1030] dialogue 172 done in 49.2s  (0.02 dial/s, ETA 683.8 min)
+2026-04-18 18:50:41 | INFO    | [174/1030] dialogue 173 done in 43.5s  (0.02 dial/s, ETA 682.6 min)
+2026-04-18 18:51:26 | INFO    | [175/1030] dialogue 174 done in 45.4s  (0.02 dial/s, ETA 681.6 min)
+2026-04-18 18:51:26 | INFO    |   running summary @ 175 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.243    0.343    0.414    0.431    0.443    0.342
+top1        0.494    0.629    0.711    0.729    0.734    0.621
+ndcg        0.623    0.716    0.769    0.784    0.789    0.709
+
+snapshot counts: k=1:350, k=2:350, k=3:350, k=4:350, k=5:350
+2026-04-18 18:52:20 | INFO    | [176/1030] dialogue 175 done in 53.3s  (0.02 dial/s, ETA 681.3 min)
+2026-04-18 18:53:05 | INFO    | [177/1030] dialogue 176 done in 45.3s  (0.02 dial/s, ETA 680.3 min)
+2026-04-18 18:53:55 | INFO    | [178/1030] dialogue 177 done in 50.1s  (0.02 dial/s, ETA 679.6 min)
+2026-04-18 18:54:44 | INFO    | [179/1030] dialogue 178 done in 48.5s  (0.02 dial/s, ETA 678.9 min)
+2026-04-18 18:55:30 | INFO    | [180/1030] dialogue 179 done in 46.3s  (0.02 dial/s, ETA 678.0 min)
+2026-04-18 18:55:30 | INFO    |   llm cache: 3617 hits / 1783 misses (rate 66.98%, size 1783)
+2026-04-18 18:55:30 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 18:56:20 | INFO    | [181/1030] dialogue 180 done in 50.3s  (0.02 dial/s, ETA 677.4 min)
+2026-04-18 18:57:08 | INFO    | [182/1030] dialogue 181 done in 47.3s  (0.02 dial/s, ETA 676.5 min)
+2026-04-18 18:57:54 | INFO    | [183/1030] dialogue 182 done in 46.1s  (0.02 dial/s, ETA 675.6 min)
+2026-04-18 18:58:41 | INFO    | [184/1030] dialogue 183 done in 47.1s  (0.02 dial/s, ETA 674.7 min)
+2026-04-18 18:59:27 | INFO    | [185/1030] dialogue 184 done in 46.3s  (0.02 dial/s, ETA 673.8 min)
+2026-04-18 19:00:12 | INFO    | [186/1030] dialogue 185 done in 44.5s  (0.02 dial/s, ETA 672.8 min)
+2026-04-18 19:00:55 | INFO    | [187/1030] dialogue 186 done in 43.2s  (0.02 dial/s, ETA 671.6 min)
+2026-04-18 19:01:44 | INFO    | [188/1030] dialogue 187 done in 49.2s  (0.02 dial/s, ETA 670.9 min)
+2026-04-18 19:02:13 | INFO    | [189/1030] dialogue 188 done in 29.1s  (0.02 dial/s, ETA 668.7 min)
+2026-04-18 19:03:01 | INFO    | [190/1030] dialogue 189 done in 47.7s  (0.02 dial/s, ETA 668.0 min)
+2026-04-18 19:03:01 | INFO    |   llm cache: 3804 hits / 1878 misses (rate 66.95%, size 1878)
+2026-04-18 19:03:01 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 19:03:48 | INFO    | [191/1030] dialogue 190 done in 46.9s  (0.02 dial/s, ETA 667.1 min)
+2026-04-18 19:04:36 | INFO    | [192/1030] dialogue 191 done in 48.4s  (0.02 dial/s, ETA 666.4 min)
+2026-04-18 19:05:23 | INFO    | [193/1030] dialogue 192 done in 46.3s  (0.02 dial/s, ETA 665.5 min)
+2026-04-18 19:06:13 | INFO    | [194/1030] dialogue 193 done in 50.6s  (0.02 dial/s, ETA 664.9 min)
+2026-04-18 19:07:03 | INFO    | [195/1030] dialogue 194 done in 50.3s  (0.02 dial/s, ETA 664.3 min)
+2026-04-18 19:07:50 | INFO    | [196/1030] dialogue 195 done in 46.9s  (0.02 dial/s, ETA 663.4 min)
+2026-04-18 19:08:39 | INFO    | [197/1030] dialogue 196 done in 48.9s  (0.02 dial/s, ETA 662.7 min)
+2026-04-18 19:09:23 | INFO    | [198/1030] dialogue 197 done in 43.5s  (0.02 dial/s, ETA 661.6 min)
+2026-04-18 19:10:11 | INFO    | [199/1030] dialogue 198 done in 48.6s  (0.02 dial/s, ETA 660.9 min)
+2026-04-18 19:11:00 | INFO    | [200/1030] dialogue 199 done in 48.6s  (0.02 dial/s, ETA 660.1 min)
+2026-04-18 19:11:00 | INFO    |   llm cache: 4004 hits / 1978 misses (rate 66.93%, size 1978)
+2026-04-18 19:11:00 | INFO    |   running summary @ 200 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.250    0.352    0.415    0.427    0.440    0.347
+top1        0.497    0.647    0.723    0.741    0.749    0.632
+ndcg        0.623    0.727    0.775    0.788    0.795    0.715
+
+snapshot counts: k=1:400, k=2:400, k=3:400, k=4:398, k=5:398
+2026-04-18 19:11:00 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 19:11:44 | INFO    | [201/1030] dialogue 200 done in 43.9s  (0.02 dial/s, ETA 659.1 min)
+2026-04-18 19:12:29 | INFO    | [202/1030] dialogue 201 done in 45.3s  (0.02 dial/s, ETA 658.1 min)
+2026-04-18 19:13:17 | INFO    | [203/1030] dialogue 202 done in 48.1s  (0.02 dial/s, ETA 657.4 min)
+2026-04-18 19:13:58 | INFO    | [204/1030] dialogue 203 done in 40.6s  (0.02 dial/s, ETA 656.1 min)
+2026-04-18 19:14:46 | INFO    | [205/1030] dialogue 204 done in 48.4s  (0.02 dial/s, ETA 655.3 min)
+2026-04-18 19:15:39 | INFO    | [206/1030] dialogue 205 done in 52.3s  (0.02 dial/s, ETA 654.9 min)
+2026-04-18 19:16:28 | INFO    | [207/1030] dialogue 206 done in 49.2s  (0.02 dial/s, ETA 654.2 min)
+2026-04-18 19:17:20 | INFO    | [208/1030] dialogue 207 done in 52.2s  (0.02 dial/s, ETA 653.7 min)
+2026-04-18 19:18:05 | INFO    | [209/1030] dialogue 208 done in 45.1s  (0.02 dial/s, ETA 652.7 min)
+2026-04-18 19:18:55 | INFO    | [210/1030] dialogue 209 done in 49.6s  (0.02 dial/s, ETA 652.0 min)
+2026-04-18 19:18:55 | INFO    |   llm cache: 4207 hits / 2075 misses (rate 66.97%, size 2075)
+2026-04-18 19:18:55 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 19:19:40 | INFO    | [211/1030] dialogue 210 done in 45.6s  (0.02 dial/s, ETA 651.1 min)
+2026-04-18 19:20:31 | INFO    | [212/1030] dialogue 211 done in 50.6s  (0.02 dial/s, ETA 650.5 min)
+2026-04-18 19:21:21 | INFO    | [213/1030] dialogue 212 done in 50.4s  (0.02 dial/s, ETA 649.9 min)
+2026-04-18 19:22:17 | INFO    | [214/1030] dialogue 213 done in 55.3s  (0.02 dial/s, ETA 649.5 min)
+2026-04-18 19:23:02 | INFO    | [215/1030] dialogue 214 done in 45.6s  (0.02 dial/s, ETA 648.6 min)
+2026-04-18 19:23:51 | INFO    | [216/1030] dialogue 215 done in 48.5s  (0.02 dial/s, ETA 647.9 min)
+2026-04-18 19:24:33 | INFO    | [217/1030] dialogue 216 done in 42.7s  (0.02 dial/s, ETA 646.8 min)
+2026-04-18 19:25:21 | INFO    | [218/1030] dialogue 217 done in 47.7s  (0.02 dial/s, ETA 646.0 min)
+2026-04-18 19:26:08 | INFO    | [219/1030] dialogue 218 done in 46.6s  (0.02 dial/s, ETA 645.1 min)
+2026-04-18 19:26:58 | INFO    | [220/1030] dialogue 219 done in 50.8s  (0.02 dial/s, ETA 644.5 min)
+2026-04-18 19:26:58 | INFO    |   llm cache: 4408 hits / 2174 misses (rate 66.97%, size 2174)
+2026-04-18 19:26:58 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 19:27:44 | INFO    | [221/1030] dialogue 220 done in 45.8s  (0.02 dial/s, ETA 643.6 min)
+2026-04-18 19:28:33 | INFO    | [222/1030] dialogue 221 done in 48.8s  (0.02 dial/s, ETA 642.8 min)
+2026-04-18 19:29:20 | INFO    | [223/1030] dialogue 222 done in 46.8s  (0.02 dial/s, ETA 642.0 min)
+2026-04-18 19:30:09 | INFO    | [224/1030] dialogue 223 done in 49.4s  (0.02 dial/s, ETA 641.3 min)
+2026-04-18 19:30:58 | INFO    | [225/1030] dialogue 224 done in 48.5s  (0.02 dial/s, ETA 640.5 min)
+2026-04-18 19:30:58 | INFO    |   running summary @ 225 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.258    0.349    0.420    0.435    0.444    0.351
+top1        0.509    0.642    0.724    0.748    0.752    0.636
+ndcg        0.631    0.721    0.775    0.790    0.794    0.716
+
+snapshot counts: k=1:450, k=2:450, k=3:450, k=4:448, k=5:448
+2026-04-18 19:31:37 | INFO    | [226/1030] dialogue 225 done in 39.7s  (0.02 dial/s, ETA 639.3 min)
+2026-04-18 19:32:25 | INFO    | [227/1030] dialogue 226 done in 48.0s  (0.02 dial/s, ETA 638.5 min)
+2026-04-18 19:33:17 | INFO    | [228/1030] dialogue 227 done in 51.3s  (0.02 dial/s, ETA 637.9 min)
+2026-04-18 19:34:02 | INFO    | [229/1030] dialogue 228 done in 45.0s  (0.02 dial/s, ETA 637.0 min)
+2026-04-18 19:34:53 | INFO    | [230/1030] dialogue 229 done in 50.8s  (0.02 dial/s, ETA 636.3 min)
+2026-04-18 19:34:53 | INFO    |   llm cache: 4609 hits / 2273 misses (rate 66.97%, size 2273)
+2026-04-18 19:34:53 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 19:35:39 | INFO    | [231/1030] dialogue 230 done in 46.2s  (0.02 dial/s, ETA 635.5 min)
+2026-04-18 19:36:35 | INFO    | [232/1030] dialogue 231 done in 56.0s  (0.02 dial/s, ETA 635.1 min)
+2026-04-18 19:37:25 | INFO    | [233/1030] dialogue 232 done in 50.4s  (0.02 dial/s, ETA 634.5 min)
+2026-04-18 19:38:14 | INFO    | [234/1030] dialogue 233 done in 48.7s  (0.02 dial/s, ETA 633.7 min)
+2026-04-18 19:39:04 | INFO    | [235/1030] dialogue 234 done in 50.1s  (0.02 dial/s, ETA 633.1 min)
+2026-04-18 19:39:52 | INFO    | [236/1030] dialogue 235 done in 47.6s  (0.02 dial/s, ETA 632.3 min)
+2026-04-18 19:40:40 | INFO    | [237/1030] dialogue 236 done in 48.6s  (0.02 dial/s, ETA 631.5 min)
+2026-04-18 19:41:33 | INFO    | [238/1030] dialogue 237 done in 52.7s  (0.02 dial/s, ETA 631.0 min)
+2026-04-18 19:42:27 | INFO    | [239/1030] dialogue 238 done in 54.0s  (0.02 dial/s, ETA 630.6 min)
+2026-04-18 19:43:10 | INFO    | [240/1030] dialogue 239 done in 43.0s  (0.02 dial/s, ETA 629.5 min)
+2026-04-18 19:43:10 | INFO    |   llm cache: 4810 hits / 2372 misses (rate 66.97%, size 2372)
+2026-04-18 19:43:10 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 19:44:00 | INFO    | [241/1030] dialogue 240 done in 50.4s  (0.02 dial/s, ETA 628.8 min)
+2026-04-18 19:44:58 | INFO    | [242/1030] dialogue 241 done in 57.8s  (0.02 dial/s, ETA 628.6 min)
+2026-04-18 19:45:47 | INFO    | [243/1030] dialogue 242 done in 49.2s  (0.02 dial/s, ETA 627.8 min)
+2026-04-18 19:46:34 | INFO    | [244/1030] dialogue 243 done in 46.7s  (0.02 dial/s, ETA 627.0 min)
+2026-04-18 19:47:20 | INFO    | [245/1030] dialogue 244 done in 45.8s  (0.02 dial/s, ETA 626.1 min)
+2026-04-18 19:48:10 | INFO    | [246/1030] dialogue 245 done in 50.6s  (0.02 dial/s, ETA 625.4 min)
+2026-04-18 19:48:51 | INFO    | [247/1030] dialogue 246 done in 40.4s  (0.02 dial/s, ETA 624.2 min)
+2026-04-18 19:49:35 | INFO    | [248/1030] dialogue 247 done in 43.7s  (0.02 dial/s, ETA 623.2 min)
+2026-04-18 19:50:19 | INFO    | [249/1030] dialogue 248 done in 44.0s  (0.02 dial/s, ETA 622.2 min)
+2026-04-18 19:51:09 | INFO    | [250/1030] dialogue 249 done in 50.1s  (0.02 dial/s, ETA 621.5 min)
+2026-04-18 19:51:09 | INFO    |   llm cache: 5013 hits / 2469 misses (rate 67.00%, size 2469)
+2026-04-18 19:51:09 | INFO    |   running summary @ 250 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.274    0.356    0.422    0.432    0.442    0.358
+top1        0.524    0.648    0.730    0.747    0.753    0.643
+ndcg        0.643    0.725    0.781    0.793    0.798    0.722
+
+snapshot counts: k=1:500, k=2:500, k=3:500, k=4:498, k=5:498
+2026-04-18 19:51:09 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 19:51:58 | INFO    | [251/1030] dialogue 250 done in 49.5s  (0.02 dial/s, ETA 620.8 min)
+2026-04-18 19:52:48 | INFO    | [252/1030] dialogue 251 done in 49.6s  (0.02 dial/s, ETA 620.1 min)
+2026-04-18 19:53:40 | INFO    | [253/1030] dialogue 252 done in 52.2s  (0.02 dial/s, ETA 619.6 min)
+2026-04-18 19:54:29 | INFO    | [254/1030] dialogue 253 done in 48.8s  (0.02 dial/s, ETA 618.8 min)
+2026-04-18 19:55:11 | INFO    | [255/1030] dialogue 254 done in 42.5s  (0.02 dial/s, ETA 617.7 min)
+2026-04-18 19:56:00 | INFO    | [256/1030] dialogue 255 done in 49.1s  (0.02 dial/s, ETA 617.0 min)
+2026-04-18 19:56:47 | INFO    | [257/1030] dialogue 256 done in 47.1s  (0.02 dial/s, ETA 616.2 min)
+2026-04-18 19:57:36 | INFO    | [258/1030] dialogue 257 done in 49.0s  (0.02 dial/s, ETA 615.4 min)
+2026-04-18 19:58:28 | INFO    | [259/1030] dialogue 258 done in 51.8s  (0.02 dial/s, ETA 614.8 min)
+2026-04-18 19:59:18 | INFO    | [260/1030] dialogue 259 done in 50.0s  (0.02 dial/s, ETA 614.1 min)
+2026-04-18 19:59:18 | INFO    |   llm cache: 5213 hits / 2569 misses (rate 66.99%, size 2569)
+2026-04-18 19:59:18 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 20:00:07 | INFO    | [261/1030] dialogue 260 done in 48.8s  (0.02 dial/s, ETA 613.4 min)
+2026-04-18 20:00:57 | INFO    | [262/1030] dialogue 261 done in 49.7s  (0.02 dial/s, ETA 612.7 min)
+2026-04-18 20:01:46 | INFO    | [263/1030] dialogue 262 done in 49.0s  (0.02 dial/s, ETA 611.9 min)
+2026-04-18 20:02:31 | INFO    | [264/1030] dialogue 263 done in 45.5s  (0.02 dial/s, ETA 611.0 min)
+2026-04-18 20:03:20 | INFO    | [265/1030] dialogue 264 done in 49.2s  (0.02 dial/s, ETA 610.3 min)
+2026-04-18 20:04:12 | INFO    | [266/1030] dialogue 265 done in 51.3s  (0.02 dial/s, ETA 609.7 min)
+2026-04-18 20:05:02 | INFO    | [267/1030] dialogue 266 done in 50.6s  (0.02 dial/s, ETA 609.0 min)
+2026-04-18 20:05:56 | INFO    | [268/1030] dialogue 267 done in 53.6s  (0.02 dial/s, ETA 608.5 min)
+2026-04-18 20:06:40 | INFO    | [269/1030] dialogue 268 done in 44.2s  (0.02 dial/s, ETA 607.5 min)
+2026-04-18 20:07:34 | INFO    | [270/1030] dialogue 269 done in 53.7s  (0.02 dial/s, ETA 607.0 min)
+2026-04-18 20:07:34 | INFO    |   llm cache: 5413 hits / 2669 misses (rate 66.98%, size 2669)
+2026-04-18 20:07:34 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 20:08:22 | INFO    | [271/1030] dialogue 270 done in 48.2s  (0.02 dial/s, ETA 606.2 min)
+2026-04-18 20:09:12 | INFO    | [272/1030] dialogue 271 done in 49.8s  (0.02 dial/s, ETA 605.5 min)
+2026-04-18 20:10:02 | INFO    | [273/1030] dialogue 272 done in 50.3s  (0.02 dial/s, ETA 604.8 min)
+2026-04-18 20:10:54 | INFO    | [274/1030] dialogue 273 done in 51.8s  (0.02 dial/s, ETA 604.2 min)
+2026-04-18 20:11:41 | INFO    | [275/1030] dialogue 274 done in 47.0s  (0.02 dial/s, ETA 603.3 min)
+2026-04-18 20:11:41 | INFO    |   running summary @ 275 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.269    0.360    0.420    0.432    0.438    0.357
+top1        0.527    0.660    0.740    0.754    0.757    0.651
+ndcg        0.647    0.731    0.788    0.797    0.801    0.728
+
+snapshot counts: k=1:550, k=2:550, k=3:550, k=4:548, k=5:548
+2026-04-18 20:12:28 | INFO    | [276/1030] dialogue 275 done in 47.6s  (0.02 dial/s, ETA 602.5 min)
+2026-04-18 20:13:19 | INFO    | [277/1030] dialogue 276 done in 50.1s  (0.02 dial/s, ETA 601.8 min)
+2026-04-18 20:14:05 | INFO    | [278/1030] dialogue 277 done in 46.6s  (0.02 dial/s, ETA 600.9 min)
+2026-04-18 20:14:58 | INFO    | [279/1030] dialogue 278 done in 53.1s  (0.02 dial/s, ETA 600.4 min)
+2026-04-18 20:15:48 | INFO    | [280/1030] dialogue 279 done in 50.1s  (0.02 dial/s, ETA 599.7 min)
+2026-04-18 20:15:48 | INFO    |   llm cache: 5614 hits / 2768 misses (rate 66.98%, size 2768)
+2026-04-18 20:15:49 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 20:16:41 | INFO    | [281/1030] dialogue 280 done in 52.6s  (0.02 dial/s, ETA 599.1 min)
+2026-04-18 20:17:28 | INFO    | [282/1030] dialogue 281 done in 46.5s  (0.02 dial/s, ETA 598.2 min)
+2026-04-18 20:18:12 | INFO    | [283/1030] dialogue 282 done in 44.1s  (0.02 dial/s, ETA 597.3 min)
+2026-04-18 20:18:56 | INFO    | [284/1030] dialogue 283 done in 44.0s  (0.02 dial/s, ETA 596.3 min)
+2026-04-18 20:19:45 | INFO    | [285/1030] dialogue 284 done in 49.4s  (0.02 dial/s, ETA 595.5 min)
+2026-04-18 20:20:29 | INFO    | [286/1030] dialogue 285 done in 43.6s  (0.02 dial/s, ETA 594.6 min)
+2026-04-18 20:21:15 | INFO    | [287/1030] dialogue 286 done in 46.5s  (0.02 dial/s, ETA 593.7 min)
+2026-04-18 20:21:59 | INFO    | [288/1030] dialogue 287 done in 43.5s  (0.02 dial/s, ETA 592.7 min)
+2026-04-18 20:22:50 | INFO    | [289/1030] dialogue 288 done in 51.5s  (0.02 dial/s, ETA 592.1 min)
+2026-04-18 20:23:37 | INFO    | [290/1030] dialogue 289 done in 47.0s  (0.02 dial/s, ETA 591.2 min)
+2026-04-18 20:23:37 | INFO    |   llm cache: 5817 hits / 2865 misses (rate 67.00%, size 2865)
+2026-04-18 20:23:37 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 20:24:28 | INFO    | [291/1030] dialogue 290 done in 50.9s  (0.02 dial/s, ETA 590.5 min)
+2026-04-18 20:25:13 | INFO    | [292/1030] dialogue 291 done in 44.6s  (0.02 dial/s, ETA 589.6 min)
+2026-04-18 20:26:04 | INFO    | [293/1030] dialogue 292 done in 51.3s  (0.02 dial/s, ETA 588.9 min)
+2026-04-18 20:26:51 | INFO    | [294/1030] dialogue 293 done in 47.1s  (0.02 dial/s, ETA 588.1 min)
+2026-04-18 20:27:33 | INFO    | [295/1030] dialogue 294 done in 42.0s  (0.02 dial/s, ETA 587.1 min)
+2026-04-18 20:28:21 | INFO    | [296/1030] dialogue 295 done in 48.2s  (0.02 dial/s, ETA 586.3 min)
+2026-04-18 20:29:13 | INFO    | [297/1030] dialogue 296 done in 51.6s  (0.02 dial/s, ETA 585.6 min)
+2026-04-18 20:29:57 | INFO    | [298/1030] dialogue 297 done in 44.3s  (0.02 dial/s, ETA 584.7 min)
+2026-04-18 20:30:40 | INFO    | [299/1030] dialogue 298 done in 42.8s  (0.02 dial/s, ETA 583.7 min)
+2026-04-18 20:31:31 | INFO    | [300/1030] dialogue 299 done in 51.0s  (0.02 dial/s, ETA 583.0 min)
+2026-04-18 20:31:31 | INFO    |   llm cache: 6018 hits / 2964 misses (rate 67.00%, size 2964)
+2026-04-18 20:31:31 | INFO    |   running summary @ 300 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.270    0.363    0.422    0.438    0.443    0.359
+top1        0.525    0.662    0.743    0.764    0.768    0.653
+ndcg        0.646    0.734    0.791    0.805    0.807    0.731
+
+snapshot counts: k=1:600, k=2:600, k=3:600, k=4:598, k=5:598
+2026-04-18 20:31:31 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 20:32:22 | INFO    | [301/1030] dialogue 300 done in 50.4s  (0.02 dial/s, ETA 582.3 min)
+2026-04-18 20:33:03 | INFO    | [302/1030] dialogue 301 done in 41.5s  (0.02 dial/s, ETA 581.3 min)
+2026-04-18 20:33:50 | INFO    | [303/1030] dialogue 302 done in 46.8s  (0.02 dial/s, ETA 580.4 min)
+2026-04-18 20:34:40 | INFO    | [304/1030] dialogue 303 done in 50.1s  (0.02 dial/s, ETA 579.7 min)
+2026-04-18 20:35:29 | INFO    | [305/1030] dialogue 304 done in 48.7s  (0.02 dial/s, ETA 578.9 min)
+2026-04-18 20:36:21 | INFO    | [306/1030] dialogue 305 done in 51.8s  (0.02 dial/s, ETA 578.3 min)
+2026-04-18 20:37:13 | INFO    | [307/1030] dialogue 306 done in 52.8s  (0.02 dial/s, ETA 577.7 min)
+2026-04-18 20:38:04 | INFO    | [308/1030] dialogue 307 done in 50.1s  (0.02 dial/s, ETA 577.0 min)
+2026-04-18 20:38:54 | INFO    | [309/1030] dialogue 308 done in 50.6s  (0.02 dial/s, ETA 576.3 min)
+2026-04-18 20:39:44 | INFO    | [310/1030] dialogue 309 done in 50.1s  (0.02 dial/s, ETA 575.6 min)
+2026-04-18 20:39:44 | INFO    |   llm cache: 6219 hits / 3063 misses (rate 67.00%, size 3063)
+2026-04-18 20:39:44 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 20:40:36 | INFO    | [311/1030] dialogue 310 done in 51.7s  (0.02 dial/s, ETA 574.9 min)
+2026-04-18 20:41:23 | INFO    | [312/1030] dialogue 311 done in 46.6s  (0.02 dial/s, ETA 574.0 min)
+2026-04-18 20:42:13 | INFO    | [313/1030] dialogue 312 done in 50.9s  (0.02 dial/s, ETA 573.4 min)
+2026-04-18 20:43:04 | INFO    | [314/1030] dialogue 313 done in 50.8s  (0.02 dial/s, ETA 572.7 min)
+2026-04-18 20:43:58 | INFO    | [315/1030] dialogue 314 done in 53.9s  (0.02 dial/s, ETA 572.1 min)
+2026-04-18 20:44:48 | INFO    | [316/1030] dialogue 315 done in 49.6s  (0.02 dial/s, ETA 571.4 min)
+2026-04-18 20:45:36 | INFO    | [317/1030] dialogue 316 done in 48.5s  (0.02 dial/s, ETA 570.6 min)
+2026-04-18 20:46:25 | INFO    | [318/1030] dialogue 317 done in 48.9s  (0.02 dial/s, ETA 569.8 min)
+2026-04-18 20:47:07 | INFO    | [319/1030] dialogue 318 done in 41.5s  (0.02 dial/s, ETA 568.8 min)
+2026-04-18 20:47:53 | INFO    | [320/1030] dialogue 319 done in 46.3s  (0.02 dial/s, ETA 567.9 min)
+2026-04-18 20:47:53 | INFO    |   llm cache: 6420 hits / 3162 misses (rate 67.00%, size 3162)
+2026-04-18 20:47:53 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 20:48:44 | INFO    | [321/1030] dialogue 320 done in 50.6s  (0.02 dial/s, ETA 567.2 min)
+2026-04-18 20:49:29 | INFO    | [322/1030] dialogue 321 done in 44.9s  (0.02 dial/s, ETA 566.3 min)
+2026-04-18 20:50:16 | INFO    | [323/1030] dialogue 322 done in 47.7s  (0.02 dial/s, ETA 565.5 min)
+2026-04-18 20:51:05 | INFO    | [324/1030] dialogue 323 done in 49.1s  (0.02 dial/s, ETA 564.7 min)
+2026-04-18 20:51:55 | INFO    | [325/1030] dialogue 324 done in 49.3s  (0.02 dial/s, ETA 564.0 min)
+2026-04-18 20:51:55 | INFO    |   running summary @ 325 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.272    0.366    0.426    0.437    0.441    0.361
+top1        0.528    0.666    0.749    0.764    0.765    0.656
+ndcg        0.647    0.738    0.796    0.806    0.807    0.733
+
+snapshot counts: k=1:650, k=2:650, k=3:650, k=4:648, k=5:648
+2026-04-18 20:52:42 | INFO    | [326/1030] dialogue 325 done in 47.2s  (0.02 dial/s, ETA 563.1 min)
+2026-04-18 20:53:26 | INFO    | [327/1030] dialogue 326 done in 44.1s  (0.02 dial/s, ETA 562.2 min)
+2026-04-18 20:54:12 | INFO    | [328/1030] dialogue 327 done in 46.3s  (0.02 dial/s, ETA 561.3 min)
+2026-04-18 20:55:00 | INFO    | [329/1030] dialogue 328 done in 47.9s  (0.02 dial/s, ETA 560.5 min)
+2026-04-18 20:55:47 | INFO    | [330/1030] dialogue 329 done in 46.5s  (0.02 dial/s, ETA 559.7 min)
+2026-04-18 20:55:47 | INFO    |   llm cache: 6620 hits / 3262 misses (rate 66.99%, size 3262)
+2026-04-18 20:55:47 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 20:56:35 | INFO    | [331/1030] dialogue 330 done in 48.0s  (0.02 dial/s, ETA 558.9 min)
+2026-04-18 20:57:27 | INFO    | [332/1030] dialogue 331 done in 51.8s  (0.02 dial/s, ETA 558.2 min)
+2026-04-18 20:58:17 | INFO    | [333/1030] dialogue 332 done in 50.2s  (0.02 dial/s, ETA 557.5 min)
+2026-04-18 20:59:07 | INFO    | [334/1030] dialogue 333 done in 50.6s  (0.02 dial/s, ETA 556.8 min)
+2026-04-18 20:59:50 | INFO    | [335/1030] dialogue 334 done in 42.1s  (0.02 dial/s, ETA 555.8 min)
+2026-04-18 21:00:37 | INFO    | [336/1030] dialogue 335 done in 47.2s  (0.02 dial/s, ETA 555.0 min)
+2026-04-18 21:01:18 | INFO    | [337/1030] dialogue 336 done in 40.9s  (0.02 dial/s, ETA 553.9 min)
+2026-04-18 21:02:07 | INFO    | [338/1030] dialogue 337 done in 49.1s  (0.02 dial/s, ETA 553.2 min)
+2026-04-18 21:02:57 | INFO    | [339/1030] dialogue 338 done in 50.6s  (0.02 dial/s, ETA 552.4 min)
+2026-04-18 21:03:38 | INFO    | [340/1030] dialogue 339 done in 40.7s  (0.02 dial/s, ETA 551.4 min)
+2026-04-18 21:03:38 | INFO    |   llm cache: 6823 hits / 3359 misses (rate 67.01%, size 3359)
+2026-04-18 21:03:38 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 21:04:25 | INFO    | [341/1030] dialogue 340 done in 47.1s  (0.02 dial/s, ETA 550.6 min)
+2026-04-18 21:05:16 | INFO    | [342/1030] dialogue 341 done in 50.6s  (0.02 dial/s, ETA 549.9 min)
+2026-04-18 21:06:01 | INFO    | [343/1030] dialogue 342 done in 45.6s  (0.02 dial/s, ETA 549.0 min)
+2026-04-18 21:06:52 | INFO    | [344/1030] dialogue 343 done in 50.8s  (0.02 dial/s, ETA 548.3 min)
+2026-04-18 21:07:40 | INFO    | [345/1030] dialogue 344 done in 47.4s  (0.02 dial/s, ETA 547.5 min)
+2026-04-18 21:08:28 | INFO    | [346/1030] dialogue 345 done in 48.0s  (0.02 dial/s, ETA 546.7 min)
+2026-04-18 21:09:18 | INFO    | [347/1030] dialogue 346 done in 50.4s  (0.02 dial/s, ETA 545.9 min)
+2026-04-18 21:10:10 | INFO    | [348/1030] dialogue 347 done in 52.5s  (0.02 dial/s, ETA 545.3 min)
+2026-04-18 21:11:03 | INFO    | [349/1030] dialogue 348 done in 52.1s  (0.02 dial/s, ETA 544.6 min)
+2026-04-18 21:11:50 | INFO    | [350/1030] dialogue 349 done in 47.5s  (0.02 dial/s, ETA 543.8 min)
+2026-04-18 21:11:50 | INFO    |   llm cache: 7023 hits / 3459 misses (rate 67.00%, size 3459)
+2026-04-18 21:11:50 | INFO    |   running summary @ 350 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.269    0.363    0.433    0.438    0.444    0.361
+top1        0.521    0.663    0.760    0.765    0.765    0.656
+ndcg        0.642    0.734    0.801    0.808    0.808    0.732
+
+snapshot counts: k=1:700, k=2:700, k=3:700, k=4:698, k=5:698
+2026-04-18 21:11:50 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 21:12:37 | INFO    | [351/1030] dialogue 350 done in 46.3s  (0.02 dial/s, ETA 543.0 min)
+2026-04-18 21:13:23 | INFO    | [352/1030] dialogue 351 done in 46.5s  (0.02 dial/s, ETA 542.1 min)
+2026-04-18 21:14:17 | INFO    | [353/1030] dialogue 352 done in 53.9s  (0.02 dial/s, ETA 541.5 min)
+2026-04-18 21:15:11 | INFO    | [354/1030] dialogue 353 done in 53.7s  (0.02 dial/s, ETA 540.9 min)
+2026-04-18 21:15:57 | INFO    | [355/1030] dialogue 354 done in 46.7s  (0.02 dial/s, ETA 540.1 min)
+2026-04-18 21:16:44 | INFO    | [356/1030] dialogue 355 done in 47.0s  (0.02 dial/s, ETA 539.2 min)
+2026-04-18 21:17:29 | INFO    | [357/1030] dialogue 356 done in 44.2s  (0.02 dial/s, ETA 538.3 min)
+2026-04-18 21:18:10 | INFO    | [358/1030] dialogue 357 done in 41.6s  (0.02 dial/s, ETA 537.3 min)
+2026-04-18 21:18:59 | INFO    | [359/1030] dialogue 358 done in 49.4s  (0.02 dial/s, ETA 536.5 min)
+2026-04-18 21:19:47 | INFO    | [360/1030] dialogue 359 done in 47.8s  (0.02 dial/s, ETA 535.7 min)
+2026-04-18 21:19:47 | INFO    |   llm cache: 7224 hits / 3558 misses (rate 67.00%, size 3558)
+2026-04-18 21:19:47 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 21:20:39 | INFO    | [361/1030] dialogue 360 done in 51.8s  (0.02 dial/s, ETA 535.1 min)
+2026-04-18 21:21:27 | INFO    | [362/1030] dialogue 361 done in 47.5s  (0.02 dial/s, ETA 534.2 min)
+2026-04-18 21:22:16 | INFO    | [363/1030] dialogue 362 done in 48.8s  (0.02 dial/s, ETA 533.5 min)
+2026-04-18 21:23:06 | INFO    | [364/1030] dialogue 363 done in 50.4s  (0.02 dial/s, ETA 532.7 min)
+2026-04-18 21:23:54 | INFO    | [365/1030] dialogue 364 done in 48.3s  (0.02 dial/s, ETA 532.0 min)
+2026-04-18 21:24:42 | INFO    | [366/1030] dialogue 365 done in 47.3s  (0.02 dial/s, ETA 531.1 min)
+2026-04-18 21:25:27 | INFO    | [367/1030] dialogue 366 done in 45.7s  (0.02 dial/s, ETA 530.3 min)
+2026-04-18 21:26:14 | INFO    | [368/1030] dialogue 367 done in 46.5s  (0.02 dial/s, ETA 529.4 min)
+2026-04-18 21:27:01 | INFO    | [369/1030] dialogue 368 done in 46.9s  (0.02 dial/s, ETA 528.6 min)
+2026-04-18 21:27:52 | INFO    | [370/1030] dialogue 369 done in 51.0s  (0.02 dial/s, ETA 527.9 min)
+2026-04-18 21:27:52 | INFO    |   llm cache: 7424 hits / 3658 misses (rate 66.99%, size 3658)
+2026-04-18 21:27:52 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 21:28:43 | INFO    | [371/1030] dialogue 370 done in 51.1s  (0.02 dial/s, ETA 527.2 min)
+2026-04-18 21:29:26 | INFO    | [372/1030] dialogue 371 done in 42.8s  (0.02 dial/s, ETA 526.2 min)
+2026-04-18 21:30:16 | INFO    | [373/1030] dialogue 372 done in 50.1s  (0.02 dial/s, ETA 525.5 min)
+2026-04-18 21:31:05 | INFO    | [374/1030] dialogue 373 done in 49.2s  (0.02 dial/s, ETA 524.7 min)
+2026-04-18 21:31:56 | INFO    | [375/1030] dialogue 374 done in 51.4s  (0.02 dial/s, ETA 524.0 min)
+2026-04-18 21:31:56 | INFO    |   running summary @ 375 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.268    0.359    0.433    0.439    0.444    0.360
+top1        0.516    0.659    0.765    0.769    0.767    0.654
+ndcg        0.639    0.731    0.805    0.811    0.811    0.731
+
+snapshot counts: k=1:750, k=2:750, k=3:750, k=4:748, k=5:748
+2026-04-18 21:32:45 | INFO    | [376/1030] dialogue 375 done in 49.1s  (0.02 dial/s, ETA 523.2 min)
+2026-04-18 21:33:35 | INFO    | [377/1030] dialogue 376 done in 49.2s  (0.02 dial/s, ETA 522.5 min)
+2026-04-18 21:34:21 | INFO    | [378/1030] dialogue 377 done in 46.6s  (0.02 dial/s, ETA 521.6 min)
+2026-04-18 21:35:05 | INFO    | [379/1030] dialogue 378 done in 44.1s  (0.02 dial/s, ETA 520.7 min)
+2026-04-18 21:35:52 | INFO    | [380/1030] dialogue 379 done in 46.9s  (0.02 dial/s, ETA 519.9 min)
+2026-04-18 21:35:52 | INFO    |   llm cache: 7626 hits / 3756 misses (rate 67.00%, size 3756)
+2026-04-18 21:35:52 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 21:36:42 | INFO    | [381/1030] dialogue 380 done in 49.6s  (0.02 dial/s, ETA 519.1 min)
+2026-04-18 21:37:32 | INFO    | [382/1030] dialogue 381 done in 49.7s  (0.02 dial/s, ETA 518.4 min)
+2026-04-18 21:38:17 | INFO    | [383/1030] dialogue 382 done in 45.8s  (0.02 dial/s, ETA 517.5 min)
+2026-04-18 21:39:07 | INFO    | [384/1030] dialogue 383 done in 49.3s  (0.02 dial/s, ETA 516.8 min)
+2026-04-18 21:39:55 | INFO    | [385/1030] dialogue 384 done in 48.0s  (0.02 dial/s, ETA 516.0 min)
+2026-04-18 21:40:46 | INFO    | [386/1030] dialogue 385 done in 50.8s  (0.02 dial/s, ETA 515.2 min)
+2026-04-18 21:41:36 | INFO    | [387/1030] dialogue 386 done in 50.6s  (0.02 dial/s, ETA 514.5 min)
+2026-04-18 21:42:23 | INFO    | [388/1030] dialogue 387 done in 46.7s  (0.02 dial/s, ETA 513.7 min)
+2026-04-18 21:43:05 | INFO    | [389/1030] dialogue 388 done in 42.1s  (0.02 dial/s, ETA 512.7 min)
+2026-04-18 21:43:54 | INFO    | [390/1030] dialogue 389 done in 48.8s  (0.02 dial/s, ETA 511.9 min)
+2026-04-18 21:43:54 | INFO    |   llm cache: 7828 hits / 3854 misses (rate 67.01%, size 3854)
+2026-04-18 21:43:54 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 21:44:42 | INFO    | [391/1030] dialogue 390 done in 47.8s  (0.02 dial/s, ETA 511.1 min)
+2026-04-18 21:45:28 | INFO    | [392/1030] dialogue 391 done in 46.4s  (0.02 dial/s, ETA 510.3 min)
+2026-04-18 21:46:15 | INFO    | [393/1030] dialogue 392 done in 47.2s  (0.02 dial/s, ETA 509.5 min)
+2026-04-18 21:47:07 | INFO    | [394/1030] dialogue 393 done in 51.8s  (0.02 dial/s, ETA 508.8 min)
+2026-04-18 21:47:54 | INFO    | [395/1030] dialogue 394 done in 46.8s  (0.02 dial/s, ETA 508.0 min)
+2026-04-18 21:48:40 | INFO    | [396/1030] dialogue 395 done in 45.7s  (0.02 dial/s, ETA 507.1 min)
+2026-04-18 21:49:30 | INFO    | [397/1030] dialogue 396 done in 50.3s  (0.02 dial/s, ETA 506.4 min)
+2026-04-18 21:50:19 | INFO    | [398/1030] dialogue 397 done in 49.2s  (0.02 dial/s, ETA 505.6 min)
+2026-04-18 21:51:09 | INFO    | [399/1030] dialogue 398 done in 50.1s  (0.02 dial/s, ETA 504.8 min)
+2026-04-18 21:51:59 | INFO    | [400/1030] dialogue 399 done in 50.1s  (0.02 dial/s, ETA 504.1 min)
+2026-04-18 21:51:59 | INFO    |   llm cache: 8028 hits / 3954 misses (rate 67.00%, size 3954)
+2026-04-18 21:51:59 | INFO    |   running summary @ 400 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.268    0.357    0.432    0.439    0.442    0.359
+top1        0.517    0.662    0.766    0.771    0.763    0.656
+ndcg        0.639    0.732    0.804    0.812    0.806    0.731
+
+snapshot counts: k=1:800, k=2:800, k=3:800, k=4:798, k=5:798
+2026-04-18 21:51:59 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 21:52:45 | INFO    | [401/1030] dialogue 400 done in 45.9s  (0.02 dial/s, ETA 503.2 min)
+2026-04-18 21:53:36 | INFO    | [402/1030] dialogue 401 done in 50.4s  (0.02 dial/s, ETA 502.5 min)
+2026-04-18 21:54:26 | INFO    | [403/1030] dialogue 402 done in 50.4s  (0.02 dial/s, ETA 501.8 min)
+2026-04-18 21:55:15 | INFO    | [404/1030] dialogue 403 done in 48.6s  (0.02 dial/s, ETA 501.0 min)
+2026-04-18 21:56:06 | INFO    | [405/1030] dialogue 404 done in 51.1s  (0.02 dial/s, ETA 500.3 min)
+2026-04-18 21:56:53 | INFO    | [406/1030] dialogue 405 done in 47.1s  (0.02 dial/s, ETA 499.4 min)
+2026-04-18 21:57:41 | INFO    | [407/1030] dialogue 406 done in 48.3s  (0.02 dial/s, ETA 498.6 min)
+2026-04-18 21:58:31 | INFO    | [408/1030] dialogue 407 done in 50.2s  (0.02 dial/s, ETA 497.9 min)
+2026-04-18 21:59:16 | INFO    | [409/1030] dialogue 408 done in 44.4s  (0.02 dial/s, ETA 497.0 min)
+2026-04-18 22:00:03 | INFO    | [410/1030] dialogue 409 done in 47.6s  (0.02 dial/s, ETA 496.2 min)
+2026-04-18 22:00:03 | INFO    |   llm cache: 8229 hits / 4053 misses (rate 67.00%, size 4053)
+2026-04-18 22:00:04 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 22:00:50 | INFO    | [411/1030] dialogue 410 done in 46.0s  (0.02 dial/s, ETA 495.3 min)
+2026-04-18 22:01:43 | INFO    | [412/1030] dialogue 411 done in 53.7s  (0.02 dial/s, ETA 494.7 min)
+2026-04-18 22:02:28 | INFO    | [413/1030] dialogue 412 done in 45.0s  (0.02 dial/s, ETA 493.8 min)
+2026-04-18 22:03:18 | INFO    | [414/1030] dialogue 413 done in 50.0s  (0.02 dial/s, ETA 493.1 min)
+2026-04-18 22:04:04 | INFO    | [415/1030] dialogue 414 done in 45.7s  (0.02 dial/s, ETA 492.2 min)
+2026-04-18 22:04:57 | INFO    | [416/1030] dialogue 415 done in 52.7s  (0.02 dial/s, ETA 491.5 min)
+2026-04-18 22:05:37 | INFO    | [417/1030] dialogue 416 done in 40.1s  (0.02 dial/s, ETA 490.5 min)
+2026-04-18 22:06:27 | INFO    | [418/1030] dialogue 417 done in 50.6s  (0.02 dial/s, ETA 489.8 min)
+2026-04-18 22:07:14 | INFO    | [419/1030] dialogue 418 done in 46.3s  (0.02 dial/s, ETA 488.9 min)
+2026-04-18 22:08:02 | INFO    | [420/1030] dialogue 419 done in 48.8s  (0.02 dial/s, ETA 488.2 min)
+2026-04-18 22:08:02 | INFO    |   llm cache: 8431 hits / 4151 misses (rate 67.01%, size 4151)
+2026-04-18 22:08:03 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 22:08:48 | INFO    | [421/1030] dialogue 420 done in 45.0s  (0.02 dial/s, ETA 487.3 min)
+2026-04-18 22:09:34 | INFO    | [422/1030] dialogue 421 done in 46.3s  (0.02 dial/s, ETA 486.5 min)
+2026-04-18 22:10:22 | INFO    | [423/1030] dialogue 422 done in 47.7s  (0.02 dial/s, ETA 485.6 min)
+2026-04-18 22:11:18 | INFO    | [424/1030] dialogue 423 done in 56.3s  (0.02 dial/s, ETA 485.0 min)
+2026-04-18 22:12:06 | INFO    | [425/1030] dialogue 424 done in 48.1s  (0.02 dial/s, ETA 484.2 min)
+2026-04-18 22:12:06 | INFO    |   running summary @ 425 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.266    0.353    0.429    0.433    0.436    0.355
+top1        0.524    0.661    0.765    0.768    0.761    0.657
+ndcg        0.643    0.732    0.805    0.811    0.805    0.732
+
+snapshot counts: k=1:850, k=2:850, k=3:850, k=4:848, k=5:848
+2026-04-18 22:12:55 | INFO    | [426/1030] dialogue 425 done in 49.4s  (0.02 dial/s, ETA 483.5 min)
+2026-04-18 22:13:45 | INFO    | [427/1030] dialogue 426 done in 49.3s  (0.02 dial/s, ETA 482.7 min)
+2026-04-18 22:14:30 | INFO    | [428/1030] dialogue 427 done in 45.3s  (0.02 dial/s, ETA 481.8 min)
+2026-04-18 22:15:18 | INFO    | [429/1030] dialogue 428 done in 47.9s  (0.02 dial/s, ETA 481.0 min)
+2026-04-18 22:16:07 | INFO    | [430/1030] dialogue 429 done in 49.3s  (0.02 dial/s, ETA 480.3 min)
+2026-04-18 22:16:07 | INFO    |   llm cache: 8632 hits / 4250 misses (rate 67.01%, size 4250)
+2026-04-18 22:16:07 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 22:17:00 | INFO    | [431/1030] dialogue 430 done in 53.1s  (0.02 dial/s, ETA 479.6 min)
+2026-04-18 22:17:42 | INFO    | [432/1030] dialogue 431 done in 42.1s  (0.02 dial/s, ETA 478.6 min)
+2026-04-18 22:18:30 | INFO    | [433/1030] dialogue 432 done in 47.6s  (0.02 dial/s, ETA 477.8 min)
+2026-04-18 22:19:18 | INFO    | [434/1030] dialogue 433 done in 47.9s  (0.02 dial/s, ETA 477.0 min)
+2026-04-18 22:20:10 | INFO    | [435/1030] dialogue 434 done in 52.3s  (0.02 dial/s, ETA 476.3 min)
+2026-04-18 22:20:59 | INFO    | [436/1030] dialogue 435 done in 49.0s  (0.02 dial/s, ETA 475.6 min)
+2026-04-18 22:21:46 | INFO    | [437/1030] dialogue 436 done in 47.0s  (0.02 dial/s, ETA 474.7 min)
+2026-04-18 22:22:38 | INFO    | [438/1030] dialogue 437 done in 52.2s  (0.02 dial/s, ETA 474.0 min)
+2026-04-18 22:23:24 | INFO    | [439/1030] dialogue 438 done in 45.5s  (0.02 dial/s, ETA 473.2 min)
+2026-04-18 22:24:12 | INFO    | [440/1030] dialogue 439 done in 48.0s  (0.02 dial/s, ETA 472.4 min)
+2026-04-18 22:24:12 | INFO    |   llm cache: 8833 hits / 4349 misses (rate 67.01%, size 4349)
+2026-04-18 22:24:12 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 22:25:01 | INFO    | [441/1030] dialogue 440 done in 48.6s  (0.02 dial/s, ETA 471.6 min)
+2026-04-18 22:25:46 | INFO    | [442/1030] dialogue 441 done in 45.4s  (0.02 dial/s, ETA 470.7 min)
+2026-04-18 22:26:31 | INFO    | [443/1030] dialogue 442 done in 45.0s  (0.02 dial/s, ETA 469.9 min)
+2026-04-18 22:27:18 | INFO    | [444/1030] dialogue 443 done in 47.1s  (0.02 dial/s, ETA 469.0 min)
+2026-04-18 22:28:01 | INFO    | [445/1030] dialogue 444 done in 43.3s  (0.02 dial/s, ETA 468.1 min)
+2026-04-18 22:28:48 | INFO    | [446/1030] dialogue 445 done in 46.3s  (0.02 dial/s, ETA 467.3 min)
+2026-04-18 22:29:38 | INFO    | [447/1030] dialogue 446 done in 50.7s  (0.02 dial/s, ETA 466.5 min)
+2026-04-18 22:30:28 | INFO    | [448/1030] dialogue 447 done in 49.2s  (0.02 dial/s, ETA 465.8 min)
+2026-04-18 22:31:16 | INFO    | [449/1030] dialogue 448 done in 48.8s  (0.02 dial/s, ETA 465.0 min)
+2026-04-18 22:32:04 | INFO    | [450/1030] dialogue 449 done in 47.1s  (0.02 dial/s, ETA 464.2 min)
+2026-04-18 22:32:04 | INFO    |   llm cache: 9034 hits / 4448 misses (rate 67.01%, size 4448)
+2026-04-18 22:32:04 | INFO    |   running summary @ 450 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.267    0.353    0.430    0.433    0.435    0.356
+top1        0.523    0.659    0.764    0.771    0.763    0.657
+ndcg        0.642    0.731    0.803    0.812    0.805    0.731
+
+snapshot counts: k=1:900, k=2:900, k=3:900, k=4:898, k=5:898
+2026-04-18 22:32:04 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 22:32:57 | INFO    | [451/1030] dialogue 450 done in 53.4s  (0.02 dial/s, ETA 463.5 min)
+2026-04-18 22:33:45 | INFO    | [452/1030] dialogue 451 done in 47.9s  (0.02 dial/s, ETA 462.7 min)
+2026-04-18 22:34:36 | INFO    | [453/1030] dialogue 452 done in 51.6s  (0.02 dial/s, ETA 462.0 min)
+2026-04-18 22:35:25 | INFO    | [454/1030] dialogue 453 done in 48.1s  (0.02 dial/s, ETA 461.2 min)
+2026-04-18 22:36:09 | INFO    | [455/1030] dialogue 454 done in 44.7s  (0.02 dial/s, ETA 460.3 min)
+2026-04-18 22:36:59 | INFO    | [456/1030] dialogue 455 done in 49.5s  (0.02 dial/s, ETA 459.5 min)
+2026-04-18 22:37:53 | INFO    | [457/1030] dialogue 456 done in 53.7s  (0.02 dial/s, ETA 458.8 min)
+2026-04-18 22:38:42 | INFO    | [458/1030] dialogue 457 done in 49.6s  (0.02 dial/s, ETA 458.1 min)
+2026-04-18 22:39:28 | INFO    | [459/1030] dialogue 458 done in 46.1s  (0.02 dial/s, ETA 457.2 min)
+2026-04-18 22:40:16 | INFO    | [460/1030] dialogue 459 done in 47.8s  (0.02 dial/s, ETA 456.4 min)
+2026-04-18 22:40:16 | INFO    |   llm cache: 9234 hits / 4548 misses (rate 67.00%, size 4548)
+2026-04-18 22:40:16 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 22:41:01 | INFO    | [461/1030] dialogue 460 done in 44.8s  (0.02 dial/s, ETA 455.6 min)
+2026-04-18 22:41:48 | INFO    | [462/1030] dialogue 461 done in 46.8s  (0.02 dial/s, ETA 454.7 min)
+2026-04-18 22:42:29 | INFO    | [463/1030] dialogue 462 done in 41.5s  (0.02 dial/s, ETA 453.8 min)
+2026-04-18 22:43:20 | INFO    | [464/1030] dialogue 463 done in 50.2s  (0.02 dial/s, ETA 453.0 min)
+2026-04-18 22:44:11 | INFO    | [465/1030] dialogue 464 done in 51.2s  (0.02 dial/s, ETA 452.3 min)
+2026-04-18 22:45:10 | INFO    | [466/1030] dialogue 465 done in 59.3s  (0.02 dial/s, ETA 451.7 min)
+2026-04-18 22:45:58 | INFO    | [467/1030] dialogue 466 done in 48.5s  (0.02 dial/s, ETA 450.9 min)
+2026-04-18 22:46:48 | INFO    | [468/1030] dialogue 467 done in 49.9s  (0.02 dial/s, ETA 450.2 min)
+2026-04-18 22:47:41 | INFO    | [469/1030] dialogue 468 done in 52.8s  (0.02 dial/s, ETA 449.5 min)
+2026-04-18 22:48:28 | INFO    | [470/1030] dialogue 469 done in 46.8s  (0.02 dial/s, ETA 448.6 min)
+2026-04-18 22:48:28 | INFO    |   llm cache: 9435 hits / 4647 misses (rate 67.00%, size 4647)
+2026-04-18 22:48:28 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 22:49:17 | INFO    | [471/1030] dialogue 470 done in 48.9s  (0.02 dial/s, ETA 447.9 min)
+2026-04-18 22:50:06 | INFO    | [472/1030] dialogue 471 done in 49.3s  (0.02 dial/s, ETA 447.1 min)
+2026-04-18 22:50:52 | INFO    | [473/1030] dialogue 472 done in 45.9s  (0.02 dial/s, ETA 446.2 min)
+2026-04-18 22:51:40 | INFO    | [474/1030] dialogue 473 done in 48.1s  (0.02 dial/s, ETA 445.4 min)
+2026-04-18 22:52:40 | INFO    | [475/1030] dialogue 474 done in 59.4s  (0.02 dial/s, ETA 444.9 min)
+2026-04-18 22:52:40 | INFO    |   running summary @ 475 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.267    0.357    0.429    0.431    0.435    0.357
+top1        0.527    0.668    0.769    0.775    0.765    0.662
+ndcg        0.643    0.736    0.806    0.813    0.805    0.734
+
+snapshot counts: k=1:950, k=2:950, k=3:950, k=4:948, k=5:948
+2026-04-18 22:53:35 | INFO    | [476/1030] dialogue 475 done in 55.3s  (0.02 dial/s, ETA 444.2 min)
+2026-04-18 22:54:23 | INFO    | [477/1030] dialogue 476 done in 47.4s  (0.02 dial/s, ETA 443.4 min)
+2026-04-18 22:55:06 | INFO    | [478/1030] dialogue 477 done in 43.2s  (0.02 dial/s, ETA 442.5 min)
+2026-04-18 22:55:54 | INFO    | [479/1030] dialogue 478 done in 48.0s  (0.02 dial/s, ETA 441.7 min)
+2026-04-18 22:56:42 | INFO    | [480/1030] dialogue 479 done in 48.2s  (0.02 dial/s, ETA 440.9 min)
+2026-04-18 22:56:42 | INFO    |   llm cache: 9636 hits / 4746 misses (rate 67.00%, size 4746)
+2026-04-18 22:56:42 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 22:57:31 | INFO    | [481/1030] dialogue 480 done in 49.0s  (0.02 dial/s, ETA 440.1 min)
+2026-04-18 22:58:18 | INFO    | [482/1030] dialogue 481 done in 47.2s  (0.02 dial/s, ETA 439.3 min)
+2026-04-18 22:59:04 | INFO    | [483/1030] dialogue 482 done in 45.9s  (0.02 dial/s, ETA 438.4 min)
+2026-04-18 22:59:52 | INFO    | [484/1030] dialogue 483 done in 48.2s  (0.02 dial/s, ETA 437.6 min)
+2026-04-18 23:00:38 | INFO    | [485/1030] dialogue 484 done in 45.4s  (0.02 dial/s, ETA 436.8 min)
+2026-04-18 23:01:30 | INFO    | [486/1030] dialogue 485 done in 51.8s  (0.02 dial/s, ETA 436.1 min)
+2026-04-18 23:02:11 | INFO    | [487/1030] dialogue 486 done in 41.1s  (0.02 dial/s, ETA 435.1 min)
+2026-04-18 23:02:55 | INFO    | [488/1030] dialogue 487 done in 44.4s  (0.02 dial/s, ETA 434.3 min)
+2026-04-18 23:03:43 | INFO    | [489/1030] dialogue 488 done in 47.7s  (0.02 dial/s, ETA 433.4 min)
+2026-04-18 23:04:26 | INFO    | [490/1030] dialogue 489 done in 43.6s  (0.02 dial/s, ETA 432.6 min)
+2026-04-18 23:04:26 | INFO    |   llm cache: 9839 hits / 4843 misses (rate 67.01%, size 4843)
+2026-04-18 23:04:26 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 23:05:16 | INFO    | [491/1030] dialogue 490 done in 49.7s  (0.02 dial/s, ETA 431.8 min)
+2026-04-18 23:06:15 | INFO    | [492/1030] dialogue 491 done in 58.7s  (0.02 dial/s, ETA 431.2 min)
+2026-04-18 23:07:08 | INFO    | [493/1030] dialogue 492 done in 53.5s  (0.02 dial/s, ETA 430.5 min)
+2026-04-18 23:07:50 | INFO    | [494/1030] dialogue 493 done in 41.3s  (0.02 dial/s, ETA 429.6 min)
+2026-04-18 23:08:40 | INFO    | [495/1030] dialogue 494 done in 50.6s  (0.02 dial/s, ETA 428.8 min)
+2026-04-18 23:09:24 | INFO    | [496/1030] dialogue 495 done in 43.5s  (0.02 dial/s, ETA 427.9 min)
+2026-04-18 23:10:15 | INFO    | [497/1030] dialogue 496 done in 51.0s  (0.02 dial/s, ETA 427.2 min)
+2026-04-18 23:11:00 | INFO    | [498/1030] dialogue 497 done in 45.4s  (0.02 dial/s, ETA 426.3 min)
+2026-04-18 23:11:45 | INFO    | [499/1030] dialogue 498 done in 44.5s  (0.02 dial/s, ETA 425.5 min)
+2026-04-18 23:12:33 | INFO    | [500/1030] dialogue 499 done in 48.0s  (0.02 dial/s, ETA 424.7 min)
+2026-04-18 23:12:33 | INFO    |   llm cache: 10041 hits / 4941 misses (rate 67.02%, size 4941)
+2026-04-18 23:12:33 | INFO    |   running summary @ 500 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.267    0.357    0.429    0.433    0.436    0.357
+top1        0.524    0.667    0.769    0.780    0.770    0.662
+ndcg        0.642    0.736    0.805    0.816    0.807    0.734
+
+snapshot counts: k=1:1000, k=2:1000, k=3:1000, k=4:998, k=5:998
+2026-04-18 23:12:33 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 23:13:26 | INFO    | [501/1030] dialogue 500 done in 53.0s  (0.02 dial/s, ETA 423.9 min)
+2026-04-18 23:14:07 | INFO    | [502/1030] dialogue 501 done in 41.7s  (0.02 dial/s, ETA 423.0 min)
+2026-04-18 23:14:54 | INFO    | [503/1030] dialogue 502 done in 46.7s  (0.02 dial/s, ETA 422.2 min)
+2026-04-18 23:15:43 | INFO    | [504/1030] dialogue 503 done in 48.6s  (0.02 dial/s, ETA 421.4 min)
+2026-04-18 23:16:23 | INFO    | [505/1030] dialogue 504 done in 40.5s  (0.02 dial/s, ETA 420.5 min)
+2026-04-18 23:17:07 | INFO    | [506/1030] dialogue 505 done in 43.6s  (0.02 dial/s, ETA 419.6 min)
+2026-04-18 23:17:57 | INFO    | [507/1030] dialogue 506 done in 49.8s  (0.02 dial/s, ETA 418.8 min)
+2026-04-18 23:18:43 | INFO    | [508/1030] dialogue 507 done in 46.9s  (0.02 dial/s, ETA 418.0 min)
+2026-04-18 23:19:37 | INFO    | [509/1030] dialogue 508 done in 53.9s  (0.02 dial/s, ETA 417.3 min)
+2026-04-18 23:20:28 | INFO    | [510/1030] dialogue 509 done in 50.8s  (0.02 dial/s, ETA 416.6 min)
+2026-04-18 23:20:28 | INFO    |   llm cache: 10244 hits / 5038 misses (rate 67.03%, size 5038)
+2026-04-18 23:20:28 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 23:21:18 | INFO    | [511/1030] dialogue 510 done in 49.3s  (0.02 dial/s, ETA 415.8 min)
+2026-04-18 23:22:10 | INFO    | [512/1030] dialogue 511 done in 52.1s  (0.02 dial/s, ETA 415.0 min)
+2026-04-18 23:22:55 | INFO    | [513/1030] dialogue 512 done in 45.8s  (0.02 dial/s, ETA 414.2 min)
+2026-04-18 23:23:48 | INFO    | [514/1030] dialogue 513 done in 52.1s  (0.02 dial/s, ETA 413.5 min)
+2026-04-18 23:24:31 | INFO    | [515/1030] dialogue 514 done in 43.9s  (0.02 dial/s, ETA 412.6 min)
+2026-04-18 23:25:16 | INFO    | [516/1030] dialogue 515 done in 44.2s  (0.02 dial/s, ETA 411.7 min)
+2026-04-18 23:26:08 | INFO    | [517/1030] dialogue 516 done in 52.5s  (0.02 dial/s, ETA 411.0 min)
+2026-04-18 23:26:54 | INFO    | [518/1030] dialogue 517 done in 45.5s  (0.02 dial/s, ETA 410.2 min)
+2026-04-18 23:27:36 | INFO    | [519/1030] dialogue 518 done in 42.1s  (0.02 dial/s, ETA 409.3 min)
+2026-04-18 23:28:22 | INFO    | [520/1030] dialogue 519 done in 46.7s  (0.02 dial/s, ETA 408.4 min)
+2026-04-18 23:28:22 | INFO    |   llm cache: 10448 hits / 5134 misses (rate 67.05%, size 5134)
+2026-04-18 23:28:23 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 23:29:11 | INFO    | [521/1030] dialogue 520 done in 48.7s  (0.02 dial/s, ETA 407.6 min)
+2026-04-18 23:30:03 | INFO    | [522/1030] dialogue 521 done in 51.2s  (0.02 dial/s, ETA 406.9 min)
+2026-04-18 23:30:52 | INFO    | [523/1030] dialogue 522 done in 49.1s  (0.02 dial/s, ETA 406.1 min)
+2026-04-18 23:31:39 | INFO    | [524/1030] dialogue 523 done in 47.1s  (0.02 dial/s, ETA 405.3 min)
+2026-04-18 23:32:21 | INFO    | [525/1030] dialogue 524 done in 42.2s  (0.02 dial/s, ETA 404.4 min)
+2026-04-18 23:32:21 | INFO    |   running summary @ 525 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.268    0.358    0.428    0.429    0.436    0.357
+top1        0.526    0.665    0.767    0.777    0.769    0.661
+ndcg        0.642    0.734    0.804    0.815    0.808    0.733
+
+snapshot counts: k=1:1050, k=2:1050, k=3:1050, k=4:1048, k=5:1048
+2026-04-18 23:33:12 | INFO    | [526/1030] dialogue 525 done in 51.5s  (0.02 dial/s, ETA 403.7 min)
+2026-04-18 23:34:01 | INFO    | [527/1030] dialogue 526 done in 48.7s  (0.02 dial/s, ETA 402.9 min)
+2026-04-18 23:34:49 | INFO    | [528/1030] dialogue 527 done in 48.0s  (0.02 dial/s, ETA 402.1 min)
+2026-04-18 23:35:38 | INFO    | [529/1030] dialogue 528 done in 48.5s  (0.02 dial/s, ETA 401.3 min)
+2026-04-18 23:36:27 | INFO    | [530/1030] dialogue 529 done in 49.5s  (0.02 dial/s, ETA 400.5 min)
+2026-04-18 23:36:27 | INFO    |   llm cache: 10649 hits / 5233 misses (rate 67.05%, size 5233)
+2026-04-18 23:36:27 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 23:37:16 | INFO    | [531/1030] dialogue 530 done in 48.5s  (0.02 dial/s, ETA 399.7 min)
+2026-04-18 23:38:06 | INFO    | [532/1030] dialogue 531 done in 50.0s  (0.02 dial/s, ETA 398.9 min)
+2026-04-18 23:38:53 | INFO    | [533/1030] dialogue 532 done in 47.5s  (0.02 dial/s, ETA 398.1 min)
+2026-04-18 23:39:41 | INFO    | [534/1030] dialogue 533 done in 47.7s  (0.02 dial/s, ETA 397.3 min)
+2026-04-18 23:40:31 | INFO    | [535/1030] dialogue 534 done in 50.3s  (0.02 dial/s, ETA 396.6 min)
+2026-04-18 23:41:20 | INFO    | [536/1030] dialogue 535 done in 48.4s  (0.02 dial/s, ETA 395.8 min)
+2026-04-18 23:42:08 | INFO    | [537/1030] dialogue 536 done in 48.5s  (0.02 dial/s, ETA 395.0 min)
+2026-04-18 23:42:57 | INFO    | [538/1030] dialogue 537 done in 48.8s  (0.02 dial/s, ETA 394.2 min)
+2026-04-18 23:43:45 | INFO    | [539/1030] dialogue 538 done in 47.6s  (0.02 dial/s, ETA 393.4 min)
+2026-04-18 23:44:21 | INFO    | [540/1030] dialogue 539 done in 35.7s  (0.02 dial/s, ETA 392.4 min)
+2026-04-18 23:44:21 | INFO    |   llm cache: 10841 hits / 5331 misses (rate 67.04%, size 5331)
+2026-04-18 23:44:21 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 23:45:09 | INFO    | [541/1030] dialogue 540 done in 48.4s  (0.02 dial/s, ETA 391.6 min)
+2026-04-18 23:45:55 | INFO    | [542/1030] dialogue 541 done in 46.2s  (0.02 dial/s, ETA 390.8 min)
+2026-04-18 23:46:47 | INFO    | [543/1030] dialogue 542 done in 51.6s  (0.02 dial/s, ETA 390.0 min)
+2026-04-18 23:47:36 | INFO    | [544/1030] dialogue 543 done in 49.2s  (0.02 dial/s, ETA 389.2 min)
+2026-04-18 23:48:22 | INFO    | [545/1030] dialogue 544 done in 46.2s  (0.02 dial/s, ETA 388.4 min)
+2026-04-18 23:49:12 | INFO    | [546/1030] dialogue 545 done in 49.4s  (0.02 dial/s, ETA 387.6 min)
+2026-04-18 23:49:56 | INFO    | [547/1030] dialogue 546 done in 44.4s  (0.02 dial/s, ETA 386.8 min)
+2026-04-18 23:50:40 | INFO    | [548/1030] dialogue 547 done in 44.0s  (0.02 dial/s, ETA 385.9 min)
+2026-04-18 23:51:31 | INFO    | [549/1030] dialogue 548 done in 50.4s  (0.02 dial/s, ETA 385.1 min)
+2026-04-18 23:52:23 | INFO    | [550/1030] dialogue 549 done in 52.6s  (0.02 dial/s, ETA 384.4 min)
+2026-04-18 23:52:23 | INFO    |   llm cache: 11042 hits / 5430 misses (rate 67.03%, size 5430)
+2026-04-18 23:52:23 | INFO    |   running summary @ 550 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.265    0.353    0.421    0.425    0.432    0.352
+top1        0.526    0.667    0.764    0.773    0.767    0.660
+ndcg        0.640    0.735    0.802    0.813    0.807    0.732
+
+snapshot counts: k=1:1100, k=2:1100, k=3:1100, k=4:1098, k=5:1096
+2026-04-18 23:52:23 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-18 23:53:18 | INFO    | [551/1030] dialogue 550 done in 54.5s  (0.02 dial/s, ETA 383.7 min)
+2026-04-18 23:54:03 | INFO    | [552/1030] dialogue 551 done in 45.4s  (0.02 dial/s, ETA 382.9 min)
+2026-04-18 23:54:53 | INFO    | [553/1030] dialogue 552 done in 49.6s  (0.02 dial/s, ETA 382.1 min)
+2026-04-18 23:55:39 | INFO    | [554/1030] dialogue 553 done in 46.6s  (0.02 dial/s, ETA 381.3 min)
+2026-04-18 23:56:32 | INFO    | [555/1030] dialogue 554 done in 52.8s  (0.02 dial/s, ETA 380.5 min)
+2026-04-18 23:57:18 | INFO    | [556/1030] dialogue 555 done in 46.1s  (0.02 dial/s, ETA 379.7 min)
+2026-04-18 23:58:05 | INFO    | [557/1030] dialogue 556 done in 47.0s  (0.02 dial/s, ETA 378.9 min)
+2026-04-18 23:58:51 | INFO    | [558/1030] dialogue 557 done in 45.9s  (0.02 dial/s, ETA 378.0 min)
+2026-04-18 23:59:40 | INFO    | [559/1030] dialogue 558 done in 48.7s  (0.02 dial/s, ETA 377.3 min)
+2026-04-19 00:00:25 | INFO    | [560/1030] dialogue 559 done in 44.9s  (0.02 dial/s, ETA 376.4 min)
+2026-04-19 00:00:25 | INFO    |   llm cache: 11242 hits / 5530 misses (rate 67.03%, size 5530)
+2026-04-19 00:00:25 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 00:01:15 | INFO    | [561/1030] dialogue 560 done in 49.9s  (0.02 dial/s, ETA 375.6 min)
+2026-04-19 00:02:04 | INFO    | [562/1030] dialogue 561 done in 49.0s  (0.02 dial/s, ETA 374.8 min)
+2026-04-19 00:02:56 | INFO    | [563/1030] dialogue 562 done in 51.6s  (0.02 dial/s, ETA 374.1 min)
+2026-04-19 00:03:47 | INFO    | [564/1030] dialogue 563 done in 51.1s  (0.02 dial/s, ETA 373.3 min)
+2026-04-19 00:04:30 | INFO    | [565/1030] dialogue 564 done in 43.2s  (0.02 dial/s, ETA 372.5 min)
+2026-04-19 00:05:19 | INFO    | [566/1030] dialogue 565 done in 48.6s  (0.02 dial/s, ETA 371.7 min)
+2026-04-19 00:06:08 | INFO    | [567/1030] dialogue 566 done in 49.5s  (0.02 dial/s, ETA 370.9 min)
+2026-04-19 00:06:58 | INFO    | [568/1030] dialogue 567 done in 49.6s  (0.02 dial/s, ETA 370.1 min)
+2026-04-19 00:07:46 | INFO    | [569/1030] dialogue 568 done in 48.3s  (0.02 dial/s, ETA 369.3 min)
+2026-04-19 00:08:33 | INFO    | [570/1030] dialogue 569 done in 47.3s  (0.02 dial/s, ETA 368.5 min)
+2026-04-19 00:08:33 | INFO    |   llm cache: 11443 hits / 5629 misses (rate 67.03%, size 5629)
+2026-04-19 00:08:33 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 00:09:22 | INFO    | [571/1030] dialogue 570 done in 48.6s  (0.02 dial/s, ETA 367.7 min)
+2026-04-19 00:10:07 | INFO    | [572/1030] dialogue 571 done in 45.4s  (0.02 dial/s, ETA 366.9 min)
+2026-04-19 00:10:59 | INFO    | [573/1030] dialogue 572 done in 51.6s  (0.02 dial/s, ETA 366.1 min)
+2026-04-19 00:11:52 | INFO    | [574/1030] dialogue 573 done in 53.1s  (0.02 dial/s, ETA 365.4 min)
+2026-04-19 00:12:32 | INFO    | [575/1030] dialogue 574 done in 40.2s  (0.02 dial/s, ETA 364.5 min)
+2026-04-19 00:12:32 | INFO    |   running summary @ 575 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.265    0.352    0.420    0.424    0.429    0.352
+top1        0.527    0.668    0.763    0.773    0.766    0.661
+ndcg        0.640    0.734    0.802    0.811    0.805    0.731
+
+snapshot counts: k=1:1150, k=2:1150, k=3:1150, k=4:1148, k=5:1146
+2026-04-19 00:13:20 | INFO    | [576/1030] dialogue 575 done in 47.4s  (0.02 dial/s, ETA 363.7 min)
+2026-04-19 00:14:08 | INFO    | [577/1030] dialogue 576 done in 48.4s  (0.02 dial/s, ETA 362.9 min)
+2026-04-19 00:14:58 | INFO    | [578/1030] dialogue 577 done in 49.4s  (0.02 dial/s, ETA 362.1 min)
+2026-04-19 00:15:49 | INFO    | [579/1030] dialogue 578 done in 51.7s  (0.02 dial/s, ETA 361.3 min)
+2026-04-19 00:16:38 | INFO    | [580/1030] dialogue 579 done in 48.6s  (0.02 dial/s, ETA 360.5 min)
+2026-04-19 00:16:38 | INFO    |   llm cache: 11644 hits / 5728 misses (rate 67.03%, size 5728)
+2026-04-19 00:16:38 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 00:17:22 | INFO    | [581/1030] dialogue 580 done in 44.3s  (0.02 dial/s, ETA 359.7 min)
+2026-04-19 00:18:11 | INFO    | [582/1030] dialogue 581 done in 48.3s  (0.02 dial/s, ETA 358.9 min)
+2026-04-19 00:18:59 | INFO    | [583/1030] dialogue 582 done in 48.8s  (0.02 dial/s, ETA 358.1 min)
+2026-04-19 00:19:51 | INFO    | [584/1030] dialogue 583 done in 51.2s  (0.02 dial/s, ETA 357.3 min)
+2026-04-19 00:20:40 | INFO    | [585/1030] dialogue 584 done in 49.2s  (0.02 dial/s, ETA 356.6 min)
+2026-04-19 00:21:28 | INFO    | [586/1030] dialogue 585 done in 48.4s  (0.02 dial/s, ETA 355.8 min)
+2026-04-19 00:22:15 | INFO    | [587/1030] dialogue 586 done in 46.7s  (0.02 dial/s, ETA 354.9 min)
+2026-04-19 00:23:00 | INFO    | [588/1030] dialogue 587 done in 45.2s  (0.02 dial/s, ETA 354.1 min)
+2026-04-19 00:23:45 | INFO    | [589/1030] dialogue 588 done in 45.2s  (0.02 dial/s, ETA 353.3 min)
+2026-04-19 00:24:35 | INFO    | [590/1030] dialogue 589 done in 49.6s  (0.02 dial/s, ETA 352.5 min)
+2026-04-19 00:24:35 | INFO    |   llm cache: 11847 hits / 5825 misses (rate 67.04%, size 5825)
+2026-04-19 00:24:35 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 00:25:26 | INFO    | [591/1030] dialogue 590 done in 50.7s  (0.02 dial/s, ETA 351.7 min)
+2026-04-19 00:26:08 | INFO    | [592/1030] dialogue 591 done in 42.3s  (0.02 dial/s, ETA 350.8 min)
+2026-04-19 00:26:54 | INFO    | [593/1030] dialogue 592 done in 45.4s  (0.02 dial/s, ETA 350.0 min)
+2026-04-19 00:27:36 | INFO    | [594/1030] dialogue 593 done in 42.6s  (0.02 dial/s, ETA 349.1 min)
+2026-04-19 00:28:22 | INFO    | [595/1030] dialogue 594 done in 45.5s  (0.02 dial/s, ETA 348.3 min)
+2026-04-19 00:29:09 | INFO    | [596/1030] dialogue 595 done in 47.3s  (0.02 dial/s, ETA 347.5 min)
+2026-04-19 00:30:01 | INFO    | [597/1030] dialogue 596 done in 52.2s  (0.02 dial/s, ETA 346.8 min)
+2026-04-19 00:30:48 | INFO    | [598/1030] dialogue 597 done in 46.9s  (0.02 dial/s, ETA 345.9 min)
+2026-04-19 00:31:32 | INFO    | [599/1030] dialogue 598 done in 44.1s  (0.02 dial/s, ETA 345.1 min)
+2026-04-19 00:32:21 | INFO    | [600/1030] dialogue 599 done in 48.9s  (0.02 dial/s, ETA 344.3 min)
+2026-04-19 00:32:21 | INFO    |   llm cache: 12051 hits / 5921 misses (rate 67.05%, size 5921)
+2026-04-19 00:32:21 | INFO    |   running summary @ 600 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.268    0.354    0.417    0.422    0.427    0.352
+top1        0.527    0.672    0.763    0.775    0.770    0.662
+ndcg        0.641    0.738    0.801    0.812    0.807    0.733
+
+snapshot counts: k=1:1200, k=2:1200, k=3:1200, k=4:1198, k=5:1196
+2026-04-19 00:32:21 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 00:33:07 | INFO    | [601/1030] dialogue 600 done in 46.1s  (0.02 dial/s, ETA 343.5 min)
+2026-04-19 00:34:01 | INFO    | [602/1030] dialogue 601 done in 53.4s  (0.02 dial/s, ETA 342.7 min)
+2026-04-19 00:34:48 | INFO    | [603/1030] dialogue 602 done in 47.2s  (0.02 dial/s, ETA 341.9 min)
+2026-04-19 00:35:35 | INFO    | [604/1030] dialogue 603 done in 47.6s  (0.02 dial/s, ETA 341.1 min)
+2026-04-19 00:36:21 | INFO    | [605/1030] dialogue 604 done in 45.7s  (0.02 dial/s, ETA 340.3 min)
+2026-04-19 00:37:11 | INFO    | [606/1030] dialogue 605 done in 49.9s  (0.02 dial/s, ETA 339.5 min)
+2026-04-19 00:37:58 | INFO    | [607/1030] dialogue 606 done in 46.7s  (0.02 dial/s, ETA 338.7 min)
+2026-04-19 00:38:45 | INFO    | [608/1030] dialogue 607 done in 47.2s  (0.02 dial/s, ETA 337.9 min)
+2026-04-19 00:39:30 | INFO    | [609/1030] dialogue 608 done in 44.8s  (0.02 dial/s, ETA 337.1 min)
+2026-04-19 00:40:19 | INFO    | [610/1030] dialogue 609 done in 49.6s  (0.02 dial/s, ETA 336.3 min)
+2026-04-19 00:40:19 | INFO    |   llm cache: 12253 hits / 6019 misses (rate 67.06%, size 6019)
+2026-04-19 00:40:20 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 00:41:04 | INFO    | [611/1030] dialogue 610 done in 44.3s  (0.02 dial/s, ETA 335.4 min)
+2026-04-19 00:41:52 | INFO    | [612/1030] dialogue 611 done in 48.0s  (0.02 dial/s, ETA 334.6 min)
+2026-04-19 00:42:40 | INFO    | [613/1030] dialogue 612 done in 47.8s  (0.02 dial/s, ETA 333.8 min)
+2026-04-19 00:43:35 | INFO    | [614/1030] dialogue 613 done in 55.2s  (0.02 dial/s, ETA 333.1 min)
+2026-04-19 00:44:17 | INFO    | [615/1030] dialogue 614 done in 41.7s  (0.02 dial/s, ETA 332.2 min)
+2026-04-19 00:45:06 | INFO    | [616/1030] dialogue 615 done in 49.7s  (0.02 dial/s, ETA 331.5 min)
+2026-04-19 00:45:53 | INFO    | [617/1030] dialogue 616 done in 46.7s  (0.02 dial/s, ETA 330.6 min)
+2026-04-19 00:46:42 | INFO    | [618/1030] dialogue 617 done in 48.6s  (0.02 dial/s, ETA 329.8 min)
+2026-04-19 00:47:30 | INFO    | [619/1030] dialogue 618 done in 48.1s  (0.02 dial/s, ETA 329.0 min)
+2026-04-19 00:48:16 | INFO    | [620/1030] dialogue 619 done in 46.1s  (0.02 dial/s, ETA 328.2 min)
+2026-04-19 00:48:16 | INFO    |   llm cache: 12455 hits / 6117 misses (rate 67.06%, size 6117)
+2026-04-19 00:48:16 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 00:49:04 | INFO    | [621/1030] dialogue 620 done in 48.2s  (0.02 dial/s, ETA 327.4 min)
+2026-04-19 00:49:47 | INFO    | [622/1030] dialogue 621 done in 42.9s  (0.02 dial/s, ETA 326.6 min)
+2026-04-19 00:50:36 | INFO    | [623/1030] dialogue 622 done in 48.9s  (0.02 dial/s, ETA 325.8 min)
+2026-04-19 00:51:21 | INFO    | [624/1030] dialogue 623 done in 45.3s  (0.02 dial/s, ETA 324.9 min)
+2026-04-19 00:52:14 | INFO    | [625/1030] dialogue 624 done in 53.0s  (0.02 dial/s, ETA 324.2 min)
+2026-04-19 00:52:14 | INFO    |   running summary @ 625 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.264    0.350    0.411    0.418    0.423    0.347
+top1        0.526    0.672    0.761    0.772    0.769    0.661
+ndcg        0.639    0.737    0.799    0.809    0.806    0.731
+
+snapshot counts: k=1:1250, k=2:1250, k=3:1250, k=4:1248, k=5:1246
+2026-04-19 00:53:03 | INFO    | [626/1030] dialogue 625 done in 48.4s  (0.02 dial/s, ETA 323.4 min)
+2026-04-19 00:53:51 | INFO    | [627/1030] dialogue 626 done in 48.9s  (0.02 dial/s, ETA 322.6 min)
+2026-04-19 00:54:38 | INFO    | [628/1030] dialogue 627 done in 46.2s  (0.02 dial/s, ETA 321.8 min)
+2026-04-19 00:55:24 | INFO    | [629/1030] dialogue 628 done in 45.8s  (0.02 dial/s, ETA 321.0 min)
+2026-04-19 00:56:04 | INFO    | [630/1030] dialogue 629 done in 40.9s  (0.02 dial/s, ETA 320.1 min)
+2026-04-19 00:56:04 | INFO    |   llm cache: 12658 hits / 6214 misses (rate 67.07%, size 6214)
+2026-04-19 00:56:05 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 00:56:52 | INFO    | [631/1030] dialogue 630 done in 47.4s  (0.02 dial/s, ETA 319.3 min)
+2026-04-19 00:57:36 | INFO    | [632/1030] dialogue 631 done in 43.4s  (0.02 dial/s, ETA 318.4 min)
+2026-04-19 00:58:25 | INFO    | [633/1030] dialogue 632 done in 49.5s  (0.02 dial/s, ETA 317.7 min)
+2026-04-19 00:59:17 | INFO    | [634/1030] dialogue 633 done in 52.0s  (0.02 dial/s, ETA 316.9 min)
+2026-04-19 01:00:06 | INFO    | [635/1030] dialogue 634 done in 48.5s  (0.02 dial/s, ETA 316.1 min)
+2026-04-19 01:01:02 | INFO    | [636/1030] dialogue 635 done in 56.5s  (0.02 dial/s, ETA 315.4 min)
+2026-04-19 01:01:51 | INFO    | [637/1030] dialogue 636 done in 49.0s  (0.02 dial/s, ETA 314.6 min)
+2026-04-19 01:02:33 | INFO    | [638/1030] dialogue 637 done in 42.0s  (0.02 dial/s, ETA 313.7 min)
+2026-04-19 01:03:20 | INFO    | [639/1030] dialogue 638 done in 46.8s  (0.02 dial/s, ETA 312.9 min)
+2026-04-19 01:04:09 | INFO    | [640/1030] dialogue 639 done in 49.6s  (0.02 dial/s, ETA 312.1 min)
+2026-04-19 01:04:09 | INFO    |   llm cache: 12860 hits / 6312 misses (rate 67.08%, size 6312)
+2026-04-19 01:04:10 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 01:04:55 | INFO    | [641/1030] dialogue 640 done in 45.3s  (0.02 dial/s, ETA 311.3 min)
+2026-04-19 01:05:46 | INFO    | [642/1030] dialogue 641 done in 51.5s  (0.02 dial/s, ETA 310.5 min)
+2026-04-19 01:06:27 | INFO    | [643/1030] dialogue 642 done in 40.3s  (0.02 dial/s, ETA 309.7 min)
+2026-04-19 01:07:15 | INFO    | [644/1030] dialogue 643 done in 48.7s  (0.02 dial/s, ETA 308.9 min)
+2026-04-19 01:08:05 | INFO    | [645/1030] dialogue 644 done in 49.9s  (0.02 dial/s, ETA 308.1 min)
+2026-04-19 01:08:53 | INFO    | [646/1030] dialogue 645 done in 48.2s  (0.02 dial/s, ETA 307.3 min)
+2026-04-19 01:09:41 | INFO    | [647/1030] dialogue 646 done in 48.1s  (0.02 dial/s, ETA 306.5 min)
+2026-04-19 01:10:28 | INFO    | [648/1030] dialogue 647 done in 46.4s  (0.02 dial/s, ETA 305.7 min)
+2026-04-19 01:11:20 | INFO    | [649/1030] dialogue 648 done in 52.3s  (0.02 dial/s, ETA 304.9 min)
+2026-04-19 01:12:10 | INFO    | [650/1030] dialogue 649 done in 49.6s  (0.02 dial/s, ETA 304.1 min)
+2026-04-19 01:12:10 | INFO    |   llm cache: 13061 hits / 6411 misses (rate 67.08%, size 6411)
+2026-04-19 01:12:10 | INFO    |   running summary @ 650 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.262    0.351    0.415    0.421    0.424    0.348
+top1        0.525    0.671    0.764    0.773    0.769    0.661
+ndcg        0.640    0.737    0.801    0.810    0.805    0.732
+
+snapshot counts: k=1:1300, k=2:1300, k=3:1300, k=4:1298, k=5:1296
+2026-04-19 01:12:10 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 01:13:00 | INFO    | [651/1030] dialogue 650 done in 49.7s  (0.02 dial/s, ETA 303.4 min)
+2026-04-19 01:13:47 | INFO    | [652/1030] dialogue 651 done in 47.3s  (0.02 dial/s, ETA 302.5 min)
+2026-04-19 01:14:31 | INFO    | [653/1030] dialogue 652 done in 44.0s  (0.02 dial/s, ETA 301.7 min)
+2026-04-19 01:15:18 | INFO    | [654/1030] dialogue 653 done in 46.9s  (0.02 dial/s, ETA 300.9 min)
+2026-04-19 01:16:00 | INFO    | [655/1030] dialogue 654 done in 42.0s  (0.02 dial/s, ETA 300.0 min)
+2026-04-19 01:16:47 | INFO    | [656/1030] dialogue 655 done in 47.3s  (0.02 dial/s, ETA 299.2 min)
+2026-04-19 01:17:38 | INFO    | [657/1030] dialogue 656 done in 51.1s  (0.02 dial/s, ETA 298.5 min)
+2026-04-19 01:18:28 | INFO    | [658/1030] dialogue 657 done in 49.6s  (0.02 dial/s, ETA 297.7 min)
+2026-04-19 01:19:17 | INFO    | [659/1030] dialogue 658 done in 48.7s  (0.02 dial/s, ETA 296.9 min)
+2026-04-19 01:20:05 | INFO    | [660/1030] dialogue 659 done in 48.6s  (0.02 dial/s, ETA 296.1 min)
+2026-04-19 01:20:05 | INFO    |   llm cache: 13263 hits / 6509 misses (rate 67.08%, size 6509)
+2026-04-19 01:20:05 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 01:20:53 | INFO    | [661/1030] dialogue 660 done in 48.0s  (0.02 dial/s, ETA 295.3 min)
+2026-04-19 01:21:45 | INFO    | [662/1030] dialogue 661 done in 51.1s  (0.02 dial/s, ETA 294.5 min)
+2026-04-19 01:22:30 | INFO    | [663/1030] dialogue 662 done in 45.8s  (0.02 dial/s, ETA 293.7 min)
+2026-04-19 01:23:24 | INFO    | [664/1030] dialogue 663 done in 53.4s  (0.02 dial/s, ETA 292.9 min)
+2026-04-19 01:24:10 | INFO    | [665/1030] dialogue 664 done in 46.0s  (0.02 dial/s, ETA 292.1 min)
+2026-04-19 01:25:01 | INFO    | [666/1030] dialogue 665 done in 50.9s  (0.02 dial/s, ETA 291.4 min)
+2026-04-19 01:25:48 | INFO    | [667/1030] dialogue 666 done in 47.9s  (0.02 dial/s, ETA 290.6 min)
+2026-04-19 01:26:37 | INFO    | [668/1030] dialogue 667 done in 48.2s  (0.02 dial/s, ETA 289.8 min)
+2026-04-19 01:27:23 | INFO    | [669/1030] dialogue 668 done in 45.9s  (0.02 dial/s, ETA 288.9 min)
+2026-04-19 01:28:09 | INFO    | [670/1030] dialogue 669 done in 46.1s  (0.02 dial/s, ETA 288.1 min)
+2026-04-19 01:28:09 | INFO    |   llm cache: 13463 hits / 6609 misses (rate 67.07%, size 6609)
+2026-04-19 01:28:09 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 01:28:53 | INFO    | [671/1030] dialogue 670 done in 44.5s  (0.02 dial/s, ETA 287.3 min)
+2026-04-19 01:29:43 | INFO    | [672/1030] dialogue 671 done in 49.3s  (0.02 dial/s, ETA 286.5 min)
+2026-04-19 01:30:33 | INFO    | [673/1030] dialogue 672 done in 50.5s  (0.02 dial/s, ETA 285.7 min)
+2026-04-19 01:31:19 | INFO    | [674/1030] dialogue 673 done in 45.9s  (0.02 dial/s, ETA 284.9 min)
+2026-04-19 01:32:05 | INFO    | [675/1030] dialogue 674 done in 46.5s  (0.02 dial/s, ETA 284.1 min)
+2026-04-19 01:32:05 | INFO    |   running summary @ 675 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.264    0.349    0.413    0.419    0.422    0.347
+top1        0.527    0.667    0.758    0.769    0.762    0.658
+ndcg        0.641    0.734    0.798    0.807    0.802    0.730
+
+snapshot counts: k=1:1350, k=2:1350, k=3:1350, k=4:1348, k=5:1346
+2026-04-19 01:32:56 | INFO    | [676/1030] dialogue 675 done in 50.3s  (0.02 dial/s, ETA 283.3 min)
+2026-04-19 01:33:44 | INFO    | [677/1030] dialogue 676 done in 48.3s  (0.02 dial/s, ETA 282.5 min)
+2026-04-19 01:34:24 | INFO    | [678/1030] dialogue 677 done in 40.2s  (0.02 dial/s, ETA 281.6 min)
+2026-04-19 01:35:16 | INFO    | [679/1030] dialogue 678 done in 51.8s  (0.02 dial/s, ETA 280.9 min)
+2026-04-19 01:36:04 | INFO    | [680/1030] dialogue 679 done in 47.6s  (0.02 dial/s, ETA 280.1 min)
+2026-04-19 01:36:04 | INFO    |   llm cache: 13665 hits / 6707 misses (rate 67.08%, size 6707)
+2026-04-19 01:36:04 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 01:36:54 | INFO    | [681/1030] dialogue 680 done in 50.6s  (0.02 dial/s, ETA 279.3 min)
+2026-04-19 01:37:44 | INFO    | [682/1030] dialogue 681 done in 49.6s  (0.02 dial/s, ETA 278.5 min)
+2026-04-19 01:38:27 | INFO    | [683/1030] dialogue 682 done in 43.1s  (0.02 dial/s, ETA 277.7 min)
+2026-04-19 01:39:15 | INFO    | [684/1030] dialogue 683 done in 47.4s  (0.02 dial/s, ETA 276.9 min)
+2026-04-19 01:40:05 | INFO    | [685/1030] dialogue 684 done in 50.0s  (0.02 dial/s, ETA 276.1 min)
+2026-04-19 01:40:57 | INFO    | [686/1030] dialogue 685 done in 52.0s  (0.02 dial/s, ETA 275.3 min)
+2026-04-19 01:41:41 | INFO    | [687/1030] dialogue 686 done in 44.7s  (0.02 dial/s, ETA 274.5 min)
+2026-04-19 01:42:22 | INFO    | [688/1030] dialogue 687 done in 40.7s  (0.02 dial/s, ETA 273.6 min)
+2026-04-19 01:43:07 | INFO    | [689/1030] dialogue 688 done in 45.0s  (0.02 dial/s, ETA 272.8 min)
+2026-04-19 01:43:56 | INFO    | [690/1030] dialogue 689 done in 49.3s  (0.02 dial/s, ETA 272.0 min)
+2026-04-19 01:43:56 | INFO    |   llm cache: 13869 hits / 6803 misses (rate 67.09%, size 6803)
+2026-04-19 01:43:56 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 01:44:45 | INFO    | [691/1030] dialogue 690 done in 48.5s  (0.02 dial/s, ETA 271.2 min)
+2026-04-19 01:45:33 | INFO    | [692/1030] dialogue 691 done in 48.4s  (0.02 dial/s, ETA 270.4 min)
+2026-04-19 01:46:24 | INFO    | [693/1030] dialogue 692 done in 50.7s  (0.02 dial/s, ETA 269.6 min)
+2026-04-19 01:47:12 | INFO    | [694/1030] dialogue 693 done in 47.4s  (0.02 dial/s, ETA 268.8 min)
+2026-04-19 01:47:59 | INFO    | [695/1030] dialogue 694 done in 47.8s  (0.02 dial/s, ETA 268.0 min)
+2026-04-19 01:48:45 | INFO    | [696/1030] dialogue 695 done in 45.5s  (0.02 dial/s, ETA 267.2 min)
+2026-04-19 01:49:31 | INFO    | [697/1030] dialogue 696 done in 46.6s  (0.02 dial/s, ETA 266.4 min)
+2026-04-19 01:50:18 | INFO    | [698/1030] dialogue 697 done in 46.8s  (0.02 dial/s, ETA 265.6 min)
+2026-04-19 01:51:00 | INFO    | [699/1030] dialogue 698 done in 42.1s  (0.02 dial/s, ETA 264.7 min)
+2026-04-19 01:51:44 | INFO    | [700/1030] dialogue 699 done in 43.7s  (0.02 dial/s, ETA 263.9 min)
+2026-04-19 01:51:44 | INFO    |   llm cache: 14071 hits / 6901 misses (rate 67.09%, size 6901)
+2026-04-19 01:51:44 | INFO    |   running summary @ 700 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.265    0.351    0.412    0.420    0.423    0.348
+top1        0.526    0.666    0.756    0.768    0.761    0.657
+ndcg        0.640    0.734    0.798    0.807    0.802    0.730
+
+snapshot counts: k=1:1400, k=2:1400, k=3:1400, k=4:1398, k=5:1396
+2026-04-19 01:51:44 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 01:52:29 | INFO    | [701/1030] dialogue 700 done in 45.0s  (0.02 dial/s, ETA 263.1 min)
+2026-04-19 01:53:19 | INFO    | [702/1030] dialogue 701 done in 49.6s  (0.02 dial/s, ETA 262.3 min)
+2026-04-19 01:54:06 | INFO    | [703/1030] dialogue 702 done in 47.3s  (0.02 dial/s, ETA 261.5 min)
+2026-04-19 01:54:57 | INFO    | [704/1030] dialogue 703 done in 50.5s  (0.02 dial/s, ETA 260.7 min)
+2026-04-19 01:55:48 | INFO    | [705/1030] dialogue 704 done in 50.9s  (0.02 dial/s, ETA 259.9 min)
+2026-04-19 01:56:33 | INFO    | [706/1030] dialogue 705 done in 45.9s  (0.02 dial/s, ETA 259.1 min)
+2026-04-19 01:57:21 | INFO    | [707/1030] dialogue 706 done in 48.0s  (0.02 dial/s, ETA 258.3 min)
+2026-04-19 01:58:05 | INFO    | [708/1030] dialogue 707 done in 43.2s  (0.02 dial/s, ETA 257.5 min)
+2026-04-19 01:58:54 | INFO    | [709/1030] dialogue 708 done in 49.5s  (0.02 dial/s, ETA 256.7 min)
+2026-04-19 01:59:41 | INFO    | [710/1030] dialogue 709 done in 47.3s  (0.02 dial/s, ETA 255.9 min)
+2026-04-19 01:59:41 | INFO    |   llm cache: 14272 hits / 7000 misses (rate 67.09%, size 7000)
+2026-04-19 01:59:42 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 02:00:32 | INFO    | [711/1030] dialogue 710 done in 50.6s  (0.02 dial/s, ETA 255.1 min)
+2026-04-19 02:01:23 | INFO    | [712/1030] dialogue 711 done in 50.7s  (0.02 dial/s, ETA 254.3 min)
+2026-04-19 02:02:13 | INFO    | [713/1030] dialogue 712 done in 50.3s  (0.02 dial/s, ETA 253.6 min)
+2026-04-19 02:02:57 | INFO    | [714/1030] dialogue 713 done in 44.1s  (0.02 dial/s, ETA 252.7 min)
+2026-04-19 02:03:48 | INFO    | [715/1030] dialogue 714 done in 51.0s  (0.02 dial/s, ETA 251.9 min)
+2026-04-19 02:04:37 | INFO    | [716/1030] dialogue 715 done in 48.4s  (0.02 dial/s, ETA 251.1 min)
+2026-04-19 02:05:24 | INFO    | [717/1030] dialogue 716 done in 46.8s  (0.02 dial/s, ETA 250.3 min)
+2026-04-19 02:06:07 | INFO    | [718/1030] dialogue 717 done in 43.3s  (0.02 dial/s, ETA 249.5 min)
+2026-04-19 02:06:52 | INFO    | [719/1030] dialogue 718 done in 45.3s  (0.02 dial/s, ETA 248.7 min)
+2026-04-19 02:07:45 | INFO    | [720/1030] dialogue 719 done in 52.8s  (0.02 dial/s, ETA 247.9 min)
+2026-04-19 02:07:45 | INFO    |   llm cache: 14473 hits / 7099 misses (rate 67.09%, size 7099)
+2026-04-19 02:07:45 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 02:08:30 | INFO    | [721/1030] dialogue 720 done in 45.3s  (0.02 dial/s, ETA 247.1 min)
+2026-04-19 02:09:17 | INFO    | [722/1030] dialogue 721 done in 46.8s  (0.02 dial/s, ETA 246.3 min)
+2026-04-19 02:10:07 | INFO    | [723/1030] dialogue 722 done in 49.3s  (0.02 dial/s, ETA 245.5 min)
+2026-04-19 02:10:58 | INFO    | [724/1030] dialogue 723 done in 51.2s  (0.02 dial/s, ETA 244.7 min)
+2026-04-19 02:11:45 | INFO    | [725/1030] dialogue 724 done in 47.0s  (0.02 dial/s, ETA 243.9 min)
+2026-04-19 02:11:45 | INFO    |   running summary @ 725 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.268    0.351    0.416    0.422    0.423    0.351
+top1        0.531    0.668    0.759    0.769    0.761    0.660
+ndcg        0.643    0.735    0.799    0.807    0.801    0.731
+
+snapshot counts: k=1:1450, k=2:1450, k=3:1450, k=4:1448, k=5:1446
+2026-04-19 02:12:34 | INFO    | [726/1030] dialogue 725 done in 48.9s  (0.02 dial/s, ETA 243.1 min)
+2026-04-19 02:13:18 | INFO    | [727/1030] dialogue 726 done in 44.5s  (0.02 dial/s, ETA 242.3 min)
+2026-04-19 02:14:08 | INFO    | [728/1030] dialogue 727 done in 50.0s  (0.02 dial/s, ETA 241.5 min)
+2026-04-19 02:14:58 | INFO    | [729/1030] dialogue 728 done in 50.3s  (0.02 dial/s, ETA 240.7 min)
+2026-04-19 02:15:44 | INFO    | [730/1030] dialogue 729 done in 45.7s  (0.02 dial/s, ETA 239.9 min)
+2026-04-19 02:15:44 | INFO    |   llm cache: 14673 hits / 7199 misses (rate 67.09%, size 7199)
+2026-04-19 02:15:44 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 02:16:34 | INFO    | [731/1030] dialogue 730 done in 49.8s  (0.02 dial/s, ETA 239.1 min)
+2026-04-19 02:17:20 | INFO    | [732/1030] dialogue 731 done in 46.3s  (0.02 dial/s, ETA 238.3 min)
+2026-04-19 02:18:01 | INFO    | [733/1030] dialogue 732 done in 40.8s  (0.02 dial/s, ETA 237.5 min)
+2026-04-19 02:18:50 | INFO    | [734/1030] dialogue 733 done in 49.1s  (0.02 dial/s, ETA 236.7 min)
+2026-04-19 02:19:42 | INFO    | [735/1030] dialogue 734 done in 52.1s  (0.02 dial/s, ETA 235.9 min)
+2026-04-19 02:20:29 | INFO    | [736/1030] dialogue 735 done in 46.9s  (0.02 dial/s, ETA 235.1 min)
+2026-04-19 02:21:16 | INFO    | [737/1030] dialogue 736 done in 46.4s  (0.02 dial/s, ETA 234.3 min)
+2026-04-19 02:22:01 | INFO    | [738/1030] dialogue 737 done in 45.0s  (0.02 dial/s, ETA 233.5 min)
+2026-04-19 02:22:47 | INFO    | [739/1030] dialogue 738 done in 46.0s  (0.02 dial/s, ETA 232.7 min)
+2026-04-19 02:23:29 | INFO    | [740/1030] dialogue 739 done in 42.1s  (0.02 dial/s, ETA 231.8 min)
+2026-04-19 02:23:29 | INFO    |   llm cache: 14875 hits / 7297 misses (rate 67.09%, size 7297)
+2026-04-19 02:23:29 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 02:24:17 | INFO    | [741/1030] dialogue 740 done in 47.8s  (0.02 dial/s, ETA 231.0 min)
+2026-04-19 02:25:01 | INFO    | [742/1030] dialogue 741 done in 44.8s  (0.02 dial/s, ETA 230.2 min)
+2026-04-19 02:25:53 | INFO    | [743/1030] dialogue 742 done in 51.8s  (0.02 dial/s, ETA 229.4 min)
+2026-04-19 02:26:38 | INFO    | [744/1030] dialogue 743 done in 45.2s  (0.02 dial/s, ETA 228.6 min)
+2026-04-19 02:27:23 | INFO    | [745/1030] dialogue 744 done in 44.2s  (0.02 dial/s, ETA 227.8 min)
+2026-04-19 02:28:14 | INFO    | [746/1030] dialogue 745 done in 51.7s  (0.02 dial/s, ETA 227.0 min)
+2026-04-19 02:29:01 | INFO    | [747/1030] dialogue 746 done in 46.4s  (0.02 dial/s, ETA 226.2 min)
+2026-04-19 02:29:42 | INFO    | [748/1030] dialogue 747 done in 41.7s  (0.02 dial/s, ETA 225.4 min)
+2026-04-19 02:30:29 | INFO    | [749/1030] dialogue 748 done in 46.9s  (0.02 dial/s, ETA 224.6 min)
+2026-04-19 02:31:17 | INFO    | [750/1030] dialogue 749 done in 48.1s  (0.02 dial/s, ETA 223.8 min)
+2026-04-19 02:31:17 | INFO    |   llm cache: 15077 hits / 7395 misses (rate 67.09%, size 7395)
+2026-04-19 02:31:17 | INFO    |   running summary @ 750 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.265    0.350    0.414    0.421    0.422    0.349
+top1        0.529    0.669    0.759    0.771    0.763    0.660
+ndcg        0.642    0.736    0.798    0.807    0.801    0.731
+
+snapshot counts: k=1:1500, k=2:1500, k=3:1500, k=4:1498, k=5:1496
+2026-04-19 02:31:17 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 02:32:00 | INFO    | [751/1030] dialogue 750 done in 42.2s  (0.02 dial/s, ETA 222.9 min)
+2026-04-19 02:32:47 | INFO    | [752/1030] dialogue 751 done in 47.4s  (0.02 dial/s, ETA 222.1 min)
+2026-04-19 02:33:34 | INFO    | [753/1030] dialogue 752 done in 46.8s  (0.02 dial/s, ETA 221.3 min)
+2026-04-19 02:34:27 | INFO    | [754/1030] dialogue 753 done in 52.8s  (0.02 dial/s, ETA 220.5 min)
+2026-04-19 02:35:17 | INFO    | [755/1030] dialogue 754 done in 50.7s  (0.02 dial/s, ETA 219.8 min)
+2026-04-19 02:36:05 | INFO    | [756/1030] dialogue 755 done in 47.4s  (0.02 dial/s, ETA 219.0 min)
+2026-04-19 02:36:49 | INFO    | [757/1030] dialogue 756 done in 44.4s  (0.02 dial/s, ETA 218.1 min)
+2026-04-19 02:37:36 | INFO    | [758/1030] dialogue 757 done in 47.2s  (0.02 dial/s, ETA 217.3 min)
+2026-04-19 02:38:26 | INFO    | [759/1030] dialogue 758 done in 49.2s  (0.02 dial/s, ETA 216.5 min)
+2026-04-19 02:39:12 | INFO    | [760/1030] dialogue 759 done in 46.7s  (0.02 dial/s, ETA 215.7 min)
+2026-04-19 02:39:12 | INFO    |   llm cache: 15279 hits / 7493 misses (rate 67.10%, size 7493)
+2026-04-19 02:39:12 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 02:40:07 | INFO    | [761/1030] dialogue 760 done in 54.4s  (0.02 dial/s, ETA 215.0 min)
+2026-04-19 02:40:59 | INFO    | [762/1030] dialogue 761 done in 51.8s  (0.02 dial/s, ETA 214.2 min)
+2026-04-19 02:41:53 | INFO    | [763/1030] dialogue 762 done in 54.4s  (0.02 dial/s, ETA 213.4 min)
+2026-04-19 02:42:43 | INFO    | [764/1030] dialogue 763 done in 50.2s  (0.02 dial/s, ETA 212.7 min)
+2026-04-19 02:43:26 | INFO    | [765/1030] dialogue 764 done in 42.5s  (0.02 dial/s, ETA 211.8 min)
+2026-04-19 02:44:12 | INFO    | [766/1030] dialogue 765 done in 46.0s  (0.02 dial/s, ETA 211.0 min)
+2026-04-19 02:44:48 | INFO    | [767/1030] dialogue 766 done in 36.4s  (0.02 dial/s, ETA 210.2 min)
+2026-04-19 02:45:36 | INFO    | [768/1030] dialogue 767 done in 48.2s  (0.02 dial/s, ETA 209.4 min)
+2026-04-19 02:46:27 | INFO    | [769/1030] dialogue 768 done in 50.7s  (0.02 dial/s, ETA 208.6 min)
+2026-04-19 02:47:16 | INFO    | [770/1030] dialogue 769 done in 49.3s  (0.02 dial/s, ETA 207.8 min)
+2026-04-19 02:47:16 | INFO    |   llm cache: 15482 hits / 7590 misses (rate 67.10%, size 7590)
+2026-04-19 02:47:17 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 02:48:03 | INFO    | [771/1030] dialogue 770 done in 46.3s  (0.02 dial/s, ETA 207.0 min)
+2026-04-19 02:48:52 | INFO    | [772/1030] dialogue 771 done in 49.0s  (0.02 dial/s, ETA 206.2 min)
+2026-04-19 02:49:38 | INFO    | [773/1030] dialogue 772 done in 45.6s  (0.02 dial/s, ETA 205.4 min)
+2026-04-19 02:50:28 | INFO    | [774/1030] dialogue 773 done in 50.3s  (0.02 dial/s, ETA 204.6 min)
+2026-04-19 02:51:20 | INFO    | [775/1030] dialogue 774 done in 52.6s  (0.02 dial/s, ETA 203.8 min)
+2026-04-19 02:51:20 | INFO    |   running summary @ 775 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.261    0.347    0.411    0.420    0.422    0.346
+top1        0.524    0.664    0.753    0.766    0.757    0.655
+ndcg        0.638    0.731    0.794    0.804    0.799    0.727
+
+snapshot counts: k=1:1550, k=2:1550, k=3:1550, k=4:1548, k=5:1546
+2026-04-19 02:52:10 | INFO    | [776/1030] dialogue 775 done in 49.2s  (0.02 dial/s, ETA 203.0 min)
+2026-04-19 02:52:58 | INFO    | [777/1030] dialogue 776 done in 48.1s  (0.02 dial/s, ETA 202.2 min)
+2026-04-19 02:53:52 | INFO    | [778/1030] dialogue 777 done in 54.4s  (0.02 dial/s, ETA 201.5 min)
+2026-04-19 02:54:44 | INFO    | [779/1030] dialogue 778 done in 51.4s  (0.02 dial/s, ETA 200.7 min)
+2026-04-19 02:55:32 | INFO    | [780/1030] dialogue 779 done in 48.5s  (0.02 dial/s, ETA 199.9 min)
+2026-04-19 02:55:32 | INFO    |   llm cache: 15683 hits / 7689 misses (rate 67.10%, size 7689)
+2026-04-19 02:55:32 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 02:56:22 | INFO    | [781/1030] dialogue 780 done in 49.3s  (0.02 dial/s, ETA 199.1 min)
+2026-04-19 02:57:04 | INFO    | [782/1030] dialogue 781 done in 42.5s  (0.02 dial/s, ETA 198.3 min)
+2026-04-19 02:58:00 | INFO    | [783/1030] dialogue 782 done in 56.2s  (0.02 dial/s, ETA 197.5 min)
+2026-04-19 02:58:42 | INFO    | [784/1030] dialogue 783 done in 41.5s  (0.02 dial/s, ETA 196.7 min)
+2026-04-19 02:59:25 | INFO    | [785/1030] dialogue 784 done in 43.1s  (0.02 dial/s, ETA 195.8 min)
+2026-04-19 03:00:17 | INFO    | [786/1030] dialogue 785 done in 52.2s  (0.02 dial/s, ETA 195.1 min)
+2026-04-19 03:01:11 | INFO    | [787/1030] dialogue 786 done in 53.6s  (0.02 dial/s, ETA 194.3 min)
+2026-04-19 03:01:57 | INFO    | [788/1030] dialogue 787 done in 46.2s  (0.02 dial/s, ETA 193.5 min)
+2026-04-19 03:02:44 | INFO    | [789/1030] dialogue 788 done in 46.7s  (0.02 dial/s, ETA 192.7 min)
+2026-04-19 03:03:28 | INFO    | [790/1030] dialogue 789 done in 44.7s  (0.02 dial/s, ETA 191.9 min)
+2026-04-19 03:03:28 | INFO    |   llm cache: 15876 hits / 7786 misses (rate 67.09%, size 7786)
+2026-04-19 03:03:29 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 03:04:14 | INFO    | [791/1030] dialogue 790 done in 45.0s  (0.02 dial/s, ETA 191.0 min)
+2026-04-19 03:05:02 | INFO    | [792/1030] dialogue 791 done in 48.6s  (0.02 dial/s, ETA 190.3 min)
+2026-04-19 03:05:50 | INFO    | [793/1030] dialogue 792 done in 47.7s  (0.02 dial/s, ETA 189.5 min)
+2026-04-19 03:06:42 | INFO    | [794/1030] dialogue 793 done in 52.1s  (0.02 dial/s, ETA 188.7 min)
+2026-04-19 03:07:25 | INFO    | [795/1030] dialogue 794 done in 42.6s  (0.02 dial/s, ETA 187.8 min)
+2026-04-19 03:08:11 | INFO    | [796/1030] dialogue 795 done in 46.9s  (0.02 dial/s, ETA 187.0 min)
+2026-04-19 03:09:02 | INFO    | [797/1030] dialogue 796 done in 50.9s  (0.02 dial/s, ETA 186.3 min)
+2026-04-19 03:09:49 | INFO    | [798/1030] dialogue 797 done in 46.6s  (0.02 dial/s, ETA 185.5 min)
+2026-04-19 03:10:29 | INFO    | [799/1030] dialogue 798 done in 40.0s  (0.02 dial/s, ETA 184.6 min)
+2026-04-19 03:11:17 | INFO    | [800/1030] dialogue 799 done in 48.0s  (0.02 dial/s, ETA 183.8 min)
+2026-04-19 03:11:17 | INFO    |   llm cache: 16080 hits / 7882 misses (rate 67.11%, size 7882)
+2026-04-19 03:11:17 | INFO    |   running summary @ 800 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.261    0.347    0.411    0.421    0.423    0.346
+top1        0.525    0.667    0.752    0.767    0.758    0.656
+ndcg        0.640    0.734    0.794    0.805    0.800    0.728
+
+snapshot counts: k=1:1600, k=2:1600, k=3:1600, k=4:1598, k=5:1594
+2026-04-19 03:11:17 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 03:12:08 | INFO    | [801/1030] dialogue 800 done in 51.2s  (0.02 dial/s, ETA 183.0 min)
+2026-04-19 03:12:52 | INFO    | [802/1030] dialogue 801 done in 43.5s  (0.02 dial/s, ETA 182.2 min)
+2026-04-19 03:13:39 | INFO    | [803/1030] dialogue 802 done in 47.1s  (0.02 dial/s, ETA 181.4 min)
+2026-04-19 03:14:27 | INFO    | [804/1030] dialogue 803 done in 47.6s  (0.02 dial/s, ETA 180.6 min)
+2026-04-19 03:15:16 | INFO    | [805/1030] dialogue 804 done in 49.4s  (0.02 dial/s, ETA 179.8 min)
+2026-04-19 03:16:02 | INFO    | [806/1030] dialogue 805 done in 45.6s  (0.02 dial/s, ETA 179.0 min)
+2026-04-19 03:16:53 | INFO    | [807/1030] dialogue 806 done in 51.3s  (0.02 dial/s, ETA 178.2 min)
+2026-04-19 03:17:36 | INFO    | [808/1030] dialogue 807 done in 43.0s  (0.02 dial/s, ETA 177.4 min)
+2026-04-19 03:18:28 | INFO    | [809/1030] dialogue 808 done in 51.9s  (0.02 dial/s, ETA 176.6 min)
+2026-04-19 03:19:15 | INFO    | [810/1030] dialogue 809 done in 47.6s  (0.02 dial/s, ETA 175.8 min)
+2026-04-19 03:19:15 | INFO    |   llm cache: 16281 hits / 7981 misses (rate 67.10%, size 7981)
+2026-04-19 03:19:16 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 03:19:58 | INFO    | [811/1030] dialogue 810 done in 42.9s  (0.02 dial/s, ETA 175.0 min)
+2026-04-19 03:20:43 | INFO    | [812/1030] dialogue 811 done in 44.4s  (0.02 dial/s, ETA 174.2 min)
+2026-04-19 03:21:30 | INFO    | [813/1030] dialogue 812 done in 46.9s  (0.02 dial/s, ETA 173.4 min)
+2026-04-19 03:22:19 | INFO    | [814/1030] dialogue 813 done in 49.5s  (0.02 dial/s, ETA 172.6 min)
+2026-04-19 03:22:58 | INFO    | [815/1030] dialogue 814 done in 38.5s  (0.02 dial/s, ETA 171.7 min)
+2026-04-19 03:23:48 | INFO    | [816/1030] dialogue 815 done in 50.5s  (0.02 dial/s, ETA 171.0 min)
+2026-04-19 03:24:36 | INFO    | [817/1030] dialogue 816 done in 47.7s  (0.02 dial/s, ETA 170.2 min)
+2026-04-19 03:25:17 | INFO    | [818/1030] dialogue 817 done in 40.7s  (0.02 dial/s, ETA 169.3 min)
+2026-04-19 03:26:02 | INFO    | [819/1030] dialogue 818 done in 45.3s  (0.02 dial/s, ETA 168.5 min)
+2026-04-19 03:26:51 | INFO    | [820/1030] dialogue 819 done in 48.7s  (0.02 dial/s, ETA 167.7 min)
+2026-04-19 03:26:51 | INFO    |   llm cache: 16486 hits / 8076 misses (rate 67.12%, size 8076)
+2026-04-19 03:26:51 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 03:27:43 | INFO    | [821/1030] dialogue 820 done in 51.6s  (0.02 dial/s, ETA 166.9 min)
+2026-04-19 03:28:30 | INFO    | [822/1030] dialogue 821 done in 46.9s  (0.02 dial/s, ETA 166.1 min)
+2026-04-19 03:29:17 | INFO    | [823/1030] dialogue 822 done in 47.4s  (0.02 dial/s, ETA 165.3 min)
+2026-04-19 03:30:03 | INFO    | [824/1030] dialogue 823 done in 46.1s  (0.02 dial/s, ETA 164.5 min)
+2026-04-19 03:30:53 | INFO    | [825/1030] dialogue 824 done in 49.5s  (0.02 dial/s, ETA 163.7 min)
+2026-04-19 03:30:53 | INFO    |   running summary @ 825 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.261    0.350    0.413    0.423    0.423    0.348
+top1        0.526    0.669    0.755    0.768    0.757    0.657
+ndcg        0.640    0.735    0.795    0.806    0.799    0.729
+
+snapshot counts: k=1:1650, k=2:1650, k=3:1650, k=4:1648, k=5:1644
+2026-04-19 03:31:43 | INFO    | [826/1030] dialogue 825 done in 49.9s  (0.02 dial/s, ETA 162.9 min)
+2026-04-19 03:32:29 | INFO    | [827/1030] dialogue 826 done in 46.9s  (0.02 dial/s, ETA 162.1 min)
+2026-04-19 03:33:18 | INFO    | [828/1030] dialogue 827 done in 48.7s  (0.02 dial/s, ETA 161.3 min)
+2026-04-19 03:34:11 | INFO    | [829/1030] dialogue 828 done in 52.6s  (0.02 dial/s, ETA 160.6 min)
+2026-04-19 03:34:52 | INFO    | [830/1030] dialogue 829 done in 41.8s  (0.02 dial/s, ETA 159.7 min)
+2026-04-19 03:34:52 | INFO    |   llm cache: 16687 hits / 8175 misses (rate 67.12%, size 8175)
+2026-04-19 03:34:53 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 03:35:45 | INFO    | [831/1030] dialogue 830 done in 52.7s  (0.02 dial/s, ETA 159.0 min)
+2026-04-19 03:36:32 | INFO    | [832/1030] dialogue 831 done in 47.0s  (0.02 dial/s, ETA 158.2 min)
+2026-04-19 03:37:18 | INFO    | [833/1030] dialogue 832 done in 45.9s  (0.02 dial/s, ETA 157.4 min)
+2026-04-19 03:38:02 | INFO    | [834/1030] dialogue 833 done in 43.5s  (0.02 dial/s, ETA 156.5 min)
+2026-04-19 03:38:41 | INFO    | [835/1030] dialogue 834 done in 39.1s  (0.02 dial/s, ETA 155.7 min)
+2026-04-19 03:39:26 | INFO    | [836/1030] dialogue 835 done in 45.3s  (0.02 dial/s, ETA 154.9 min)
+2026-04-19 03:40:12 | INFO    | [837/1030] dialogue 836 done in 46.4s  (0.02 dial/s, ETA 154.1 min)
+2026-04-19 03:41:01 | INFO    | [838/1030] dialogue 837 done in 48.2s  (0.02 dial/s, ETA 153.3 min)
+2026-04-19 03:41:52 | INFO    | [839/1030] dialogue 838 done in 51.0s  (0.02 dial/s, ETA 152.5 min)
+2026-04-19 03:42:38 | INFO    | [840/1030] dialogue 839 done in 46.8s  (0.02 dial/s, ETA 151.7 min)
+2026-04-19 03:42:38 | INFO    |   llm cache: 16889 hits / 8273 misses (rate 67.12%, size 8273)
+2026-04-19 03:42:39 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 03:43:28 | INFO    | [841/1030] dialogue 840 done in 48.9s  (0.02 dial/s, ETA 150.9 min)
+2026-04-19 03:44:14 | INFO    | [842/1030] dialogue 841 done in 45.9s  (0.02 dial/s, ETA 150.1 min)
+2026-04-19 03:45:00 | INFO    | [843/1030] dialogue 842 done in 46.7s  (0.02 dial/s, ETA 149.3 min)
+2026-04-19 03:45:50 | INFO    | [844/1030] dialogue 843 done in 50.1s  (0.02 dial/s, ETA 148.5 min)
+2026-04-19 03:46:38 | INFO    | [845/1030] dialogue 844 done in 47.5s  (0.02 dial/s, ETA 147.7 min)
+2026-04-19 03:47:29 | INFO    | [846/1030] dialogue 845 done in 51.5s  (0.02 dial/s, ETA 146.9 min)
+2026-04-19 03:48:18 | INFO    | [847/1030] dialogue 846 done in 49.0s  (0.02 dial/s, ETA 146.1 min)
+2026-04-19 03:49:06 | INFO    | [848/1030] dialogue 847 done in 47.7s  (0.02 dial/s, ETA 145.3 min)
+2026-04-19 03:49:55 | INFO    | [849/1030] dialogue 848 done in 49.1s  (0.02 dial/s, ETA 144.5 min)
+2026-04-19 03:50:40 | INFO    | [850/1030] dialogue 849 done in 44.9s  (0.02 dial/s, ETA 143.7 min)
+2026-04-19 03:50:40 | INFO    |   llm cache: 17091 hits / 8371 misses (rate 67.12%, size 8371)
+2026-04-19 03:50:40 | INFO    |   running summary @ 850 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.262    0.352    0.414    0.425    0.426    0.349
+top1        0.526    0.671    0.754    0.769    0.757    0.658
+ndcg        0.641    0.736    0.794    0.806    0.799    0.730
+
+snapshot counts: k=1:1700, k=2:1700, k=3:1700, k=4:1698, k=5:1694
+2026-04-19 03:50:40 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 03:51:24 | INFO    | [851/1030] dialogue 850 done in 43.4s  (0.02 dial/s, ETA 142.9 min)
+2026-04-19 03:52:04 | INFO    | [852/1030] dialogue 851 done in 40.1s  (0.02 dial/s, ETA 142.1 min)
+2026-04-19 03:52:54 | INFO    | [853/1030] dialogue 852 done in 50.6s  (0.02 dial/s, ETA 141.3 min)
+2026-04-19 03:53:39 | INFO    | [854/1030] dialogue 853 done in 44.4s  (0.02 dial/s, ETA 140.5 min)
+2026-04-19 03:54:24 | INFO    | [855/1030] dialogue 854 done in 44.8s  (0.02 dial/s, ETA 139.7 min)
+2026-04-19 03:55:11 | INFO    | [856/1030] dialogue 855 done in 47.7s  (0.02 dial/s, ETA 138.9 min)
+2026-04-19 03:55:51 | INFO    | [857/1030] dialogue 856 done in 39.4s  (0.02 dial/s, ETA 138.1 min)
+2026-04-19 03:56:45 | INFO    | [858/1030] dialogue 857 done in 54.0s  (0.02 dial/s, ETA 137.3 min)
+2026-04-19 03:57:36 | INFO    | [859/1030] dialogue 858 done in 51.6s  (0.02 dial/s, ETA 136.5 min)
+2026-04-19 03:58:27 | INFO    | [860/1030] dialogue 859 done in 50.7s  (0.02 dial/s, ETA 135.7 min)
+2026-04-19 03:58:27 | INFO    |   llm cache: 17294 hits / 8468 misses (rate 67.13%, size 8468)
+2026-04-19 03:58:27 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 03:59:15 | INFO    | [861/1030] dialogue 860 done in 48.1s  (0.02 dial/s, ETA 134.9 min)
+2026-04-19 04:00:02 | INFO    | [862/1030] dialogue 861 done in 46.5s  (0.02 dial/s, ETA 134.1 min)
+2026-04-19 04:00:50 | INFO    | [863/1030] dialogue 862 done in 48.2s  (0.02 dial/s, ETA 133.3 min)
+2026-04-19 04:01:37 | INFO    | [864/1030] dialogue 863 done in 47.3s  (0.02 dial/s, ETA 132.5 min)
+2026-04-19 04:02:28 | INFO    | [865/1030] dialogue 864 done in 50.4s  (0.02 dial/s, ETA 131.7 min)
+2026-04-19 04:03:19 | INFO    | [866/1030] dialogue 865 done in 51.2s  (0.02 dial/s, ETA 130.9 min)
+2026-04-19 04:04:05 | INFO    | [867/1030] dialogue 866 done in 46.5s  (0.02 dial/s, ETA 130.1 min)
+2026-04-19 04:04:53 | INFO    | [868/1030] dialogue 867 done in 48.1s  (0.02 dial/s, ETA 129.3 min)
+2026-04-19 04:05:42 | INFO    | [869/1030] dialogue 868 done in 48.3s  (0.02 dial/s, ETA 128.5 min)
+2026-04-19 04:06:29 | INFO    | [870/1030] dialogue 869 done in 47.0s  (0.02 dial/s, ETA 127.7 min)
+2026-04-19 04:06:29 | INFO    |   llm cache: 17494 hits / 8568 misses (rate 67.12%, size 8568)
+2026-04-19 04:06:29 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 04:07:13 | INFO    | [871/1030] dialogue 870 done in 44.0s  (0.02 dial/s, ETA 126.9 min)
+2026-04-19 04:08:00 | INFO    | [872/1030] dialogue 871 done in 46.9s  (0.02 dial/s, ETA 126.1 min)
+2026-04-19 04:08:49 | INFO    | [873/1030] dialogue 872 done in 49.6s  (0.02 dial/s, ETA 125.3 min)
+2026-04-19 04:09:40 | INFO    | [874/1030] dialogue 873 done in 50.2s  (0.02 dial/s, ETA 124.5 min)
+2026-04-19 04:10:28 | INFO    | [875/1030] dialogue 874 done in 48.6s  (0.02 dial/s, ETA 123.7 min)
+2026-04-19 04:10:28 | INFO    |   running summary @ 875 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.261    0.351    0.413    0.424    0.427    0.348
+top1        0.522    0.668    0.752    0.768    0.758    0.656
+ndcg        0.638    0.734    0.793    0.805    0.799    0.728
+
+snapshot counts: k=1:1750, k=2:1750, k=3:1750, k=4:1748, k=5:1744
+2026-04-19 04:11:17 | INFO    | [876/1030] dialogue 875 done in 48.9s  (0.02 dial/s, ETA 122.9 min)
+2026-04-19 04:12:09 | INFO    | [877/1030] dialogue 876 done in 52.2s  (0.02 dial/s, ETA 122.2 min)
+2026-04-19 04:12:58 | INFO    | [878/1030] dialogue 877 done in 48.3s  (0.02 dial/s, ETA 121.4 min)
+2026-04-19 04:13:47 | INFO    | [879/1030] dialogue 878 done in 48.9s  (0.02 dial/s, ETA 120.6 min)
+2026-04-19 04:14:35 | INFO    | [880/1030] dialogue 879 done in 48.3s  (0.02 dial/s, ETA 119.8 min)
+2026-04-19 04:14:35 | INFO    |   llm cache: 17695 hits / 8667 misses (rate 67.12%, size 8667)
+2026-04-19 04:14:35 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 04:15:22 | INFO    | [881/1030] dialogue 880 done in 46.8s  (0.02 dial/s, ETA 119.0 min)
+2026-04-19 04:16:07 | INFO    | [882/1030] dialogue 881 done in 44.7s  (0.02 dial/s, ETA 118.2 min)
+2026-04-19 04:16:55 | INFO    | [883/1030] dialogue 882 done in 48.6s  (0.02 dial/s, ETA 117.4 min)
+2026-04-19 04:17:43 | INFO    | [884/1030] dialogue 883 done in 48.0s  (0.02 dial/s, ETA 116.6 min)
+2026-04-19 04:18:29 | INFO    | [885/1030] dialogue 884 done in 46.0s  (0.02 dial/s, ETA 115.8 min)
+2026-04-19 04:19:12 | INFO    | [886/1030] dialogue 885 done in 42.5s  (0.02 dial/s, ETA 115.0 min)
+2026-04-19 04:20:02 | INFO    | [887/1030] dialogue 886 done in 50.8s  (0.02 dial/s, ETA 114.2 min)
+2026-04-19 04:20:51 | INFO    | [888/1030] dialogue 887 done in 48.7s  (0.02 dial/s, ETA 113.4 min)
+2026-04-19 04:21:37 | INFO    | [889/1030] dialogue 888 done in 45.8s  (0.02 dial/s, ETA 112.6 min)
+2026-04-19 04:22:30 | INFO    | [890/1030] dialogue 889 done in 52.7s  (0.02 dial/s, ETA 111.8 min)
+2026-04-19 04:22:30 | INFO    |   llm cache: 17896 hits / 8766 misses (rate 67.12%, size 8766)
+2026-04-19 04:22:30 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 04:23:17 | INFO    | [891/1030] dialogue 890 done in 46.7s  (0.02 dial/s, ETA 111.0 min)
+2026-04-19 04:24:05 | INFO    | [892/1030] dialogue 891 done in 48.0s  (0.02 dial/s, ETA 110.2 min)
+2026-04-19 04:24:53 | INFO    | [893/1030] dialogue 892 done in 48.2s  (0.02 dial/s, ETA 109.4 min)
+2026-04-19 04:25:43 | INFO    | [894/1030] dialogue 893 done in 50.7s  (0.02 dial/s, ETA 108.6 min)
+2026-04-19 04:26:32 | INFO    | [895/1030] dialogue 894 done in 49.0s  (0.02 dial/s, ETA 107.8 min)
+2026-04-19 04:27:12 | INFO    | [896/1030] dialogue 895 done in 39.8s  (0.02 dial/s, ETA 107.0 min)
+2026-04-19 04:28:04 | INFO    | [897/1030] dialogue 896 done in 51.2s  (0.02 dial/s, ETA 106.2 min)
+2026-04-19 04:28:55 | INFO    | [898/1030] dialogue 897 done in 51.1s  (0.02 dial/s, ETA 105.4 min)
+2026-04-19 04:29:43 | INFO    | [899/1030] dialogue 898 done in 48.9s  (0.02 dial/s, ETA 104.6 min)
+2026-04-19 04:30:29 | INFO    | [900/1030] dialogue 899 done in 45.4s  (0.02 dial/s, ETA 103.8 min)
+2026-04-19 04:30:29 | INFO    |   llm cache: 18098 hits / 8864 misses (rate 67.12%, size 8864)
+2026-04-19 04:30:29 | INFO    |   running summary @ 900 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.262    0.352    0.412    0.423    0.425    0.348
+top1        0.523    0.668    0.751    0.768    0.757    0.656
+ndcg        0.639    0.735    0.793    0.805    0.799    0.728
+
+snapshot counts: k=1:1800, k=2:1800, k=3:1800, k=4:1798, k=5:1794
+2026-04-19 04:30:29 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 04:31:14 | INFO    | [901/1030] dialogue 900 done in 44.6s  (0.02 dial/s, ETA 103.0 min)
+2026-04-19 04:31:58 | INFO    | [902/1030] dialogue 901 done in 44.4s  (0.02 dial/s, ETA 102.2 min)
+2026-04-19 04:32:42 | INFO    | [903/1030] dialogue 902 done in 44.4s  (0.02 dial/s, ETA 101.4 min)
+2026-04-19 04:33:31 | INFO    | [904/1030] dialogue 903 done in 49.0s  (0.02 dial/s, ETA 100.6 min)
+2026-04-19 04:34:13 | INFO    | [905/1030] dialogue 904 done in 41.3s  (0.02 dial/s, ETA 99.8 min)
+2026-04-19 04:34:55 | INFO    | [906/1030] dialogue 905 done in 42.6s  (0.02 dial/s, ETA 99.0 min)
+2026-04-19 04:35:44 | INFO    | [907/1030] dialogue 906 done in 48.3s  (0.02 dial/s, ETA 98.2 min)
+2026-04-19 04:36:36 | INFO    | [908/1030] dialogue 907 done in 52.2s  (0.02 dial/s, ETA 97.4 min)
+2026-04-19 04:37:24 | INFO    | [909/1030] dialogue 908 done in 48.4s  (0.02 dial/s, ETA 96.6 min)
+2026-04-19 04:38:06 | INFO    | [910/1030] dialogue 909 done in 41.6s  (0.02 dial/s, ETA 95.8 min)
+2026-04-19 04:38:06 | INFO    |   llm cache: 18301 hits / 8961 misses (rate 67.13%, size 8961)
+2026-04-19 04:38:06 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 04:38:56 | INFO    | [911/1030] dialogue 910 done in 49.9s  (0.02 dial/s, ETA 95.0 min)
+2026-04-19 04:39:44 | INFO    | [912/1030] dialogue 911 done in 47.6s  (0.02 dial/s, ETA 94.2 min)
+2026-04-19 04:40:30 | INFO    | [913/1030] dialogue 912 done in 46.0s  (0.02 dial/s, ETA 93.4 min)
+2026-04-19 04:41:20 | INFO    | [914/1030] dialogue 913 done in 50.1s  (0.02 dial/s, ETA 92.6 min)
+2026-04-19 04:42:08 | INFO    | [915/1030] dialogue 914 done in 47.9s  (0.02 dial/s, ETA 91.8 min)
+2026-04-19 04:43:02 | INFO    | [916/1030] dialogue 915 done in 54.3s  (0.02 dial/s, ETA 91.0 min)
+2026-04-19 04:43:49 | INFO    | [917/1030] dialogue 916 done in 47.1s  (0.02 dial/s, ETA 90.2 min)
+2026-04-19 04:44:40 | INFO    | [918/1030] dialogue 917 done in 50.8s  (0.02 dial/s, ETA 89.4 min)
+2026-04-19 04:45:28 | INFO    | [919/1030] dialogue 918 done in 47.8s  (0.02 dial/s, ETA 88.6 min)
+2026-04-19 04:46:12 | INFO    | [920/1030] dialogue 919 done in 44.4s  (0.02 dial/s, ETA 87.8 min)
+2026-04-19 04:46:12 | INFO    |   llm cache: 18502 hits / 9060 misses (rate 67.13%, size 9060)
+2026-04-19 04:46:12 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 04:47:02 | INFO    | [921/1030] dialogue 920 done in 49.8s  (0.02 dial/s, ETA 87.0 min)
+2026-04-19 04:47:49 | INFO    | [922/1030] dialogue 921 done in 47.4s  (0.02 dial/s, ETA 86.2 min)
+2026-04-19 04:48:39 | INFO    | [923/1030] dialogue 922 done in 49.1s  (0.02 dial/s, ETA 85.4 min)
+2026-04-19 04:49:25 | INFO    | [924/1030] dialogue 923 done in 46.0s  (0.02 dial/s, ETA 84.6 min)
+2026-04-19 04:50:13 | INFO    | [925/1030] dialogue 924 done in 48.0s  (0.02 dial/s, ETA 83.8 min)
+2026-04-19 04:50:13 | INFO    |   running summary @ 925 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.263    0.351    0.412    0.423    0.425    0.348
+top1        0.523    0.670    0.752    0.769    0.759    0.656
+ndcg        0.637    0.736    0.794    0.806    0.800    0.728
+
+snapshot counts: k=1:1850, k=2:1850, k=3:1850, k=4:1848, k=5:1844
+2026-04-19 04:50:57 | INFO    | [926/1030] dialogue 925 done in 44.3s  (0.02 dial/s, ETA 83.0 min)
+2026-04-19 04:51:43 | INFO    | [927/1030] dialogue 926 done in 46.5s  (0.02 dial/s, ETA 82.2 min)
+2026-04-19 04:52:31 | INFO    | [928/1030] dialogue 927 done in 47.7s  (0.02 dial/s, ETA 81.4 min)
+2026-04-19 04:53:19 | INFO    | [929/1030] dialogue 928 done in 48.0s  (0.02 dial/s, ETA 80.6 min)
+2026-04-19 04:54:11 | INFO    | [930/1030] dialogue 929 done in 52.2s  (0.02 dial/s, ETA 79.8 min)
+2026-04-19 04:54:11 | INFO    |   llm cache: 18702 hits / 9160 misses (rate 67.12%, size 9160)
+2026-04-19 04:54:12 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 04:55:02 | INFO    | [931/1030] dialogue 930 done in 50.2s  (0.02 dial/s, ETA 79.0 min)
+2026-04-19 04:55:45 | INFO    | [932/1030] dialogue 931 done in 42.9s  (0.02 dial/s, ETA 78.2 min)
+2026-04-19 04:56:33 | INFO    | [933/1030] dialogue 932 done in 48.6s  (0.02 dial/s, ETA 77.4 min)
+2026-04-19 04:57:20 | INFO    | [934/1030] dialogue 933 done in 47.0s  (0.02 dial/s, ETA 76.6 min)
+2026-04-19 04:58:10 | INFO    | [935/1030] dialogue 934 done in 50.0s  (0.02 dial/s, ETA 75.8 min)
+2026-04-19 04:58:59 | INFO    | [936/1030] dialogue 935 done in 48.8s  (0.02 dial/s, ETA 75.0 min)
+2026-04-19 04:59:40 | INFO    | [937/1030] dialogue 936 done in 40.7s  (0.02 dial/s, ETA 74.2 min)
+2026-04-19 05:00:27 | INFO    | [938/1030] dialogue 937 done in 47.2s  (0.02 dial/s, ETA 73.4 min)
+2026-04-19 05:01:16 | INFO    | [939/1030] dialogue 938 done in 48.8s  (0.02 dial/s, ETA 72.6 min)
+2026-04-19 05:02:04 | INFO    | [940/1030] dialogue 939 done in 47.8s  (0.02 dial/s, ETA 71.8 min)
+2026-04-19 05:02:04 | INFO    |   llm cache: 18904 hits / 9258 misses (rate 67.13%, size 9258)
+2026-04-19 05:02:04 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 05:02:54 | INFO    | [941/1030] dialogue 940 done in 50.0s  (0.02 dial/s, ETA 71.0 min)
+2026-04-19 05:03:42 | INFO    | [942/1030] dialogue 941 done in 47.7s  (0.02 dial/s, ETA 70.2 min)
+2026-04-19 05:04:13 | INFO    | [943/1030] dialogue 942 done in 31.6s  (0.02 dial/s, ETA 69.4 min)
+2026-04-19 05:04:54 | INFO    | [944/1030] dialogue 943 done in 41.1s  (0.02 dial/s, ETA 68.6 min)
+2026-04-19 05:05:44 | INFO    | [945/1030] dialogue 944 done in 49.9s  (0.02 dial/s, ETA 67.8 min)
+2026-04-19 05:06:30 | INFO    | [946/1030] dialogue 945 done in 46.3s  (0.02 dial/s, ETA 67.0 min)
+2026-04-19 05:07:13 | INFO    | [947/1030] dialogue 946 done in 42.4s  (0.02 dial/s, ETA 66.2 min)
+2026-04-19 05:08:04 | INFO    | [948/1030] dialogue 947 done in 50.9s  (0.02 dial/s, ETA 65.4 min)
+2026-04-19 05:08:50 | INFO    | [949/1030] dialogue 948 done in 46.2s  (0.02 dial/s, ETA 64.6 min)
+2026-04-19 05:09:40 | INFO    | [950/1030] dialogue 949 done in 49.7s  (0.02 dial/s, ETA 63.8 min)
+2026-04-19 05:09:40 | INFO    |   llm cache: 19100 hits / 9352 misses (rate 67.13%, size 9352)
+2026-04-19 05:09:40 | INFO    |   running summary @ 950 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.262    0.351    0.413    0.423    0.425    0.348
+top1        0.521    0.668    0.750    0.769    0.758    0.655
+ndcg        0.635    0.735    0.792    0.805    0.799    0.726
+
+snapshot counts: k=1:1900, k=2:1900, k=3:1900, k=4:1898, k=5:1892
+2026-04-19 05:09:40 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 05:10:28 | INFO    | [951/1030] dialogue 950 done in 47.9s  (0.02 dial/s, ETA 63.0 min)
+2026-04-19 05:11:12 | INFO    | [952/1030] dialogue 951 done in 44.7s  (0.02 dial/s, ETA 62.2 min)
+2026-04-19 05:11:59 | INFO    | [953/1030] dialogue 952 done in 46.9s  (0.02 dial/s, ETA 61.4 min)
+2026-04-19 05:12:51 | INFO    | [954/1030] dialogue 953 done in 51.6s  (0.02 dial/s, ETA 60.6 min)
+2026-04-19 05:13:40 | INFO    | [955/1030] dialogue 954 done in 49.0s  (0.02 dial/s, ETA 59.8 min)
+2026-04-19 05:14:31 | INFO    | [956/1030] dialogue 955 done in 50.7s  (0.02 dial/s, ETA 59.0 min)
+2026-04-19 05:15:17 | INFO    | [957/1030] dialogue 956 done in 46.1s  (0.02 dial/s, ETA 58.2 min)
+2026-04-19 05:16:07 | INFO    | [958/1030] dialogue 957 done in 50.7s  (0.02 dial/s, ETA 57.4 min)
+2026-04-19 05:16:56 | INFO    | [959/1030] dialogue 958 done in 48.4s  (0.02 dial/s, ETA 56.6 min)
+2026-04-19 05:17:47 | INFO    | [960/1030] dialogue 959 done in 51.5s  (0.02 dial/s, ETA 55.8 min)
+2026-04-19 05:17:47 | INFO    |   llm cache: 19301 hits / 9451 misses (rate 67.13%, size 9451)
+2026-04-19 05:17:48 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 05:18:43 | INFO    | [961/1030] dialogue 960 done in 55.2s  (0.02 dial/s, ETA 55.1 min)
+2026-04-19 05:19:29 | INFO    | [962/1030] dialogue 961 done in 45.7s  (0.02 dial/s, ETA 54.3 min)
+2026-04-19 05:20:13 | INFO    | [963/1030] dialogue 962 done in 44.0s  (0.02 dial/s, ETA 53.5 min)
+2026-04-19 05:21:01 | INFO    | [964/1030] dialogue 963 done in 48.8s  (0.02 dial/s, ETA 52.7 min)
+2026-04-19 05:21:51 | INFO    | [965/1030] dialogue 964 done in 50.0s  (0.02 dial/s, ETA 51.9 min)
+2026-04-19 05:22:35 | INFO    | [966/1030] dialogue 965 done in 43.4s  (0.02 dial/s, ETA 51.1 min)
+2026-04-19 05:23:21 | INFO    | [967/1030] dialogue 966 done in 45.9s  (0.02 dial/s, ETA 50.3 min)
+2026-04-19 05:24:02 | INFO    | [968/1030] dialogue 967 done in 41.1s  (0.02 dial/s, ETA 49.5 min)
+2026-04-19 05:24:51 | INFO    | [969/1030] dialogue 968 done in 49.3s  (0.02 dial/s, ETA 48.7 min)
+2026-04-19 05:25:30 | INFO    | [970/1030] dialogue 969 done in 39.2s  (0.02 dial/s, ETA 47.8 min)
+2026-04-19 05:25:30 | INFO    |   llm cache: 19505 hits / 9547 misses (rate 67.14%, size 9547)
+2026-04-19 05:25:30 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 05:26:15 | INFO    | [971/1030] dialogue 970 done in 44.1s  (0.02 dial/s, ETA 47.0 min)
+2026-04-19 05:26:58 | INFO    | [972/1030] dialogue 971 done in 43.4s  (0.02 dial/s, ETA 46.2 min)
+2026-04-19 05:27:49 | INFO    | [973/1030] dialogue 972 done in 50.7s  (0.02 dial/s, ETA 45.5 min)
+2026-04-19 05:28:32 | INFO    | [974/1030] dialogue 973 done in 42.8s  (0.02 dial/s, ETA 44.7 min)
+2026-04-19 05:29:14 | INFO    | [975/1030] dialogue 974 done in 42.7s  (0.02 dial/s, ETA 43.8 min)
+2026-04-19 05:29:14 | INFO    |   running summary @ 975 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.263    0.351    0.413    0.425    0.425    0.349
+top1        0.518    0.667    0.748    0.768    0.756    0.653
+ndcg        0.633    0.733    0.790    0.804    0.797    0.725
+
+snapshot counts: k=1:1950, k=2:1950, k=3:1950, k=4:1948, k=5:1942
+2026-04-19 05:30:03 | INFO    | [976/1030] dialogue 975 done in 49.3s  (0.02 dial/s, ETA 43.1 min)
+2026-04-19 05:30:48 | INFO    | [977/1030] dialogue 976 done in 44.3s  (0.02 dial/s, ETA 42.3 min)
+2026-04-19 05:31:34 | INFO    | [978/1030] dialogue 977 done in 46.7s  (0.02 dial/s, ETA 41.5 min)
+2026-04-19 05:32:26 | INFO    | [979/1030] dialogue 978 done in 51.2s  (0.02 dial/s, ETA 40.7 min)
+2026-04-19 05:33:16 | INFO    | [980/1030] dialogue 979 done in 49.8s  (0.02 dial/s, ETA 39.9 min)
+2026-04-19 05:33:16 | INFO    |   llm cache: 19709 hits / 9643 misses (rate 67.15%, size 9643)
+2026-04-19 05:33:16 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 05:34:04 | INFO    | [981/1030] dialogue 980 done in 48.2s  (0.02 dial/s, ETA 39.1 min)
+2026-04-19 05:34:56 | INFO    | [982/1030] dialogue 981 done in 51.6s  (0.02 dial/s, ETA 38.3 min)
+2026-04-19 05:35:37 | INFO    | [983/1030] dialogue 982 done in 41.6s  (0.02 dial/s, ETA 37.5 min)
+2026-04-19 05:36:28 | INFO    | [984/1030] dialogue 983 done in 50.7s  (0.02 dial/s, ETA 36.7 min)
+2026-04-19 05:37:14 | INFO    | [985/1030] dialogue 984 done in 45.9s  (0.02 dial/s, ETA 35.9 min)
+2026-04-19 05:37:56 | INFO    | [986/1030] dialogue 985 done in 42.2s  (0.02 dial/s, ETA 35.1 min)
+2026-04-19 05:38:44 | INFO    | [987/1030] dialogue 986 done in 47.6s  (0.02 dial/s, ETA 34.3 min)
+2026-04-19 05:39:31 | INFO    | [988/1030] dialogue 987 done in 47.5s  (0.02 dial/s, ETA 33.5 min)
+2026-04-19 05:40:20 | INFO    | [989/1030] dialogue 988 done in 48.8s  (0.02 dial/s, ETA 32.7 min)
+2026-04-19 05:41:07 | INFO    | [990/1030] dialogue 989 done in 46.8s  (0.02 dial/s, ETA 31.9 min)
+2026-04-19 05:41:07 | INFO    |   llm cache: 19911 hits / 9741 misses (rate 67.15%, size 9741)
+2026-04-19 05:41:07 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 05:41:57 | INFO    | [991/1030] dialogue 990 done in 50.3s  (0.02 dial/s, ETA 31.1 min)
+2026-04-19 05:42:44 | INFO    | [992/1030] dialogue 991 done in 46.4s  (0.02 dial/s, ETA 30.3 min)
+2026-04-19 05:43:36 | INFO    | [993/1030] dialogue 992 done in 52.7s  (0.02 dial/s, ETA 29.5 min)
+2026-04-19 05:44:19 | INFO    | [994/1030] dialogue 993 done in 42.6s  (0.02 dial/s, ETA 28.7 min)
+2026-04-19 05:45:07 | INFO    | [995/1030] dialogue 994 done in 48.2s  (0.02 dial/s, ETA 27.9 min)
+2026-04-19 05:45:54 | INFO    | [996/1030] dialogue 995 done in 47.2s  (0.02 dial/s, ETA 27.1 min)
+2026-04-19 05:46:47 | INFO    | [997/1030] dialogue 996 done in 52.3s  (0.02 dial/s, ETA 26.3 min)
+2026-04-19 05:47:35 | INFO    | [998/1030] dialogue 997 done in 48.6s  (0.02 dial/s, ETA 25.5 min)
+2026-04-19 05:48:26 | INFO    | [999/1030] dialogue 998 done in 50.9s  (0.02 dial/s, ETA 24.7 min)
+2026-04-19 05:49:12 | INFO    | [1000/1030] dialogue 999 done in 45.8s  (0.02 dial/s, ETA 23.9 min)
+2026-04-19 05:49:12 | INFO    |   llm cache: 20113 hits / 9839 misses (rate 67.15%, size 9839)
+2026-04-19 05:49:12 | INFO    |   running summary @ 1000 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.260    0.350    0.412    0.424    0.426    0.347
+top1        0.517    0.667    0.750    0.769    0.758    0.653
+ndcg        0.633    0.733    0.791    0.805    0.798    0.725
+
+snapshot counts: k=1:2000, k=2:2000, k=3:2000, k=4:1998, k=5:1992
+2026-04-19 05:49:12 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 05:50:03 | INFO    | [1001/1030] dialogue 1000 done in 50.5s  (0.02 dial/s, ETA 23.1 min)
+2026-04-19 05:50:51 | INFO    | [1002/1030] dialogue 1001 done in 48.6s  (0.02 dial/s, ETA 22.3 min)
+2026-04-19 05:51:33 | INFO    | [1003/1030] dialogue 1002 done in 41.8s  (0.02 dial/s, ETA 21.5 min)
+2026-04-19 05:52:18 | INFO    | [1004/1030] dialogue 1003 done in 45.0s  (0.02 dial/s, ETA 20.7 min)
+2026-04-19 05:53:07 | INFO    | [1005/1030] dialogue 1004 done in 48.8s  (0.02 dial/s, ETA 19.9 min)
+2026-04-19 05:53:56 | INFO    | [1006/1030] dialogue 1005 done in 49.6s  (0.02 dial/s, ETA 19.1 min)
+2026-04-19 05:54:43 | INFO    | [1007/1030] dialogue 1006 done in 46.8s  (0.02 dial/s, ETA 18.3 min)
+2026-04-19 05:55:28 | INFO    | [1008/1030] dialogue 1007 done in 44.6s  (0.02 dial/s, ETA 17.5 min)
+2026-04-19 05:56:21 | INFO    | [1009/1030] dialogue 1008 done in 52.9s  (0.02 dial/s, ETA 16.7 min)
+2026-04-19 05:57:11 | INFO    | [1010/1030] dialogue 1009 done in 49.9s  (0.02 dial/s, ETA 15.9 min)
+2026-04-19 05:57:11 | INFO    |   llm cache: 20314 hits / 9938 misses (rate 67.15%, size 9938)
+2026-04-19 05:57:11 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 05:57:59 | INFO    | [1011/1030] dialogue 1010 done in 48.1s  (0.02 dial/s, ETA 15.1 min)
+2026-04-19 05:58:40 | INFO    | [1012/1030] dialogue 1011 done in 41.4s  (0.02 dial/s, ETA 14.3 min)
+2026-04-19 05:59:33 | INFO    | [1013/1030] dialogue 1012 done in 52.1s  (0.02 dial/s, ETA 13.6 min)
+2026-04-19 06:00:22 | INFO    | [1014/1030] dialogue 1013 done in 49.9s  (0.02 dial/s, ETA 12.8 min)
+2026-04-19 06:01:09 | INFO    | [1015/1030] dialogue 1014 done in 46.2s  (0.02 dial/s, ETA 12.0 min)
+2026-04-19 06:01:52 | INFO    | [1016/1030] dialogue 1015 done in 43.4s  (0.02 dial/s, ETA 11.2 min)
+2026-04-19 06:02:38 | INFO    | [1017/1030] dialogue 1016 done in 46.3s  (0.02 dial/s, ETA 10.4 min)
+2026-04-19 06:03:25 | INFO    | [1018/1030] dialogue 1017 done in 46.5s  (0.02 dial/s, ETA 9.6 min)
+2026-04-19 06:04:11 | INFO    | [1019/1030] dialogue 1018 done in 46.6s  (0.02 dial/s, ETA 8.8 min)
+2026-04-19 06:05:00 | INFO    | [1020/1030] dialogue 1019 done in 48.3s  (0.02 dial/s, ETA 8.0 min)
+2026-04-19 06:05:00 | INFO    |   llm cache: 20516 hits / 10036 misses (rate 67.15%, size 10036)
+2026-04-19 06:05:00 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 06:05:44 | INFO    | [1021/1030] dialogue 1020 done in 44.2s  (0.02 dial/s, ETA 7.2 min)
+2026-04-19 06:06:29 | INFO    | [1022/1030] dialogue 1021 done in 44.7s  (0.02 dial/s, ETA 6.4 min)
+2026-04-19 06:07:13 | INFO    | [1023/1030] dialogue 1022 done in 44.3s  (0.02 dial/s, ETA 5.6 min)
+2026-04-19 06:08:04 | INFO    | [1024/1030] dialogue 1023 done in 51.1s  (0.02 dial/s, ETA 4.8 min)
+2026-04-19 06:08:54 | INFO    | [1025/1030] dialogue 1024 done in 49.5s  (0.02 dial/s, ETA 4.0 min)
+2026-04-19 06:08:54 | INFO    |   running summary @ 1025 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.262    0.350    0.413    0.424    0.425    0.348
+top1        0.519    0.669    0.750    0.770    0.758    0.655
+ndcg        0.634    0.735    0.791    0.804    0.798    0.726
+
+snapshot counts: k=1:2050, k=2:2050, k=3:2050, k=4:2048, k=5:2042
+2026-04-19 06:09:46 | INFO    | [1026/1030] dialogue 1025 done in 51.9s  (0.02 dial/s, ETA 3.2 min)
+2026-04-19 06:10:34 | INFO    | [1027/1030] dialogue 1026 done in 48.1s  (0.02 dial/s, ETA 2.4 min)
+2026-04-19 06:11:20 | INFO    | [1028/1030] dialogue 1027 done in 46.6s  (0.02 dial/s, ETA 1.6 min)
+2026-04-19 06:12:09 | INFO    | [1029/1030] dialogue 1028 done in 48.1s  (0.02 dial/s, ETA 0.8 min)
+2026-04-19 06:12:55 | INFO    | [1030/1030] dialogue 1029 done in 46.4s  (0.02 dial/s, ETA 0.0 min)
+2026-04-19 06:12:55 | INFO    |   llm cache: 20717 hits / 10135 misses (rate 67.15%, size 10135)
+2026-04-19 06:12:55 | INFO    |   checkpoint saved → opponent_model/results/hybrid_eval/checkpoint.json
+2026-04-19 06:12:55 | INFO    | Final summary:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.262    0.350    0.412    0.424    0.425    0.348
+top1        0.520    0.669    0.750    0.769    0.758    0.655
+ndcg        0.634    0.735    0.790    0.804    0.798    0.726
+
+snapshot counts: k=1:2060, k=2:2060, k=3:2060, k=4:2058, k=5:2052
+2026-04-19 06:12:55 | INFO    | Wrote opponent_model/results/hybrid_eval/summary.json
+=== done at Sun Apr 19 06:12:56 EDT 2026 ===
+
+
+PS:
+
+Read file <opponent_model/results/hybrid_eval/lsf.237816711.err> for stderr output of this job.
+

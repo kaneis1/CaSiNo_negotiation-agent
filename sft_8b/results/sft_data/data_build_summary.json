@@ -1,0 +1,29 @@
+[
+  {
+    "input_path": "CaSiNo/data/split/casino_train.json",
+    "output_path": "sft_8b/results/sft_data/sft_train_rows.jsonl",
+    "n_dialogues_input": 900,
+    "n_dialogues_with_rows": 900,
+    "n_rows": 8990,
+    "max_k": 5,
+    "skips": {}
+  },
+  {
+    "input_path": "CaSiNo/data/split/casino_valid.json",
+    "output_path": "sft_8b/results/sft_data/sft_valid_rows.jsonl",
+    "n_dialogues_input": 30,
+    "n_dialogues_with_rows": 30,
+    "n_rows": 300,
+    "max_k": 5,
+    "skips": {}
+  },
+  {
+    "input_path": "CaSiNo/data/split/casino_test.json",
+    "output_path": "sft_8b/results/sft_data/sft_test_rows.jsonl",
+    "n_dialogues_input": 100,
+    "n_dialogues_with_rows": 100,
+    "n_rows": 1000,
+    "max_k": 5,
+    "skips": {}
+  }
+]

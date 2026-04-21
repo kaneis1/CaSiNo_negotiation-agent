@@ -1,0 +1,141 @@
+#!/bin/bash
+#BSUB -J sft8b_cv_fold
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+# Single 80 GB card per fold; H100-NVL by default for speed.
+# Quicker swaps if availability shifts (gpuavail to check):
+#   #BSUB -R "(a10080g||h100nvl) rusage[mem=40000] span[hosts=1]"
+#   #BSUB -R "a10080g rusage[mem=40000] span[hosts=1]"
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 12:00
+# %J resolves to the LSF job id; the FOLD env var (passed via `bsub -env`) is
+# available below for the per-fold output dir, but cannot be templated here.
+#BSUB -o sft_8b/results/cv/lsf.%J.out
+#BSUB -e sft_8b/results/cv/lsf.%J.err
+#BSUB -L /bin/bash
+
+# ── One fold of K-fold CV: build data + train + eval on held-out split ──
+#
+# The fold index is read from the env var FOLD. The reliable way to pass
+# it is via the heredoc wrapper in sft_8b/scripts/submit_all_folds.sh —
+# Minerva's LSF silently drops `bsub -env "FOLD=..."` so we don't use that.
+#
+# To launch all 5 folds:
+#   bash sft_8b/scripts/submit_all_folds.sh
+#
+# To re-run a single fold by hand (e.g., fold 2):
+#   bsub <<'EOF'
+#   #BSUB -J sft8b_cv_fold_2
+#   #BSUB -P acc_lin_lab
+#   #BSUB -q gpu
+#   #BSUB -gpu "num=1"
+#   #BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#   #BSUB -n 4
+#   #BSUB -W 12:00
+#   #BSUB -o sft_8b/results/cv/lsf.fold_2.%J.out
+#   #BSUB -e sft_8b/results/cv/lsf.fold_2.%J.err
+#   export FOLD=2 N_SPLITS=5 SEED=42
+#   exec bash sft_8b/scripts/run_cv_fold.lsf
+#   EOF
+#
+# Per-fold pipeline (everything under sft_8b/results/cv/fold_${FOLD}/):
+#   1. python -m sft_8b.cv_data --fold $FOLD     # train/in_loop/held_out split
+#   2. python -m sft_8b.train  ...               # LoRA SFT on train
+#   3. python -m sft_8b.eval_run  ...            # eval on held-out, ~206 dlg
+#
+# Time budget per fold (calibrated against the completed 900-dialogue run,
+# 1686 steps in 1h51m on A100 = 3.95 sec/step; H100 ~2.2 sec/step on this shape):
+#   * data build              : ~1   min
+#   * train (~1545 opt steps) : ~57  min on H100  (~100 min on A100)
+#   * in-loop eval x3 epochs  : ~9   min on H100
+#   * adapter save / overhead : ~2   min
+#   * final eval (~2060 preds): ~22  min on H100  (~28 min on A100)
+#   ─────────────────────────────────────────────
+#   total per fold            : ~91  min on H100  (~145 min on A100)
+#
+# -W 12:00 leaves >9 h of slack on H100, ~9.5 h on A100. Plenty of margin
+# in case a fold gets a noisier card, the queue is busy, or you re-run with
+# more epochs / a larger LoRA rank.
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+if [[ -z "${FOLD:-}" ]]; then
+    echo "ERROR: FOLD env var not set."
+    echo "Use sft_8b/scripts/submit_all_folds.sh, or see the heredoc"
+    echo "example in the header of this script for the single-fold form."
+    exit 2
+fi
+
+N_SPLITS=${N_SPLITS:-5}
+SEED=${SEED:-42}
+
+FOLD_DIR=sft_8b/results/cv/fold_${FOLD}
+mkdir -p "${FOLD_DIR}"
+mkdir -p sft_8b/results/cv
+
+# Send per-fold logs to a stable place too (the LSF .out goes to cv/ root
+# because the directive can't reference $FOLD). This makes `tail -f`
+# straightforward when you have 5 jobs running.
+exec > >(tee -a "${FOLD_DIR}/fold.log") 2>&1
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+export TRANSFORMERS_NO_ADVISORY_WARNINGS=1
+
+echo "=== job $LSB_JOBID  fold ${FOLD}/${N_SPLITS}  on $(hostname) at $(date) ==="
+echo "Interpreter: $CASINO_PY"
+echo "Output dir : ${FOLD_DIR}"
+echo "GPUs visible:"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+# ── 1) Build SFT data for this fold (idempotent — skips if files exist) ──
+TRAIN_F=${FOLD_DIR}/sft_data/sft_train_rows.jsonl
+TEST_F=${FOLD_DIR}/sft_data/sft_test_rows.jsonl
+HELD_F=${FOLD_DIR}/dialogues_heldout.json
+
+if [[ ! -s "$TRAIN_F" ]] || [[ ! -s "$TEST_F" ]] || [[ ! -s "$HELD_F" ]]; then
+    echo "[$(date +%T)] === [1/3] Building SFT data for fold ${FOLD} ==="
+    "$CASINO_PY" -m sft_8b.cv_data \
+        --fold "${FOLD}" \
+        --n-splits "${N_SPLITS}" \
+        --seed "${SEED}"
+else
+    echo "[$(date +%T)] === [1/3] SFT data already present, skipping build ==="
+fi
+
+# ── 2) LoRA SFT on this fold's train split ──────────────────────────────
+echo ""
+echo "[$(date +%T)] === [2/3] LoRA SFT (fold ${FOLD}) ==="
+"$CASINO_PY" -m sft_8b.train \
+    --train-file "${TRAIN_F}" \
+    --eval-file  "${TEST_F}" \
+    --output-dir "${FOLD_DIR}/lora_run"
+
+# ── 3) Eval on held-out 206 dialogues ────────────────────────────────────
+echo ""
+echo "[$(date +%T)] === [3/3] Eval on held-out (fold ${FOLD}) ==="
+"$CASINO_PY" -m sft_8b.eval_run \
+    --data       "${HELD_F}" \
+    --output-dir "${FOLD_DIR}/sft_eval" \
+    --adapter    "${FOLD_DIR}/lora_run/lora_best" \
+    --resume
+
+echo ""
+echo "=== fold ${FOLD} done at $(date) ==="
+echo "Summary: ${FOLD_DIR}/sft_eval/summary.json"

@@ -1,0 +1,192 @@
+Sender: LSF System <lsfadmin@lg02e11>
+Subject: Job 237869263: <sft8b_eval> in cluster <chimera> Done
+
+Job <sft8b_eval> was submitted from host <lg03a01> by user <cuiz02> in cluster <chimera> at Sun Apr 19 12:37:24 2026
+Job was executed on host(s) <2*lg02e11>, in queue <gpu>, as user <cuiz02> in cluster <chimera> at Sun Apr 19 12:37:30 2026
+</hpc/users/cuiz02> was used as the home directory.
+</sc/arion/projects/lin_lab/complexbehavior/CaSino> was used as the working directory.
+Started at Sun Apr 19 12:37:30 2026
+Terminated at Sun Apr 19 12:41:50 2026
+Results reported at Sun Apr 19 12:41:50 2026
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/bash
+#BSUB -J sft8b_eval
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+# Inference only: 8B in bf16 + LoRA adapter ≈ 18 GB. Any single GPU works.
+# Currently targeting h100nvl (plenty free); swap to the alternates below
+# if the queue gets busy.
+# Quicker swaps:
+#   #BSUB -R "(a10080g||h100nvl) rusage[mem=40000] span[hosts=1]"  # any A100/H100
+#   #BSUB -R "a10080g rusage[mem=40000] span[hosts=1]"             # A100 only
+#   #BSUB -R "l40s rusage[mem=40000] span[hosts=1]"                # 1x48 GB L40S
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 2
+#BSUB -W 1:00
+#BSUB -o sft_8b/results/sft_eval/lsf.%J.out
+#BSUB -e sft_8b/results/sft_eval/lsf.%J.err
+#BSUB -L /bin/bash
+
+# ── Final eval of SFT'd 8B on casino_valid.json (30 dialogues) ──
+#
+# Reports the SAME schema as the 70B hybrid run (predictions.jsonl +
+# summary.json with EMA/top1/NDCG@k + k-penalty), plus a satisfaction
+# block (5-class accuracy + ordinal MAE per k).
+#
+# Time budget
+#   * 30 dialogues x ~10 snapshots/dialogue x ~1 sec/gen on H100 ≈ 5 min.
+#   * Add model-load overhead (~1 min) -> ~10 min total. -W 1:00 = generous.
+#
+# Submit after the train job finishes:
+#   bsub < sft_8b/scripts/run_sft_eval.lsf
+#
+# Watch live:
+#   tail -f sft_8b/results/sft_eval/eval.log
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+mkdir -p sft_8b/results/sft_eval
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+(... more ...)
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   242.00 sec.
+    Max Memory :                                 1467 MB
+    Average Memory :                             1182.64 MB
+    Total Requested Memory :                     80000.00 MB
+    Delta Memory :                               78533.00 MB
+    Max Swap :                                   -
+    Max Processes :                              7
+    Max Threads :                                21
+    Run time :                                   259 sec.
+    Turnaround time :                            266 sec.
+
+The output (if any) follows:
+
+=== job 237869263 on lg02e11 at Sun Apr 19 12:37:32 EDT 2026 ===
+Interpreter: /sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+GPUs visible:
+index, name, memory.total [MiB]
+0, NVIDIA H100 80GB HBM3, 81559 MiB
+2026-04-19 12:38:46 | INFO    | [1/30] dialogue 157 done in 8.7s  (0.11 dial/s, ETA 4.2 min)
+2026-04-19 12:38:52 | INFO    | [2/30] dialogue 431 done in 6.2s  (0.13 dial/s, ETA 3.5 min)
+2026-04-19 12:38:59 | INFO    | [3/30] dialogue 375 done in 6.3s  (0.14 dial/s, ETA 3.2 min)
+2026-04-19 12:39:05 | INFO    | [4/30] dialogue 378 done in 6.3s  (0.15 dial/s, ETA 3.0 min)
+2026-04-19 12:39:11 | INFO    | [5/30] dialogue 642 done in 6.3s  (0.15 dial/s, ETA 2.8 min)
+2026-04-19 12:39:11 | INFO    |   checkpoint saved -> sft_8b/results/sft_eval/checkpoint.json
+2026-04-19 12:39:17 | INFO    | [6/30] dialogue 908 done in 6.3s  (0.15 dial/s, ETA 2.7 min)
+2026-04-19 12:39:24 | INFO    | [7/30] dialogue 969 done in 6.2s  (0.15 dial/s, ETA 2.5 min)
+2026-04-19 12:39:30 | INFO    | [8/30] dialogue 336 done in 6.2s  (0.15 dial/s, ETA 2.4 min)
+2026-04-19 12:39:36 | INFO    | [9/30] dialogue 937 done in 6.2s  (0.15 dial/s, ETA 2.3 min)
+2026-04-19 12:39:42 | INFO    | [10/30] dialogue 981 done in 6.3s  (0.15 dial/s, ETA 2.2 min)
+2026-04-19 12:39:42 | INFO    |   running summary @ 10 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.250    0.300    0.500    0.550    0.550    0.373
+top1        0.550    0.700    0.700    0.750    0.750    0.660
+ndcg        0.617    0.798    0.812    0.843    0.837    0.749
+
+snapshot counts: k=1:20, k=2:20, k=3:20, k=4:20, k=5:20
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.700    0.700    0.600    0.700    0.750    0.683
+sat_mae     0.300    0.300    0.400    0.300    0.250    0.317
+
+satisfaction snapshot counts: k=1:20, k=2:20, k=3:20, k=4:20, k=5:20
+2026-04-19 12:39:42 | INFO    |   checkpoint saved -> sft_8b/results/sft_eval/checkpoint.json
+2026-04-19 12:39:49 | INFO    | [11/30] dialogue 762 done in 6.3s  (0.15 dial/s, ETA 2.1 min)
+2026-04-19 12:39:55 | INFO    | [12/30] dialogue 1028 done in 6.3s  (0.15 dial/s, ETA 1.9 min)
+2026-04-19 12:40:01 | INFO    | [13/30] dialogue 506 done in 6.3s  (0.16 dial/s, ETA 1.8 min)
+2026-04-19 12:40:08 | INFO    | [14/30] dialogue 823 done in 6.3s  (0.16 dial/s, ETA 1.7 min)
+2026-04-19 12:40:14 | INFO    | [15/30] dialogue 924 done in 6.3s  (0.16 dial/s, ETA 1.6 min)
+2026-04-19 12:40:14 | INFO    |   checkpoint saved -> sft_8b/results/sft_eval/checkpoint.json
+2026-04-19 12:40:20 | INFO    | [16/30] dialogue 147 done in 6.3s  (0.16 dial/s, ETA 1.5 min)
+2026-04-19 12:40:26 | INFO    | [17/30] dialogue 388 done in 6.2s  (0.16 dial/s, ETA 1.4 min)
+2026-04-19 12:40:33 | INFO    | [18/30] dialogue 745 done in 6.3s  (0.16 dial/s, ETA 1.3 min)
+2026-04-19 12:40:39 | INFO    | [19/30] dialogue 239 done in 6.3s  (0.16 dial/s, ETA 1.2 min)
+2026-04-19 12:40:45 | INFO    | [20/30] dialogue 850 done in 6.2s  (0.16 dial/s, ETA 1.1 min)
+2026-04-19 12:40:45 | INFO    |   running summary @ 20 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.225    0.325    0.450    0.575    0.575    0.367
+top1        0.525    0.700    0.675    0.725    0.725    0.642
+ndcg        0.602    0.788    0.780    0.832    0.825    0.733
+
+snapshot counts: k=1:40, k=2:40, k=3:40, k=4:40, k=5:40
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.625    0.600    0.550    0.625    0.625    0.603
+sat_mae     0.475    0.450    0.500    0.425    0.425    0.463
+
+satisfaction snapshot counts: k=1:40, k=2:40, k=3:40, k=4:40, k=5:40
+2026-04-19 12:40:45 | INFO    |   checkpoint saved -> sft_8b/results/sft_eval/checkpoint.json
+2026-04-19 12:40:51 | INFO    | [21/30] dialogue 811 done in 6.2s  (0.16 dial/s, ETA 1.0 min)
+2026-04-19 12:40:58 | INFO    | [22/30] dialogue 329 done in 6.2s  (0.16 dial/s, ETA 0.8 min)
+2026-04-19 12:41:04 | INFO    | [23/30] dialogue 352 done in 6.3s  (0.16 dial/s, ETA 0.7 min)
+2026-04-19 12:41:10 | INFO    | [24/30] dialogue 445 done in 6.3s  (0.16 dial/s, ETA 0.6 min)
+2026-04-19 12:41:16 | INFO    | [25/30] dialogue 900 done in 6.2s  (0.16 dial/s, ETA 0.5 min)
+2026-04-19 12:41:16 | INFO    |   checkpoint saved -> sft_8b/results/sft_eval/checkpoint.json
+2026-04-19 12:41:23 | INFO    | [26/30] dialogue 139 done in 6.3s  (0.16 dial/s, ETA 0.4 min)
+2026-04-19 12:41:29 | INFO    | [27/30] dialogue 572 done in 6.3s  (0.16 dial/s, ETA 0.3 min)
+2026-04-19 12:41:35 | INFO    | [28/30] dialogue 741 done in 6.3s  (0.16 dial/s, ETA 0.2 min)
+2026-04-19 12:41:41 | INFO    | [29/30] dialogue 861 done in 6.3s  (0.16 dial/s, ETA 0.1 min)
+2026-04-19 12:41:48 | INFO    | [30/30] dialogue 683 done in 6.2s  (0.16 dial/s, ETA 0.0 min)
+2026-04-19 12:41:48 | INFO    |   running summary @ 30 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.250    0.383    0.483    0.600    0.617    0.403
+top1        0.567    0.733    0.733    0.767    0.767    0.684
+ndcg        0.640    0.806    0.822    0.861    0.858    0.765
+
+snapshot counts: k=1:60, k=2:60, k=3:60, k=4:60, k=5:60
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.617    0.633    0.600    0.633    0.633    0.621
+sat_mae     0.500    0.433    0.467    0.450    0.450    0.466
+
+satisfaction snapshot counts: k=1:60, k=2:60, k=3:60, k=4:60, k=5:60
+2026-04-19 12:41:48 | INFO    |   checkpoint saved -> sft_8b/results/sft_eval/checkpoint.json
+2026-04-19 12:41:48 | INFO    | Final preferences summary:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.250    0.383    0.483    0.600    0.617    0.403
+top1        0.567    0.733    0.733    0.767    0.767    0.684
+ndcg        0.640    0.806    0.822    0.861    0.858    0.765
+
+snapshot counts: k=1:60, k=2:60, k=3:60, k=4:60, k=5:60
+2026-04-19 12:41:48 | INFO    | Final satisfaction summary:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.617    0.633    0.600    0.633    0.633    0.621
+sat_mae     0.500    0.433    0.467    0.450    0.450    0.466
+
+satisfaction snapshot counts: k=1:60, k=2:60, k=3:60, k=4:60, k=5:60
+2026-04-19 12:41:48 | INFO    | Wrote sft_8b/results/sft_eval/summary.json
+=== done at Sun Apr 19 12:41:49 EDT 2026 ===
+
+
+PS:
+
+Read file <sft_8b/results/sft_eval/lsf.237869263.err> for stderr output of this job.
+

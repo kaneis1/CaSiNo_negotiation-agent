@@ -1,0 +1,23 @@
+{
+  "base_model": "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct",
+  "train_file": "sft_8b/results/sft_data/sft_train_rows.jsonl",
+  "eval_file":  "sft_8b/results/sft_data/sft_test_rows.jsonl",
+  "n_train_rows": 8990,
+  "n_eval_rows":  1000,
+  "best_checkpoint":   "sft_8b/results/lora_run/checkpoint-562",
+  "best_metric_name":  "eval_loss",
+  "best_metric_value": 0.6619234681129456,
+  "best_epoch": 1,
+  "all_eval_losses": {
+    "epoch_1": 0.6619234681129456,
+    "epoch_2": 0.9802297353744507,
+    "epoch_3": 1.0947715044021606
+  },
+  "note": "Picked epoch-1 checkpoint (lowest eval_loss). Epochs 2-3 overfit. Staged manually after train job 237859092 crashed inside _load_best_model() due to peft 0.19 + torch < 2.7 float8_e8m0fnu bug; checkpoints themselves are intact.",
+  "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "target_modules": ["q_proj","k_proj","v_proj","o_proj","gate_proj","up_proj","down_proj"]
+  }
+}

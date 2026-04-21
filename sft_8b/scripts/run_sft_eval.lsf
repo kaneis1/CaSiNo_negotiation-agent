@@ -1,0 +1,66 @@
+#!/bin/bash
+#BSUB -J sft8b_eval
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+# Inference only: 8B in bf16 + LoRA adapter ≈ 18 GB. Any single GPU works.
+# Currently targeting h100nvl (plenty free); swap to the alternates below
+# if the queue gets busy.
+# Quicker swaps:
+#   #BSUB -R "(a10080g||h100nvl) rusage[mem=40000] span[hosts=1]"  # any A100/H100
+#   #BSUB -R "a10080g rusage[mem=40000] span[hosts=1]"             # A100 only
+#   #BSUB -R "l40s rusage[mem=40000] span[hosts=1]"                # 1x48 GB L40S
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 2
+#BSUB -W 1:00
+#BSUB -o sft_8b/results/sft_eval/lsf.%J.out
+#BSUB -e sft_8b/results/sft_eval/lsf.%J.err
+#BSUB -L /bin/bash
+
+# ── Final eval of SFT'd 8B on casino_valid.json (30 dialogues) ──
+#
+# Reports the SAME schema as the 70B hybrid run (predictions.jsonl +
+# summary.json with EMA/top1/NDCG@k + k-penalty), plus a satisfaction
+# block (5-class accuracy + ordinal MAE per k).
+#
+# Time budget
+#   * 30 dialogues x ~10 snapshots/dialogue x ~1 sec/gen on H100 ≈ 5 min.
+#   * Add model-load overhead (~1 min) -> ~10 min total. -W 1:00 = generous.
+#
+# Submit after the train job finishes:
+#   bsub < sft_8b/scripts/run_sft_eval.lsf
+#
+# Watch live:
+#   tail -f sft_8b/results/sft_eval/eval.log
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+mkdir -p sft_8b/results/sft_eval
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+echo "Interpreter: $CASINO_PY"
+echo "GPUs visible:"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+# All knobs (data path, adapter path, max_k, etc.) live as constants at
+# the top of sft_8b/eval_run.py — edit there for changes.
+"$CASINO_PY" -m sft_8b.eval_run --resume
+
+echo "=== done at $(date) ==="

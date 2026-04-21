@@ -1,0 +1,543 @@
+2026-04-20 00:08:00 | INFO    | [1/206] dialogue 0 done in 6.4s  (0.16 dial/s, ETA 22.0 min)
+2026-04-20 00:08:06 | INFO    | [2/206] dialogue 2 done in 6.0s  (0.16 dial/s, ETA 21.1 min)
+2026-04-20 00:08:12 | INFO    | [3/206] dialogue 7 done in 6.0s  (0.16 dial/s, ETA 20.7 min)
+2026-04-20 00:08:18 | INFO    | [4/206] dialogue 9 done in 6.0s  (0.16 dial/s, ETA 20.5 min)
+2026-04-20 00:08:24 | INFO    | [5/206] dialogue 15 done in 6.0s  (0.16 dial/s, ETA 20.4 min)
+2026-04-20 00:08:24 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:08:30 | INFO    | [6/206] dialogue 19 done in 6.1s  (0.16 dial/s, ETA 20.3 min)
+2026-04-20 00:08:36 | INFO    | [7/206] dialogue 21 done in 6.0s  (0.16 dial/s, ETA 20.1 min)
+2026-04-20 00:08:42 | INFO    | [8/206] dialogue 40 done in 6.0s  (0.16 dial/s, ETA 20.0 min)
+2026-04-20 00:08:48 | INFO    | [9/206] dialogue 55 done in 6.0s  (0.17 dial/s, ETA 19.9 min)
+2026-04-20 00:08:54 | INFO    | [10/206] dialogue 58 done in 6.0s  (0.17 dial/s, ETA 19.7 min)
+2026-04-20 00:08:54 | INFO    |   running summary @ 10 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.350    0.650    0.700    0.700    0.700    0.570
+top1        0.750    0.800    0.850    0.900    0.950    0.817
+ndcg        0.766    0.824    0.880    0.905    0.949    0.835
+
+snapshot counts: k=1:20, k=2:20, k=3:20, k=4:20, k=5:20
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.450    0.450    0.500    0.450    0.450    0.460
+sat_mae     1.000    0.900    0.850    0.900    0.900    0.923
+
+satisfaction snapshot counts: k=1:20, k=2:20, k=3:20, k=4:20, k=5:20
+2026-04-20 00:08:54 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:09:00 | INFO    | [11/206] dialogue 59 done in 6.0s  (0.17 dial/s, ETA 19.6 min)
+2026-04-20 00:09:06 | INFO    | [12/206] dialogue 60 done in 6.0s  (0.17 dial/s, ETA 19.5 min)
+2026-04-20 00:09:12 | INFO    | [13/206] dialogue 62 done in 5.9s  (0.17 dial/s, ETA 19.4 min)
+2026-04-20 00:09:18 | INFO    | [14/206] dialogue 69 done in 5.9s  (0.17 dial/s, ETA 19.3 min)
+2026-04-20 00:09:24 | INFO    | [15/206] dialogue 70 done in 6.0s  (0.17 dial/s, ETA 19.2 min)
+2026-04-20 00:09:24 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:09:30 | INFO    | [16/206] dialogue 72 done in 5.9s  (0.17 dial/s, ETA 19.0 min)
+2026-04-20 00:09:36 | INFO    | [17/206] dialogue 74 done in 6.0s  (0.17 dial/s, ETA 18.9 min)
+2026-04-20 00:09:42 | INFO    | [18/206] dialogue 75 done in 6.0s  (0.17 dial/s, ETA 18.8 min)
+2026-04-20 00:09:48 | INFO    | [19/206] dialogue 77 done in 6.0s  (0.17 dial/s, ETA 18.7 min)
+2026-04-20 00:09:54 | INFO    | [20/206] dialogue 82 done in 6.0s  (0.17 dial/s, ETA 18.6 min)
+2026-04-20 00:09:54 | INFO    |   running summary @ 20 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.350    0.575    0.700    0.675    0.675    0.545
+top1        0.650    0.750    0.875    0.875    0.925    0.770
+ndcg        0.696    0.796    0.902    0.912    0.940    0.809
+
+snapshot counts: k=1:40, k=2:40, k=3:40, k=4:40, k=5:40
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.475    0.450    0.500    0.525    0.500    0.482
+sat_mae     0.825    0.800    0.750    0.725    0.750    0.785
+
+satisfaction snapshot counts: k=1:40, k=2:40, k=3:40, k=4:40, k=5:40
+2026-04-20 00:09:54 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:10:00 | INFO    | [21/206] dialogue 83 done in 5.9s  (0.17 dial/s, ETA 18.5 min)
+2026-04-20 00:10:06 | INFO    | [22/206] dialogue 87 done in 5.9s  (0.17 dial/s, ETA 18.4 min)
+2026-04-20 00:10:12 | INFO    | [23/206] dialogue 96 done in 6.0s  (0.17 dial/s, ETA 18.3 min)
+2026-04-20 00:10:18 | INFO    | [24/206] dialogue 100 done in 6.0s  (0.17 dial/s, ETA 18.2 min)
+2026-04-20 00:10:24 | INFO    | [25/206] dialogue 102 done in 6.0s  (0.17 dial/s, ETA 18.1 min)
+2026-04-20 00:10:24 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:10:30 | INFO    | [26/206] dialogue 111 done in 6.0s  (0.17 dial/s, ETA 18.0 min)
+2026-04-20 00:10:36 | INFO    | [27/206] dialogue 122 done in 5.9s  (0.17 dial/s, ETA 17.9 min)
+2026-04-20 00:10:42 | INFO    | [28/206] dialogue 123 done in 6.0s  (0.17 dial/s, ETA 17.8 min)
+2026-04-20 00:10:48 | INFO    | [29/206] dialogue 128 done in 6.0s  (0.17 dial/s, ETA 17.7 min)
+2026-04-20 00:10:54 | INFO    | [30/206] dialogue 131 done in 6.0s  (0.17 dial/s, ETA 17.6 min)
+2026-04-20 00:10:54 | INFO    |   running summary @ 30 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.317    0.533    0.667    0.667    0.717    0.518
+top1        0.650    0.783    0.883    0.850    0.933    0.778
+ndcg        0.696    0.818    0.899    0.891    0.947    0.812
+
+snapshot counts: k=1:60, k=2:60, k=3:60, k=4:60, k=5:60
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.483    0.483    0.517    0.500    0.517    0.494
+sat_mae     0.817    0.783    0.750    0.767    0.733    0.782
+
+satisfaction snapshot counts: k=1:60, k=2:60, k=3:60, k=4:60, k=5:60
+2026-04-20 00:10:54 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:10:59 | INFO    | [31/206] dialogue 134 done in 5.9s  (0.17 dial/s, ETA 17.5 min)
+2026-04-20 00:11:05 | INFO    | [32/206] dialogue 135 done in 6.0s  (0.17 dial/s, ETA 17.4 min)
+2026-04-20 00:11:11 | INFO    | [33/206] dialogue 143 done in 6.0s  (0.17 dial/s, ETA 17.3 min)
+2026-04-20 00:11:17 | INFO    | [34/206] dialogue 158 done in 6.0s  (0.17 dial/s, ETA 17.2 min)
+2026-04-20 00:11:23 | INFO    | [35/206] dialogue 165 done in 6.0s  (0.17 dial/s, ETA 17.1 min)
+2026-04-20 00:11:23 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:11:29 | INFO    | [36/206] dialogue 168 done in 5.9s  (0.17 dial/s, ETA 17.0 min)
+2026-04-20 00:11:35 | INFO    | [37/206] dialogue 169 done in 5.9s  (0.17 dial/s, ETA 16.9 min)
+2026-04-20 00:11:41 | INFO    | [38/206] dialogue 170 done in 6.0s  (0.17 dial/s, ETA 16.8 min)
+2026-04-20 00:11:47 | INFO    | [39/206] dialogue 187 done in 6.0s  (0.17 dial/s, ETA 16.7 min)
+2026-04-20 00:11:53 | INFO    | [40/206] dialogue 190 done in 5.9s  (0.17 dial/s, ETA 16.6 min)
+2026-04-20 00:11:53 | INFO    |   running summary @ 40 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.338    0.525    0.637    0.637    0.688    0.511
+top1        0.637    0.775    0.850    0.838    0.900    0.761
+ndcg        0.689    0.805    0.888    0.885    0.929    0.802
+
+snapshot counts: k=1:80, k=2:80, k=3:80, k=4:80, k=5:80
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.487    0.487    0.550    0.525    0.537    0.508
+sat_mae     0.900    0.863    0.775    0.800    0.787    0.844
+
+satisfaction snapshot counts: k=1:80, k=2:80, k=3:80, k=4:80, k=5:80
+2026-04-20 00:11:53 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:11:59 | INFO    | [41/206] dialogue 194 done in 6.0s  (0.17 dial/s, ETA 16.5 min)
+2026-04-20 00:12:05 | INFO    | [42/206] dialogue 205 done in 5.9s  (0.17 dial/s, ETA 16.4 min)
+2026-04-20 00:12:11 | INFO    | [43/206] dialogue 218 done in 6.0s  (0.17 dial/s, ETA 16.3 min)
+2026-04-20 00:12:17 | INFO    | [44/206] dialogue 219 done in 6.0s  (0.17 dial/s, ETA 16.2 min)
+2026-04-20 00:12:23 | INFO    | [45/206] dialogue 222 done in 6.0s  (0.17 dial/s, ETA 16.1 min)
+2026-04-20 00:12:23 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:12:29 | INFO    | [46/206] dialogue 230 done in 6.0s  (0.17 dial/s, ETA 16.0 min)
+2026-04-20 00:12:35 | INFO    | [47/206] dialogue 235 done in 6.0s  (0.17 dial/s, ETA 15.9 min)
+2026-04-20 00:12:41 | INFO    | [48/206] dialogue 240 done in 6.0s  (0.17 dial/s, ETA 15.8 min)
+2026-04-20 00:12:47 | INFO    | [49/206] dialogue 242 done in 6.0s  (0.17 dial/s, ETA 15.7 min)
+2026-04-20 00:12:53 | INFO    | [50/206] dialogue 243 done in 5.9s  (0.17 dial/s, ETA 15.6 min)
+2026-04-20 00:12:53 | INFO    |   running summary @ 50 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.360    0.570    0.640    0.660    0.710    0.535
+top1        0.670    0.800    0.850    0.850    0.900    0.780
+ndcg        0.715    0.823    0.883    0.891    0.927    0.815
+
+snapshot counts: k=1:100, k=2:100, k=3:100, k=4:100, k=5:100
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.470    0.500    0.540    0.520    0.520    0.502
+sat_mae     0.890    0.840    0.780    0.780    0.800    0.834
+
+satisfaction snapshot counts: k=1:100, k=2:100, k=3:100, k=4:100, k=5:100
+2026-04-20 00:12:53 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:12:59 | INFO    | [51/206] dialogue 244 done in 6.0s  (0.17 dial/s, ETA 15.5 min)
+2026-04-20 00:13:05 | INFO    | [52/206] dialogue 245 done in 6.0s  (0.17 dial/s, ETA 15.4 min)
+2026-04-20 00:13:11 | INFO    | [53/206] dialogue 246 done in 5.9s  (0.17 dial/s, ETA 15.2 min)
+2026-04-20 00:13:17 | INFO    | [54/206] dialogue 248 done in 6.0s  (0.17 dial/s, ETA 15.1 min)
+2026-04-20 00:13:23 | INFO    | [55/206] dialogue 253 done in 6.0s  (0.17 dial/s, ETA 15.0 min)
+2026-04-20 00:13:23 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:13:29 | INFO    | [56/206] dialogue 254 done in 5.9s  (0.17 dial/s, ETA 14.9 min)
+2026-04-20 00:13:35 | INFO    | [57/206] dialogue 255 done in 6.0s  (0.17 dial/s, ETA 14.8 min)
+2026-04-20 00:13:40 | INFO    | [58/206] dialogue 267 done in 6.0s  (0.17 dial/s, ETA 14.7 min)
+2026-04-20 00:13:46 | INFO    | [59/206] dialogue 292 done in 5.9s  (0.17 dial/s, ETA 14.6 min)
+2026-04-20 00:13:52 | INFO    | [60/206] dialogue 303 done in 6.0s  (0.17 dial/s, ETA 14.5 min)
+2026-04-20 00:13:52 | INFO    |   running summary @ 60 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.358    0.533    0.617    0.650    0.683    0.517
+top1        0.658    0.783    0.833    0.850    0.892    0.768
+ndcg        0.702    0.806    0.862    0.885    0.916    0.800
+
+snapshot counts: k=1:120, k=2:120, k=3:120, k=4:120, k=5:120
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.467    0.500    0.550    0.508    0.508    0.501
+sat_mae     0.858    0.808    0.733    0.767    0.783    0.803
+
+satisfaction snapshot counts: k=1:120, k=2:120, k=3:120, k=4:120, k=5:120
+2026-04-20 00:13:52 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:13:58 | INFO    | [61/206] dialogue 307 done in 6.0s  (0.17 dial/s, ETA 14.4 min)
+2026-04-20 00:14:04 | INFO    | [62/206] dialogue 314 done in 6.0s  (0.17 dial/s, ETA 14.3 min)
+2026-04-20 00:14:10 | INFO    | [63/206] dialogue 319 done in 6.0s  (0.17 dial/s, ETA 14.2 min)
+2026-04-20 00:14:16 | INFO    | [64/206] dialogue 321 done in 6.0s  (0.17 dial/s, ETA 14.1 min)
+2026-04-20 00:14:22 | INFO    | [65/206] dialogue 331 done in 6.0s  (0.17 dial/s, ETA 14.0 min)
+2026-04-20 00:14:22 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:14:28 | INFO    | [66/206] dialogue 338 done in 6.0s  (0.17 dial/s, ETA 13.9 min)
+2026-04-20 00:14:34 | INFO    | [67/206] dialogue 346 done in 6.0s  (0.17 dial/s, ETA 13.9 min)
+2026-04-20 00:14:40 | INFO    | [68/206] dialogue 347 done in 6.0s  (0.17 dial/s, ETA 13.8 min)
+2026-04-20 00:14:46 | INFO    | [69/206] dialogue 362 done in 5.9s  (0.17 dial/s, ETA 13.6 min)
+2026-04-20 00:14:52 | INFO    | [70/206] dialogue 371 done in 5.9s  (0.17 dial/s, ETA 13.5 min)
+2026-04-20 00:14:52 | INFO    |   running summary @ 70 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.371    0.550    0.643    0.679    0.707    0.537
+top1        0.650    0.771    0.850    0.864    0.900    0.768
+ndcg        0.702    0.803    0.877    0.897    0.923    0.805
+
+snapshot counts: k=1:140, k=2:140, k=3:140, k=4:140, k=5:140
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.450    0.479    0.529    0.486    0.486    0.480
+sat_mae     0.886    0.836    0.764    0.793    0.821    0.831
+
+satisfaction snapshot counts: k=1:140, k=2:140, k=3:140, k=4:140, k=5:140
+2026-04-20 00:14:52 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:14:58 | INFO    | [71/206] dialogue 382 done in 5.9s  (0.17 dial/s, ETA 13.4 min)
+2026-04-20 00:15:04 | INFO    | [72/206] dialogue 399 done in 6.0s  (0.17 dial/s, ETA 13.3 min)
+2026-04-20 00:15:10 | INFO    | [73/206] dialogue 412 done in 6.0s  (0.17 dial/s, ETA 13.2 min)
+2026-04-20 00:15:16 | INFO    | [74/206] dialogue 413 done in 6.0s  (0.17 dial/s, ETA 13.1 min)
+2026-04-20 00:15:22 | INFO    | [75/206] dialogue 416 done in 5.9s  (0.17 dial/s, ETA 13.0 min)
+2026-04-20 00:15:22 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:15:28 | INFO    | [76/206] dialogue 420 done in 5.9s  (0.17 dial/s, ETA 12.9 min)
+2026-04-20 00:15:34 | INFO    | [77/206] dialogue 433 done in 5.9s  (0.17 dial/s, ETA 12.8 min)
+2026-04-20 00:15:40 | INFO    | [78/206] dialogue 441 done in 5.9s  (0.17 dial/s, ETA 12.7 min)
+2026-04-20 00:15:46 | INFO    | [79/206] dialogue 448 done in 5.9s  (0.17 dial/s, ETA 12.6 min)
+2026-04-20 00:15:52 | INFO    | [80/206] dialogue 453 done in 6.0s  (0.17 dial/s, ETA 12.5 min)
+2026-04-20 00:15:52 | INFO    |   running summary @ 80 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.369    0.556    0.631    0.688    0.700    0.536
+top1        0.644    0.781    0.850    0.875    0.894    0.769
+ndcg        0.700    0.808    0.873    0.901    0.918    0.805
+
+snapshot counts: k=1:160, k=2:160, k=3:160, k=4:160, k=5:160
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.450    0.469    0.506    0.500    0.487    0.475
+sat_mae     0.875    0.838    0.775    0.769    0.812    0.827
+
+satisfaction snapshot counts: k=1:160, k=2:160, k=3:160, k=4:160, k=5:160
+2026-04-20 00:15:52 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:15:57 | INFO    | [81/206] dialogue 462 done in 5.9s  (0.17 dial/s, ETA 12.4 min)
+2026-04-20 00:16:03 | INFO    | [82/206] dialogue 465 done in 6.0s  (0.17 dial/s, ETA 12.3 min)
+2026-04-20 00:16:09 | INFO    | [83/206] dialogue 468 done in 5.9s  (0.17 dial/s, ETA 12.2 min)
+2026-04-20 00:16:15 | INFO    | [84/206] dialogue 478 done in 6.0s  (0.17 dial/s, ETA 12.1 min)
+2026-04-20 00:16:21 | INFO    | [85/206] dialogue 484 done in 6.0s  (0.17 dial/s, ETA 12.0 min)
+2026-04-20 00:16:21 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:16:27 | INFO    | [86/206] dialogue 486 done in 5.9s  (0.17 dial/s, ETA 11.9 min)
+2026-04-20 00:16:33 | INFO    | [87/206] dialogue 488 done in 6.0s  (0.17 dial/s, ETA 11.8 min)
+2026-04-20 00:16:39 | INFO    | [88/206] dialogue 492 done in 6.0s  (0.17 dial/s, ETA 11.7 min)
+2026-04-20 00:16:45 | INFO    | [89/206] dialogue 497 done in 5.9s  (0.17 dial/s, ETA 11.6 min)
+2026-04-20 00:16:51 | INFO    | [90/206] dialogue 498 done in 5.9s  (0.17 dial/s, ETA 11.5 min)
+2026-04-20 00:16:51 | INFO    |   running summary @ 90 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.367    0.539    0.622    0.689    0.694    0.529
+top1        0.644    0.778    0.833    0.878    0.889    0.765
+ndcg        0.699    0.804    0.861    0.901    0.913    0.801
+
+snapshot counts: k=1:180, k=2:180, k=3:180, k=4:180, k=5:180
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.456    0.467    0.517    0.494    0.489    0.478
+sat_mae     0.867    0.839    0.761    0.778    0.806    0.822
+
+satisfaction snapshot counts: k=1:180, k=2:180, k=3:180, k=4:180, k=5:180
+2026-04-20 00:16:51 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:16:57 | INFO    | [91/206] dialogue 500 done in 6.0s  (0.17 dial/s, ETA 11.4 min)
+2026-04-20 00:17:03 | INFO    | [92/206] dialogue 514 done in 5.9s  (0.17 dial/s, ETA 11.3 min)
+2026-04-20 00:17:09 | INFO    | [93/206] dialogue 518 done in 6.0s  (0.17 dial/s, ETA 11.2 min)
+2026-04-20 00:17:15 | INFO    | [94/206] dialogue 520 done in 5.9s  (0.17 dial/s, ETA 11.1 min)
+2026-04-20 00:17:21 | INFO    | [95/206] dialogue 526 done in 6.0s  (0.17 dial/s, ETA 11.0 min)
+2026-04-20 00:17:21 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:17:27 | INFO    | [96/206] dialogue 529 done in 5.9s  (0.17 dial/s, ETA 10.9 min)
+2026-04-20 00:17:33 | INFO    | [97/206] dialogue 535 done in 6.0s  (0.17 dial/s, ETA 10.8 min)
+2026-04-20 00:17:39 | INFO    | [98/206] dialogue 540 done in 6.0s  (0.17 dial/s, ETA 10.7 min)
+2026-04-20 00:17:45 | INFO    | [99/206] dialogue 543 done in 6.0s  (0.17 dial/s, ETA 10.6 min)
+2026-04-20 00:17:51 | INFO    | [100/206] dialogue 545 done in 6.0s  (0.17 dial/s, ETA 10.5 min)
+2026-04-20 00:17:51 | INFO    |   running summary @ 100 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.365    0.530    0.615    0.680    0.690    0.523
+top1        0.630    0.755    0.810    0.855    0.870    0.745
+ndcg        0.691    0.792    0.851    0.887    0.903    0.790
+
+snapshot counts: k=1:200, k=2:200, k=3:200, k=4:200, k=5:200
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.465    0.480    0.525    0.500    0.500    0.488
+sat_mae     0.850    0.815    0.745    0.760    0.785    0.803
+
+satisfaction snapshot counts: k=1:200, k=2:200, k=3:200, k=4:200, k=5:200
+2026-04-20 00:17:51 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:17:57 | INFO    | [101/206] dialogue 550 done in 6.0s  (0.17 dial/s, ETA 10.4 min)
+2026-04-20 00:18:03 | INFO    | [102/206] dialogue 552 done in 5.9s  (0.17 dial/s, ETA 10.3 min)
+2026-04-20 00:18:09 | INFO    | [103/206] dialogue 553 done in 6.0s  (0.17 dial/s, ETA 10.2 min)
+2026-04-20 00:18:15 | INFO    | [104/206] dialogue 555 done in 6.0s  (0.17 dial/s, ETA 10.1 min)
+2026-04-20 00:18:21 | INFO    | [105/206] dialogue 562 done in 6.0s  (0.17 dial/s, ETA 10.0 min)
+2026-04-20 00:18:21 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:18:27 | INFO    | [106/206] dialogue 567 done in 6.0s  (0.17 dial/s, ETA 9.9 min)
+2026-04-20 00:18:32 | INFO    | [107/206] dialogue 569 done in 6.0s  (0.17 dial/s, ETA 9.9 min)
+2026-04-20 00:18:38 | INFO    | [108/206] dialogue 576 done in 6.0s  (0.17 dial/s, ETA 9.8 min)
+2026-04-20 00:18:44 | INFO    | [109/206] dialogue 578 done in 6.0s  (0.17 dial/s, ETA 9.7 min)
+2026-04-20 00:18:50 | INFO    | [110/206] dialogue 583 done in 6.0s  (0.17 dial/s, ETA 9.6 min)
+2026-04-20 00:18:50 | INFO    |   running summary @ 110 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.364    0.523    0.618    0.682    0.686    0.521
+top1        0.636    0.759    0.823    0.864    0.877    0.753
+ndcg        0.697    0.797    0.857    0.892    0.905    0.795
+
+snapshot counts: k=1:220, k=2:220, k=3:220, k=4:220, k=5:220
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.477    0.495    0.541    0.505    0.514    0.501
+sat_mae     0.818    0.786    0.714    0.741    0.759    0.775
+
+satisfaction snapshot counts: k=1:220, k=2:220, k=3:220, k=4:220, k=5:220
+2026-04-20 00:18:50 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:18:56 | INFO    | [111/206] dialogue 584 done in 5.9s  (0.17 dial/s, ETA 9.5 min)
+2026-04-20 00:19:02 | INFO    | [112/206] dialogue 590 done in 6.0s  (0.17 dial/s, ETA 9.4 min)
+2026-04-20 00:19:08 | INFO    | [113/206] dialogue 592 done in 6.0s  (0.17 dial/s, ETA 9.3 min)
+2026-04-20 00:19:14 | INFO    | [114/206] dialogue 593 done in 6.0s  (0.17 dial/s, ETA 9.2 min)
+2026-04-20 00:19:20 | INFO    | [115/206] dialogue 602 done in 5.9s  (0.17 dial/s, ETA 9.1 min)
+2026-04-20 00:19:20 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:19:26 | INFO    | [116/206] dialogue 608 done in 5.9s  (0.17 dial/s, ETA 9.0 min)
+2026-04-20 00:19:32 | INFO    | [117/206] dialogue 609 done in 5.9s  (0.17 dial/s, ETA 8.9 min)
+2026-04-20 00:19:38 | INFO    | [118/206] dialogue 613 done in 6.0s  (0.17 dial/s, ETA 8.8 min)
+2026-04-20 00:19:44 | INFO    | [119/206] dialogue 621 done in 5.9s  (0.17 dial/s, ETA 8.7 min)
+2026-04-20 00:19:50 | INFO    | [120/206] dialogue 634 done in 6.0s  (0.17 dial/s, ETA 8.6 min)
+2026-04-20 00:19:50 | INFO    |   running summary @ 120 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.367    0.537    0.621    0.683    0.692    0.527
+top1        0.637    0.767    0.829    0.867    0.879    0.757
+ndcg        0.701    0.805    0.860    0.892    0.905    0.800
+
+snapshot counts: k=1:240, k=2:240, k=3:240, k=4:240, k=5:240
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.458    0.487    0.533    0.500    0.504    0.490
+sat_mae     0.850    0.804    0.729    0.758    0.779    0.797
+
+satisfaction snapshot counts: k=1:240, k=2:240, k=3:240, k=4:240, k=5:240
+2026-04-20 00:19:50 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:19:56 | INFO    | [121/206] dialogue 638 done in 5.9s  (0.17 dial/s, ETA 8.5 min)
+2026-04-20 00:20:02 | INFO    | [122/206] dialogue 646 done in 5.9s  (0.17 dial/s, ETA 8.4 min)
+2026-04-20 00:20:08 | INFO    | [123/206] dialogue 654 done in 5.9s  (0.17 dial/s, ETA 8.3 min)
+2026-04-20 00:20:14 | INFO    | [124/206] dialogue 661 done in 6.0s  (0.17 dial/s, ETA 8.2 min)
+2026-04-20 00:20:20 | INFO    | [125/206] dialogue 666 done in 6.0s  (0.17 dial/s, ETA 8.1 min)
+2026-04-20 00:20:20 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:20:26 | INFO    | [126/206] dialogue 667 done in 5.9s  (0.17 dial/s, ETA 8.0 min)
+2026-04-20 00:20:32 | INFO    | [127/206] dialogue 669 done in 6.0s  (0.17 dial/s, ETA 7.9 min)
+2026-04-20 00:20:38 | INFO    | [128/206] dialogue 674 done in 6.0s  (0.17 dial/s, ETA 7.8 min)
+2026-04-20 00:20:44 | INFO    | [129/206] dialogue 675 done in 6.0s  (0.17 dial/s, ETA 7.7 min)
+2026-04-20 00:20:50 | INFO    | [130/206] dialogue 682 done in 6.0s  (0.17 dial/s, ETA 7.6 min)
+2026-04-20 00:20:50 | INFO    |   running summary @ 130 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.358    0.531    0.608    0.681    0.681    0.518
+top1        0.619    0.758    0.827    0.865    0.873    0.747
+ndcg        0.690    0.804    0.858    0.889    0.899    0.794
+
+snapshot counts: k=1:260, k=2:260, k=3:260, k=4:260, k=5:260
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.469    0.496    0.531    0.508    0.519    0.497
+sat_mae     0.819    0.777    0.715    0.735    0.746    0.771
+
+satisfaction snapshot counts: k=1:260, k=2:260, k=3:260, k=4:260, k=5:260
+2026-04-20 00:20:50 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:20:56 | INFO    | [131/206] dialogue 685 done in 6.0s  (0.17 dial/s, ETA 7.5 min)
+2026-04-20 00:21:02 | INFO    | [132/206] dialogue 687 done in 5.9s  (0.17 dial/s, ETA 7.4 min)
+2026-04-20 00:21:07 | INFO    | [133/206] dialogue 689 done in 6.0s  (0.17 dial/s, ETA 7.3 min)
+2026-04-20 00:21:13 | INFO    | [134/206] dialogue 706 done in 5.9s  (0.17 dial/s, ETA 7.2 min)
+2026-04-20 00:21:19 | INFO    | [135/206] dialogue 712 done in 6.0s  (0.17 dial/s, ETA 7.1 min)
+2026-04-20 00:21:19 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:21:25 | INFO    | [136/206] dialogue 719 done in 5.9s  (0.17 dial/s, ETA 7.0 min)
+2026-04-20 00:21:31 | INFO    | [137/206] dialogue 722 done in 6.0s  (0.17 dial/s, ETA 6.9 min)
+2026-04-20 00:21:37 | INFO    | [138/206] dialogue 724 done in 5.9s  (0.17 dial/s, ETA 6.8 min)
+2026-04-20 00:21:43 | INFO    | [139/206] dialogue 726 done in 5.9s  (0.17 dial/s, ETA 6.7 min)
+2026-04-20 00:21:49 | INFO    | [140/206] dialogue 730 done in 6.0s  (0.17 dial/s, ETA 6.6 min)
+2026-04-20 00:21:49 | INFO    |   running summary @ 140 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.350    0.525    0.604    0.682    0.679    0.514
+top1        0.611    0.757    0.832    0.868    0.882    0.746
+ndcg        0.681    0.802    0.862    0.890    0.903    0.792
+
+snapshot counts: k=1:280, k=2:280, k=3:280, k=4:280, k=5:280
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.457    0.486    0.521    0.504    0.507    0.487
+sat_mae     0.850    0.804    0.736    0.750    0.764    0.796
+
+satisfaction snapshot counts: k=1:280, k=2:280, k=3:280, k=4:280, k=5:280
+2026-04-20 00:21:49 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:21:55 | INFO    | [141/206] dialogue 732 done in 5.9s  (0.17 dial/s, ETA 6.5 min)
+2026-04-20 00:22:01 | INFO    | [142/206] dialogue 742 done in 6.0s  (0.17 dial/s, ETA 6.4 min)
+2026-04-20 00:22:07 | INFO    | [143/206] dialogue 744 done in 5.9s  (0.17 dial/s, ETA 6.3 min)
+2026-04-20 00:22:13 | INFO    | [144/206] dialogue 749 done in 6.0s  (0.17 dial/s, ETA 6.2 min)
+2026-04-20 00:22:19 | INFO    | [145/206] dialogue 750 done in 5.9s  (0.17 dial/s, ETA 6.1 min)
+2026-04-20 00:22:19 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:22:25 | INFO    | [146/206] dialogue 752 done in 6.0s  (0.17 dial/s, ETA 6.0 min)
+2026-04-20 00:22:31 | INFO    | [147/206] dialogue 755 done in 6.0s  (0.17 dial/s, ETA 5.9 min)
+2026-04-20 00:22:37 | INFO    | [148/206] dialogue 761 done in 5.9s  (0.17 dial/s, ETA 5.8 min)
+2026-04-20 00:22:43 | INFO    | [149/206] dialogue 778 done in 6.0s  (0.17 dial/s, ETA 5.7 min)
+2026-04-20 00:22:49 | INFO    | [150/206] dialogue 783 done in 5.9s  (0.17 dial/s, ETA 5.6 min)
+2026-04-20 00:22:49 | INFO    |   running summary @ 150 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.363    0.530    0.603    0.673    0.677    0.518
+top1        0.610    0.760    0.830    0.863    0.880    0.746
+ndcg        0.682    0.805    0.861    0.886    0.902    0.793
+
+snapshot counts: k=1:300, k=2:300, k=3:300, k=4:300, k=5:300
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.453    0.483    0.513    0.500    0.497    0.482
+sat_mae     0.847    0.800    0.740    0.750    0.770    0.795
+
+satisfaction snapshot counts: k=1:300, k=2:300, k=3:300, k=4:300, k=5:300
+2026-04-20 00:22:49 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:22:55 | INFO    | [151/206] dialogue 784 done in 5.9s  (0.17 dial/s, ETA 5.5 min)
+2026-04-20 00:23:01 | INFO    | [152/206] dialogue 796 done in 5.9s  (0.17 dial/s, ETA 5.4 min)
+2026-04-20 00:23:07 | INFO    | [153/206] dialogue 797 done in 6.0s  (0.17 dial/s, ETA 5.3 min)
+2026-04-20 00:23:13 | INFO    | [154/206] dialogue 803 done in 6.0s  (0.17 dial/s, ETA 5.2 min)
+2026-04-20 00:23:19 | INFO    | [155/206] dialogue 813 done in 6.0s  (0.17 dial/s, ETA 5.1 min)
+2026-04-20 00:23:19 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:23:25 | INFO    | [156/206] dialogue 814 done in 5.9s  (0.17 dial/s, ETA 5.0 min)
+2026-04-20 00:23:31 | INFO    | [157/206] dialogue 815 done in 6.0s  (0.17 dial/s, ETA 4.9 min)
+2026-04-20 00:23:36 | INFO    | [158/206] dialogue 818 done in 5.9s  (0.17 dial/s, ETA 4.8 min)
+2026-04-20 00:23:42 | INFO    | [159/206] dialogue 827 done in 6.0s  (0.17 dial/s, ETA 4.7 min)
+2026-04-20 00:23:48 | INFO    | [160/206] dialogue 829 done in 5.9s  (0.17 dial/s, ETA 4.6 min)
+2026-04-20 00:23:48 | INFO    |   running summary @ 160 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.359    0.525    0.603    0.669    0.669    0.514
+top1        0.606    0.756    0.828    0.859    0.875    0.742
+ndcg        0.678    0.799    0.859    0.885    0.900    0.789
+
+snapshot counts: k=1:320, k=2:320, k=3:320, k=4:320, k=5:320
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.459    0.487    0.512    0.500    0.497    0.485
+sat_mae     0.844    0.797    0.747    0.756    0.769    0.795
+
+satisfaction snapshot counts: k=1:320, k=2:320, k=3:320, k=4:320, k=5:320
+2026-04-20 00:23:48 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:23:54 | INFO    | [161/206] dialogue 832 done in 5.9s  (0.17 dial/s, ETA 4.5 min)
+2026-04-20 00:24:00 | INFO    | [162/206] dialogue 836 done in 5.9s  (0.17 dial/s, ETA 4.4 min)
+2026-04-20 00:24:06 | INFO    | [163/206] dialogue 839 done in 6.0s  (0.17 dial/s, ETA 4.3 min)
+2026-04-20 00:24:12 | INFO    | [164/206] dialogue 845 done in 6.0s  (0.17 dial/s, ETA 4.2 min)
+2026-04-20 00:24:18 | INFO    | [165/206] dialogue 846 done in 5.9s  (0.17 dial/s, ETA 4.1 min)
+2026-04-20 00:24:18 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:24:24 | INFO    | [166/206] dialogue 858 done in 5.9s  (0.17 dial/s, ETA 4.0 min)
+2026-04-20 00:24:30 | INFO    | [167/206] dialogue 860 done in 5.9s  (0.17 dial/s, ETA 3.9 min)
+2026-04-20 00:24:36 | INFO    | [168/206] dialogue 865 done in 5.9s  (0.17 dial/s, ETA 3.8 min)
+2026-04-20 00:24:42 | INFO    | [169/206] dialogue 868 done in 5.9s  (0.17 dial/s, ETA 3.7 min)
+2026-04-20 00:24:48 | INFO    | [170/206] dialogue 876 done in 5.9s  (0.17 dial/s, ETA 3.6 min)
+2026-04-20 00:24:48 | INFO    |   running summary @ 170 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.365    0.541    0.615    0.682    0.679    0.525
+top1        0.618    0.768    0.832    0.862    0.876    0.750
+ndcg        0.685    0.807    0.863    0.888    0.902    0.795
+
+snapshot counts: k=1:340, k=2:340, k=3:340, k=4:340, k=5:340
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.462    0.488    0.521    0.512    0.500    0.490
+sat_mae     0.832    0.785    0.729    0.735    0.756    0.781
+
+satisfaction snapshot counts: k=1:340, k=2:340, k=3:340, k=4:340, k=5:340
+2026-04-20 00:24:48 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:24:54 | INFO    | [171/206] dialogue 878 done in 5.9s  (0.17 dial/s, ETA 3.5 min)
+2026-04-20 00:25:00 | INFO    | [172/206] dialogue 884 done in 5.9s  (0.17 dial/s, ETA 3.4 min)
+2026-04-20 00:25:06 | INFO    | [173/206] dialogue 886 done in 6.0s  (0.17 dial/s, ETA 3.3 min)
+2026-04-20 00:25:12 | INFO    | [174/206] dialogue 888 done in 6.0s  (0.17 dial/s, ETA 3.2 min)
+2026-04-20 00:25:18 | INFO    | [175/206] dialogue 896 done in 6.0s  (0.17 dial/s, ETA 3.1 min)
+2026-04-20 00:25:18 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:25:24 | INFO    | [176/206] dialogue 897 done in 6.0s  (0.17 dial/s, ETA 3.0 min)
+2026-04-20 00:25:29 | INFO    | [177/206] dialogue 900 done in 5.9s  (0.17 dial/s, ETA 2.9 min)
+2026-04-20 00:25:35 | INFO    | [178/206] dialogue 901 done in 5.9s  (0.17 dial/s, ETA 2.8 min)
+2026-04-20 00:25:41 | INFO    | [179/206] dialogue 903 done in 5.9s  (0.17 dial/s, ETA 2.7 min)
+2026-04-20 00:25:47 | INFO    | [180/206] dialogue 905 done in 5.9s  (0.17 dial/s, ETA 2.6 min)
+2026-04-20 00:25:47 | INFO    |   running summary @ 180 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.361    0.533    0.611    0.686    0.678    0.521
+top1        0.619    0.769    0.839    0.869    0.883    0.754
+ndcg        0.686    0.807    0.866    0.893    0.905    0.796
+
+snapshot counts: k=1:360, k=2:360, k=3:360, k=4:360, k=5:360
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.469    0.494    0.525    0.514    0.506    0.496
+sat_mae     0.825    0.778    0.722    0.731    0.750    0.774
+
+satisfaction snapshot counts: k=1:360, k=2:360, k=3:360, k=4:360, k=5:360
+2026-04-20 00:25:47 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:25:53 | INFO    | [181/206] dialogue 908 done in 6.0s  (0.17 dial/s, ETA 2.5 min)
+2026-04-20 00:25:59 | INFO    | [182/206] dialogue 917 done in 6.0s  (0.17 dial/s, ETA 2.4 min)
+2026-04-20 00:26:05 | INFO    | [183/206] dialogue 918 done in 6.0s  (0.17 dial/s, ETA 2.3 min)
+2026-04-20 00:26:11 | INFO    | [184/206] dialogue 925 done in 5.9s  (0.17 dial/s, ETA 2.2 min)
+2026-04-20 00:26:17 | INFO    | [185/206] dialogue 928 done in 6.0s  (0.17 dial/s, ETA 2.1 min)
+2026-04-20 00:26:17 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:26:23 | INFO    | [186/206] dialogue 929 done in 5.9s  (0.17 dial/s, ETA 2.0 min)
+2026-04-20 00:26:29 | INFO    | [187/206] dialogue 945 done in 5.9s  (0.17 dial/s, ETA 1.9 min)
+2026-04-20 00:26:35 | INFO    | [188/206] dialogue 950 done in 5.9s  (0.17 dial/s, ETA 1.8 min)
+2026-04-20 00:26:41 | INFO    | [189/206] dialogue 954 done in 6.0s  (0.17 dial/s, ETA 1.7 min)
+2026-04-20 00:26:47 | INFO    | [190/206] dialogue 959 done in 6.0s  (0.17 dial/s, ETA 1.6 min)
+2026-04-20 00:26:47 | INFO    |   running summary @ 190 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.371    0.550    0.621    0.689    0.687    0.532
+top1        0.626    0.779    0.842    0.874    0.887    0.761
+ndcg        0.691    0.815    0.870    0.894    0.907    0.801
+
+snapshot counts: k=1:380, k=2:380, k=3:380, k=4:380, k=5:380
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.479    0.497    0.534    0.518    0.505    0.502
+sat_mae     0.811    0.771    0.708    0.721    0.745    0.763
+
+satisfaction snapshot counts: k=1:380, k=2:380, k=3:380, k=4:380, k=5:380
+2026-04-20 00:26:47 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:26:53 | INFO    | [191/206] dialogue 964 done in 6.0s  (0.17 dial/s, ETA 1.5 min)
+2026-04-20 00:26:59 | INFO    | [192/206] dialogue 970 done in 5.9s  (0.17 dial/s, ETA 1.4 min)
+2026-04-20 00:27:05 | INFO    | [193/206] dialogue 978 done in 6.0s  (0.17 dial/s, ETA 1.3 min)
+2026-04-20 00:27:11 | INFO    | [194/206] dialogue 983 done in 6.0s  (0.17 dial/s, ETA 1.2 min)
+2026-04-20 00:27:17 | INFO    | [195/206] dialogue 995 done in 5.9s  (0.17 dial/s, ETA 1.1 min)
+2026-04-20 00:27:17 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:27:23 | INFO    | [196/206] dialogue 999 done in 5.9s  (0.17 dial/s, ETA 1.0 min)
+2026-04-20 00:27:29 | INFO    | [197/206] dialogue 1000 done in 5.9s  (0.17 dial/s, ETA 0.9 min)
+2026-04-20 00:27:35 | INFO    | [198/206] dialogue 1001 done in 6.0s  (0.17 dial/s, ETA 0.8 min)
+2026-04-20 00:27:41 | INFO    | [199/206] dialogue 1004 done in 6.0s  (0.17 dial/s, ETA 0.7 min)
+2026-04-20 00:27:47 | INFO    | [200/206] dialogue 1005 done in 5.9s  (0.17 dial/s, ETA 0.6 min)
+2026-04-20 00:27:47 | INFO    |   running summary @ 200 dialogues:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.370    0.540    0.625    0.695    0.695    0.531
+top1        0.618    0.770    0.843    0.877    0.890    0.756
+ndcg        0.685    0.809    0.872    0.896    0.908    0.798
+
+snapshot counts: k=1:400, k=2:400, k=3:400, k=4:400, k=5:400
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.487    0.507    0.535    0.517    0.510    0.508
+sat_mae     0.790    0.750    0.698    0.713    0.730    0.746
+
+satisfaction snapshot counts: k=1:400, k=2:400, k=3:400, k=4:400, k=5:400
+2026-04-20 00:27:47 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:27:53 | INFO    | [201/206] dialogue 1006 done in 5.9s  (0.17 dial/s, ETA 0.5 min)
+2026-04-20 00:27:59 | INFO    | [202/206] dialogue 1013 done in 5.9s  (0.17 dial/s, ETA 0.4 min)
+2026-04-20 00:28:05 | INFO    | [203/206] dialogue 1023 done in 5.9s  (0.17 dial/s, ETA 0.3 min)
+2026-04-20 00:28:11 | INFO    | [204/206] dialogue 1024 done in 5.9s  (0.17 dial/s, ETA 0.2 min)
+2026-04-20 00:28:16 | INFO    | [205/206] dialogue 1027 done in 5.9s  (0.17 dial/s, ETA 0.1 min)
+2026-04-20 00:28:17 | INFO    |   checkpoint saved -> sft_8b/results/cv/fold_3/sft_eval/checkpoint.json
+2026-04-20 00:28:22 | INFO    | [206/206] dialogue 1028 done in 5.9s  (0.17 dial/s, ETA 0.0 min)
+2026-04-20 00:28:23 | INFO    | Final preferences summary:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+ema         0.367    0.536    0.626    0.694    0.694    0.529
+top1        0.612    0.767    0.842    0.874    0.886    0.752
+ndcg        0.683    0.809    0.873    0.896    0.907    0.798
+
+snapshot counts: k=1:412, k=2:412, k=3:412, k=4:412, k=5:412
+2026-04-20 00:28:23 | INFO    | Final satisfaction summary:
+metric    k=1       k=2       k=3       k=4       k=5       kpenalty
+--------------------------------------------------------------------
+sat_acc     0.495    0.515    0.539    0.524    0.515    0.514
+sat_mae     0.777    0.735    0.687    0.699    0.718    0.733
+
+satisfaction snapshot counts: k=1:412, k=2:412, k=3:412, k=4:412, k=5:412
+2026-04-20 00:28:23 | INFO    | Wrote sft_8b/results/cv/fold_3/sft_eval/summary.json

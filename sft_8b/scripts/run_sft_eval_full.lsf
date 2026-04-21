@@ -1,0 +1,121 @@
+#!/bin/bash
+#BSUB -J sft8b_eval_full
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+# Inference only: 8B in bf16 + LoRA adapter ≈ 18 GB. Any single 80 GB card is
+# overkill but fastest.
+# Quicker swaps:
+#   #BSUB -R "(a10080g||h100nvl) rusage[mem=40000] span[hosts=1]"  # any A100/H100
+#   #BSUB -R "a10080g rusage[mem=40000] span[hosts=1]"             # A100 only
+#   #BSUB -R "l40s rusage[mem=40000] span[hosts=1]"                # 1x48 GB L40S
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 2
+#BSUB -W 1:00
+#BSUB -o sft_8b/results/sft_eval_full/lsf.%J.out
+#BSUB -e sft_8b/results/sft_eval_full/lsf.%J.err
+#BSUB -L /bin/bash
+
+# ── Final eval of SFT'd 8B on BOTH valid AND test splits ──
+#
+# Same eval pipeline as run_sft_eval.lsf, but evaluates two splits in one
+# job so you only wait in the LSF queue once. Each split gets its own
+# output directory with the standard predictions.jsonl + summary.json.
+#
+# Splits
+#   * valid  (30 dialogues, ~300 predictions) -> sft_8b/results/sft_eval_valid/
+#   * test   (100 dialogues, ~1000 predictions) -> sft_8b/results/sft_eval_test/
+#
+# NB: the existing 30-dialogue results already live at
+# sft_8b/results/sft_eval/. We write the *full* re-run into a sibling
+# `sft_eval_valid/` so the original numbers stay intact for diffing.
+#
+# Time budget (calibrated against the completed valid run, jobid 237859... :
+# 300 preds in 190 s on H100-NVL = 0.63 sec/pred)
+#   * model load           : ~60 s    (x2 = ~120 s)
+#   * valid (300 preds)    : ~190 s
+#   * test  (1000 preds)   : ~630 s
+#   * total wall           : ~16 min
+# -W 1:00 gives ~3.7x slack — fine for noisy queues.
+#
+# Submit:
+#   bsub < sft_8b/scripts/run_sft_eval_full.lsf
+#
+# Watch live:
+#   tail -f sft_8b/results/sft_eval_valid/eval.log
+#   tail -f sft_8b/results/sft_eval_test/eval.log
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+mkdir -p sft_8b/results/sft_eval_full
+mkdir -p sft_8b/results/sft_eval_valid
+mkdir -p sft_8b/results/sft_eval_test
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+echo "Interpreter: $CASINO_PY"
+echo "GPUs visible:"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+# ── Eval 1: valid split (30 dialogues) ─────────────────────────────────
+echo ""
+echo "[$(date +%T)] === EVAL 1/2: valid split (30 dialogues) ==="
+"$CASINO_PY" -m sft_8b.eval_run \
+    --data       CaSiNo/data/split/casino_valid.json \
+    --output-dir sft_8b/results/sft_eval_valid \
+    --resume
+
+# ── Eval 2: test split (100 dialogues) ─────────────────────────────────
+echo ""
+echo "[$(date +%T)] === EVAL 2/2: test split (100 dialogues) ==="
+"$CASINO_PY" -m sft_8b.eval_run \
+    --data       CaSiNo/data/split/casino_test.json \
+    --output-dir sft_8b/results/sft_eval_test \
+    --resume
+
+# ── Side-by-side summary ────────────────────────────────────────────────
+echo ""
+echo "[$(date +%T)] === Side-by-side summary ==="
+"$CASINO_PY" - <<'PY'
+import json
+from pathlib import Path
+
+splits = [
+    ("valid",  "sft_8b/results/sft_eval_valid/summary.json"),
+    ("test",   "sft_8b/results/sft_eval_test/summary.json"),
+]
+
+print(f"{'split':<6} {'n_dlg':>6} {'n_pred':>7} {'EMA':>7} {'Top1':>7} {'NDCG':>7} "
+      f"{'sat_acc':>8} {'sat_mae':>8}")
+print("-" * 70)
+for name, path in splits:
+    p = Path(path)
+    if not p.exists():
+        print(f"{name:<6} (missing: {path})")
+        continue
+    s = json.loads(p.read_text())
+    kp = s["kpenalty"]
+    sat = s["satisfaction"]["kpenalty"]
+    print(f"{name:<6} {s['n_dialogues']:>6d} {s['n_predictions']:>7d} "
+          f"{kp['ema']:>7.3f} {kp['top1']:>7.3f} {kp['ndcg']:>7.3f} "
+          f"{sat['sat_acc']:>8.3f} {sat['sat_mae']:>8.3f}")
+PY
+
+echo ""
+echo "=== done at $(date) ==="
