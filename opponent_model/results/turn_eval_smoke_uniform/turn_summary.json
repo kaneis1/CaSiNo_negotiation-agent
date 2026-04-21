@@ -1,0 +1,117 @@
+{
+  "config": {
+    "data": "data/casino_test.json",
+    "output_dir": "opponent_model/results/turn_eval_smoke_uniform",
+    "annotations": "CaSiNo/data/casino_ann.json",
+    "max_dialogues": 5,
+    "agent": "uniform",
+    "dummy_llm": false,
+    "model_id": null,
+    "base_model": null,
+    "adapter": null,
+    "max_new_tokens": 128,
+    "temperature": 0.0,
+    "likelihood_temperature": 25.0,
+    "likelihood_clip": "-3,3"
+  },
+  "n_dialogues": 5,
+  "n_records": 70,
+  "elapsed_seconds": 0.014271259307861328,
+  "accept": {
+    "f1": 0.0,
+    "accuracy": 0.0,
+    "precision": NaN,
+    "recall": 0.0,
+    "support": 5,
+    "confusion": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0
+    }
+  },
+  "bid_cosine": {
+    "mean": 0.8240595604447426,
+    "support": 5
+  },
+  "strategy_macro_f1": {
+    "macro_f1": 0.18847048545324407,
+    "support": 55,
+    "per_label": {
+      "small-talk": {
+        "f1": 0.4615384615384615,
+        "support": 8,
+        "tp": 3,
+        "fp": 2,
+        "fn": 5
+      },
+      "self-need": {
+        "f1": 0.2222222222222222,
+        "support": 15,
+        "tp": 4,
+        "fp": 17,
+        "fn": 11
+      },
+      "other-need": {
+        "f1": 0.2222222222222222,
+        "support": 3,
+        "tp": 1,
+        "fp": 5,
+        "fn": 2
+      },
+      "no-need": {
+        "f1": 0.0,
+        "support": 5,
+        "tp": 0,
+        "fp": 0,
+        "fn": 5
+      },
+      "elicit-pref": {
+        "f1": 0.28571428571428575,
+        "support": 3,
+        "tp": 1,
+        "fp": 3,
+        "fn": 2
+      },
+      "promote-coordination": {
+        "f1": 0.1111111111111111,
+        "support": 9,
+        "tp": 1,
+        "fp": 8,
+        "fn": 8
+      },
+      "vouch-fair": {
+        "f1": 0.375,
+        "support": 7,
+        "tp": 3,
+        "fp": 6,
+        "fn": 4
+      },
+      "showing-empathy": {
+        "f1": 0.0,
+        "support": 4,
+        "tp": 0,
+        "fp": 2,
+        "fn": 4
+      },
+      "uv-part": {
+        "f1": 0.0,
+        "support": 5,
+        "tp": 0,
+        "fp": 0,
+        "fn": 5
+      },
+      "non-strategic": {
+        "f1": 0.20689655172413796,
+        "support": 14,
+        "tp": 3,
+        "fp": 12,
+        "fn": 11
+      }
+    }
+  },
+  "brier": {
+    "mean": 0.1388888888888889,
+    "support": 70
+  }
+}

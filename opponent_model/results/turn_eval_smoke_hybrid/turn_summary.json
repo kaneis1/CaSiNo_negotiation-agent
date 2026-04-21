@@ -1,0 +1,117 @@
+{
+  "config": {
+    "data": "data/casino_test.json",
+    "output_dir": "opponent_model/results/turn_eval_smoke_hybrid",
+    "annotations": "CaSiNo/data/casino_ann.json",
+    "max_dialogues": 3,
+    "agent": "hybrid",
+    "dummy_llm": true,
+    "model_id": null,
+    "base_model": null,
+    "adapter": null,
+    "max_new_tokens": 128,
+    "temperature": 0.0,
+    "likelihood_temperature": 25.0,
+    "likelihood_clip": "-3,3"
+  },
+  "n_dialogues": 3,
+  "n_records": 38,
+  "elapsed_seconds": 0.022589683532714844,
+  "accept": {
+    "f1": 0.5,
+    "accuracy": 0.3333333333333333,
+    "precision": 1.0,
+    "recall": 0.3333333333333333,
+    "support": 3,
+    "confusion": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 2,
+      "tn": 0
+    }
+  },
+  "bid_cosine": {
+    "mean": NaN,
+    "support": 0
+  },
+  "strategy_macro_f1": {
+    "macro_f1": 0.035897435897435895,
+    "support": 32,
+    "per_label": {
+      "small-talk": {
+        "f1": 0.0,
+        "support": 4,
+        "tp": 0,
+        "fp": 0,
+        "fn": 4
+      },
+      "self-need": {
+        "f1": 0.0,
+        "support": 8,
+        "tp": 0,
+        "fp": 0,
+        "fn": 8
+      },
+      "other-need": {
+        "f1": 0.0,
+        "support": 4,
+        "tp": 0,
+        "fp": 0,
+        "fn": 4
+      },
+      "no-need": {
+        "f1": 0.0,
+        "support": 2,
+        "tp": 0,
+        "fp": 0,
+        "fn": 2
+      },
+      "elicit-pref": {
+        "f1": 0.0,
+        "support": 4,
+        "tp": 0,
+        "fp": 0,
+        "fn": 4
+      },
+      "promote-coordination": {
+        "f1": 0.0,
+        "support": 9,
+        "tp": 0,
+        "fp": 0,
+        "fn": 9
+      },
+      "vouch-fair": {
+        "f1": 0.0,
+        "support": 5,
+        "tp": 0,
+        "fp": 0,
+        "fn": 5
+      },
+      "showing-empathy": {
+        "f1": 0.0,
+        "support": 2,
+        "tp": 0,
+        "fp": 0,
+        "fn": 2
+      },
+      "uv-part": {
+        "f1": 0.0,
+        "support": 3,
+        "tp": 0,
+        "fp": 0,
+        "fn": 3
+      },
+      "non-strategic": {
+        "f1": 0.358974358974359,
+        "support": 7,
+        "tp": 7,
+        "fp": 25,
+        "fn": 0
+      }
+    }
+  },
+  "brier": {
+    "mean": 0.13177515641217805,
+    "support": 38
+  }
+}
