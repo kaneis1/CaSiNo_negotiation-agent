@@ -1,0 +1,80 @@
+#!/bin/bash
+#BSUB -J sft8b_train
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+# Single H100-NVL (80 GB) for an 8B LoRA fine-tune in bf16:
+#   8B * 2 bytes (bf16) = 16 GB params + ~6 GB optimizer/activations
+#   + ~2 GB LoRA + KV cache. Fits comfortably on one 80 GB card with
+#   gradient checkpointing on. ~2-3 sec/step on H100 (~1.5x faster than
+#   the A100 run that took ~1h51m for 1686 steps).
+# Quicker swaps if availability shifts (gpuavail to check):
+#   #BSUB -R "a10080g rusage[mem=40000] span[hosts=1]"             # 1x80 GB A100
+#   #BSUB -R "(a10080g||h100nvl) rusage[mem=40000] span[hosts=1]"  # either
+#   #BSUB -R "l40s rusage[mem=40000] span[hosts=1]"                # 1x48 GB L40S (slower)
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 6:00
+#BSUB -o sft_8b/results/lora_run/lsf.%J.out
+#BSUB -e sft_8b/results/lora_run/lsf.%J.err
+#BSUB -L /bin/bash
+
+# ── Llama-3.1-8B-Instruct LoRA SFT on 900 CaSiNo train dialogues ──
+#
+# Pipeline order (do these BEFORE submitting this job):
+#   1. python -m sft_8b.data           # builds sft_{train,test,valid}_rows.jsonl
+#   2. eyeball sft_8b/results/sft_data/sft_train_rows.jsonl on a few rows
+#   3. bsub < sft_8b/scripts/run_sft_train.lsf      # this script
+#   4. bsub < sft_8b/scripts/run_sft_eval.lsf       # final metrics on valid
+#
+# Time budget (calibrated against the completed A100 run, jobid 237859092)
+#   * ~9k training rows x 3 epochs / (effective bs 16) = 1686 optimizer steps.
+#   * A100 bf16, max_seq_length=2048: 1h51m wall = ~3.95 sec/step (measured).
+#   * H100-NVL is ~1.5-2x faster on this shape -> ~2.0-2.6 sec/step,
+#     so expect ~55-75 min training + eval/saves -> ~1h30m total wall.
+#   * -W 6:00 leaves >4h of slack. Drop to -W 3:00 if you want it tighter.
+#
+# Notes on `set -u`: conda's BLAS/MKL activate hooks read $MKL_INTERFACE_LAYER
+# without guarding for unset -> crashes under -u. So we keep -e + pipefail
+# (the strictness that matters) and drop -u around conda activate.
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+mkdir -p sft_8b/results/lora_run
+mkdir -p sft_8b/results/sft_data
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+export TRANSFORMERS_NO_ADVISORY_WARNINGS=1
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+echo "Interpreter: $CASINO_PY"
+"$CASINO_PY" -c "import sys, torch; print('python', sys.executable); print('torch ', torch.__version__, 'cuda?', torch.cuda.is_available())"
+echo "GPUs visible:"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+# Build SFT data if not already present (idempotent — skips rebuild if files exist).
+if [[ ! -s sft_8b/results/sft_data/sft_train_rows.jsonl ]] || \
+   [[ ! -s sft_8b/results/sft_data/sft_test_rows.jsonl  ]]; then
+    echo "[$(date +%T)] Building SFT data (train + test + valid) ..."
+    "$CASINO_PY" -m sft_8b.data
+fi
+
+echo "[$(date +%T)] Starting LoRA SFT ..."
+"$CASINO_PY" -m sft_8b.train
+
+echo "=== done at $(date) ==="

@@ -1,0 +1,95 @@
+#!/bin/bash
+#BSUB -J hybrid_oppmod
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=2"
+# Minerva uses boolean resource tags (h100nvl, l40s, a100, b200, …) instead
+# of the generic gpu_model= predicate. Llama-3.3-70B in bf16 needs ≈140 GB
+# of VRAM total; 2×H100-NVL (2×80 = 160 GB) is the cheapest fit and the
+# fastest in practice on Minerva (HBM3 bandwidth + NVLink between the two
+# cards beats L40S × 4 by ~3× per-token thanks to GDDR6 + PCIe-only links).
+# device_map="auto" inside HF Transformers shards the 80 layers across both
+# cards automatically — no torchrun / accelerate launch required.
+#
+# Quicker swaps if availability changes (just edit the next two lines):
+#   #BSUB -gpu "num=2"
+#   #BSUB -R "a10080g rusage[mem=40000] span[hosts=1]"        # 2×80 GB A100
+#   #BSUB -R "(h100nvl||a10080g) rusage[mem=40000] span[hosts=1]"   # either
+#   #BSUB -gpu "num=4"
+#   #BSUB -R "l40s rusage[mem=40000] span[hosts=1]"           # 4×48 GB L40S (slow)
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 24:00
+#BSUB -o opponent_model/results/hybrid_eval/lsf.%J.out
+#BSUB -e opponent_model/results/hybrid_eval/lsf.%J.err
+#BSUB -L /bin/bash
+
+# ── Hybrid Bayesian opponent model on the full 1030-dialogue CaSiNo set ──
+#
+# Hardware notes
+#   * Llama-3.3-70B in bf16 ≈ 140 GB params + ~10 GB activations/KV cache.
+#   * 2×H100-NVL (2×80 = 160 GB HBM3, NVLink) is the recommended config.
+#     Per-dialogue throughput observed: ~50 s/dialogue ⇒ full 1030-dialogue
+#     run in ~14 h, comfortably inside -W 24:00.
+#   * Fallbacks: 2×A100-80GB (a10080g) is similar speed; 4×L40S (l40s) works
+#     but is ~3× slower (GDDR6 + PCIe). See -BSUB header for swap snippets.
+#   * device_map="auto" inside LlamaClient handles the model-parallel split
+#     across however many GPUs are visible; no torchrun / accelerate needed.
+#
+# Resumability
+#   * Checkpoints every 10 dialogues at <output-dir>/checkpoint.json.
+#   * Add --resume to pick up after a wall-time kill.
+#   * SQLite LLM cache means even a clean restart only re-pays for the
+#     prompts that were never persisted.
+#
+# Submit:
+#   bsub < opponent_model/scripts/run_hybrid_eval.lsf
+#
+# Watch live:
+#   tail -f opponent_model/results/hybrid_eval/eval.log
+
+# NOTE on `set -u`: conda's BLAS/MKL activate hooks (e.g.
+# libblas_mkl_activate.sh) read env vars like $MKL_INTERFACE_LAYER without
+# guarding for unset, which under `set -u` aborts the whole script with
+# "MKL_INTERFACE_LAYER: unbound variable". So we keep `-e` and `pipefail`
+# (the strictness that actually matters) but drop `-u`, and re-enable it
+# AFTER `conda activate` finishes if you want it for the user-script body.
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+mkdir -p opponent_model/results/hybrid_eval
+
+# Activate casino, but don't trust the activated `python` on the PATH ── on
+# some compute nodes a stale alias or a leaking PYTHONPATH (we've seen
+# /hpc/packages/.../miniforge/pkgs prepended) shadows the env's site-packages
+# and causes "ModuleNotFoundError: No module named 'numpy'" even though the
+# env clearly has numpy installed. We unset PYTHONPATH and call the env's
+# interpreter by absolute path to be bullet-proof.
+unset PYTHONPATH
+set +u   # belt-and-braces in case someone re-adds -u above
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+echo "Interpreter: $CASINO_PY"
+"$CASINO_PY" -c "import sys, numpy; print('python', sys.executable); print('numpy ', numpy.__version__, numpy.__file__)"
+echo "GPUs visible:"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+# All knobs (model, data, k-penalty weights, checkpoint cadence, etc.)
+# live as constants at the top of run_hybrid_eval.py — edit there for
+# changes; the script picks up RESUME=True so reruns continue automatically.
+"$CASINO_PY" -m opponent_model.scripts.run_hybrid_eval
+
+echo "=== done at $(date) ==="

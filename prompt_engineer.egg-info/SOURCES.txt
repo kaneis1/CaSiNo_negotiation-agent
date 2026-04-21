@@ -1,4 +1,15 @@
 setup.py
+opponent_model/__init__.py
+opponent_model/big_five_prior.py
+opponent_model/cache.py
+opponent_model/eval_run.py
+opponent_model/hybrid_agent.py
+opponent_model/hypotheses.py
+opponent_model/metrics.py
+opponent_model/prompts.py
+opponent_model/text.py
+opponent_model/scripts/__init__.py
+opponent_model/scripts/run_hybrid_eval.py
 prompt_engineer/__init__.py
 prompt_engineer.egg-info/PKG-INFO
 prompt_engineer.egg-info/SOURCES.txt
@@ -8,6 +19,7 @@ prompt_engineer/core/__init__.py
 prompt_engineer/core/agent.py
 prompt_engineer/core/bidding.py
 prompt_engineer/core/classify_strategy.py
+prompt_engineer/core/classify_strategy_personality.py
 prompt_engineer/core/opponent_model.py
 prompt_engineer/core/prompt_builder.py
 prompt_engineer/core/strategy_selector.py
@@ -24,4 +36,6 @@ prompt_engineer/preprocessing/scoring.py
 prompt_engineer/preprocessing/stats.py
 prompt_engineer/scripts/__init__.py
 prompt_engineer/scripts/compare_gold_standard.py
-prompt_engineer/scripts/run_baseline.py
+prompt_engineer/scripts/generate_sft_data.py
+prompt_engineer/scripts/run_experiment_baseline.py
+prompt_engineer/scripts/run_experiment_personality.py

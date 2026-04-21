@@ -1,0 +1,4 @@
+# w=0.8 agent scores higher than w=0.2 agent on Protocol 2 self-score, direction confirmed at p<0.05, magnitude ≥1 raw point (effect size d≥0.2).
+# w=0.2 agent receives higher predicted opponent satisfaction than w=0.8, magnitude ≥0.3 Likert (or ≥0.2 if w=0.2 training distribution shows >90% ceiling-stacking).
+# Distilled student's final-turn posterior Brier score is lower than Abdelnabi baseline's by between 0.05 and 0.20.
+# The agent-to-agent difference in generated offer vectors (measured by cosine similarity) is smaller than the agent-to-agent difference in language style (measured by an external style classifier's disagreement rate). In other words, style differences manifest more in language than in offers.
