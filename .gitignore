@@ -1,2 +1,25 @@
 SFT/checkpoints/
 __pycache__/
+
+# ── Model weights and training state ────────────────────────────────────
+# These are binary artifacts, regenerable from training code + data. They
+# blow up the repo fast (one LoRA checkpoint = ~170 MB of optimizer state
+# + ~84 MB of weights) and some are over GitHub's 100 MB hard limit.
+# Push them to an HF hub / S3 / Git LFS instead.
+*.safetensors
+*.pt
+*.pth
+*.bin
+*.ckpt
+
+# Training checkpoint directories written by the HF Trainer. The final
+# selected adapter (``lora_best/``) is still picked up by the *.safetensors
+# rule above, so if you do want to keep it, explicitly `git add -f`.
+sft_8b/results/**/checkpoint-*/
+
+# Bulky tokenizers bundled alongside adapters (~17 MB each); the base
+# model's tokenizer is always available from HF.
+sft_8b/results/**/tokenizer.json
+
+# llama.cpp / quantization caches
+*.gguf
