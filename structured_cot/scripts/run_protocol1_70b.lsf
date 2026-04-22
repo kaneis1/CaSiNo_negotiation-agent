@@ -1,0 +1,107 @@
+#!/bin/bash
+#BSUB -J scot_p1_70b
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=2"
+# Llama-3.3-70B in bf16 needs ~140 GB; 2×H100-NVL (2×80 = 160 GB HBM3 with
+# NVLink) is the cheapest fit and fastest per-token. device_map="auto"
+# inside HF Transformers shards across both cards — no torchrun needed.
+# Swap lines if availability changes:
+#   #BSUB -R "a10080g rusage[mem=40000] span[hosts=1]"                 # 2×A100-80GB
+#   #BSUB -R "(h100nvl||a10080g) rusage[mem=40000] span[hosts=1]"     # either
+#   #BSUB -gpu "num=4"; #BSUB -R "l40s ..."                            # 4×L40S (slow)
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 16:00
+#BSUB -o structured_cot/results/lsf/scot_p1_70b.%J.out
+#BSUB -e structured_cot/results/lsf/scot_p1_70b.%J.err
+#BSUB -L /bin/bash
+
+# ── Structured-CoT baseline, Protocol 1 self-play smoke on held-out set ────
+#
+# What this runs:
+#   python -m structured_cot.run_protocol1 \
+#       --data data/casino_test.json \
+#       --num-dialogues ${NUM_DIALOGUES:-10} \
+#       --backend llama_70b \
+#       --max-tokens 800 \
+#       --temperature 0.3
+#
+# Wallclock estimate (80 layers, bf16, ~12–20 agent-turns/dialogue):
+#   * 70B on 2×H100-NVL: ~20 s/agent-turn ⇒ 10 dialogues ≈ 40 min.
+#   * Full 150-dialogue test set: ~10 h. Adjust -W if you scale up.
+#
+# Submit:
+#   bsub < structured_cot/scripts/run_protocol1_70b.lsf
+#
+# Override any knob at submit time, e.g. the full test set:
+#   NUM_DIALOGUES=150 RUN_NAME=protocol1_70b_full \
+#       bsub < structured_cot/scripts/run_protocol1_70b.lsf
+
+# See opponent_model/scripts/run_hybrid_eval.lsf for rationale on why we skip
+# `set -u` across conda activation (MKL activate hooks read unset vars).
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+mkdir -p structured_cot/results/lsf
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+echo "Interpreter: $CASINO_PY"
+"$CASINO_PY" -c "import sys, numpy; print('python', sys.executable); print('numpy ', numpy.__version__)"
+echo "GPUs visible:"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+# Default to the full held-out test set. Override at submit time via the
+# heredoc-wrapper pattern in submit_all_folds.sh (Minerva's LSF silently
+# drops `bsub -env` for user-defined vars; see that script's comments).
+NUM_DIALOGUES="${NUM_DIALOGUES:-150}"
+DATA="${DATA:-data/casino_test.json}"
+AGENT_ROLE="${AGENT_ROLE:-mturk_agent_1}"
+MAX_TOKENS="${MAX_TOKENS:-800}"
+TEMPERATURE="${TEMPERATURE:-0.3}"
+SEED="${SEED:-2024}"
+RUN_NAME="${RUN_NAME:-protocol1_70b_${LSB_JOBID}}"
+
+echo "NUM_DIALOGUES=$NUM_DIALOGUES  AGENT_ROLE=$AGENT_ROLE  RUN_NAME=$RUN_NAME"
+
+"$CASINO_PY" -m structured_cot.run_protocol1 \
+    --data           "$DATA" \
+    --num-dialogues  "$NUM_DIALOGUES" \
+    --agent-role     "$AGENT_ROLE" \
+    --backend        llama_70b \
+    --max-tokens     "$MAX_TOKENS" \
+    --temperature    "$TEMPERATURE" \
+    --seed           "$SEED" \
+    --run-name       "$RUN_NAME"
+
+echo "=== validation summary ==="
+"$CASINO_PY" -m structured_cot.validate_run \
+    --run-dir "structured_cot/results/${RUN_NAME}"
+
+# Protocol 3: score the trace we just produced against human ground truth.
+# Reads turns.jsonl + casino_ann.json, writes protocol3_metrics.json and
+# protocol3_turn_detail.jsonl inside the same run dir. Pure-CPU / seconds.
+echo "=== protocol 3 scoring ==="
+"$CASINO_PY" -m structured_cot.run_protocol3 \
+    --run-dir     "structured_cot/results/${RUN_NAME}" \
+    --annotations "CaSiNo/data/casino_ann.json" \
+    --data        "$DATA"
+
+echo "=== done at $(date) ==="

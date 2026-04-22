@@ -23,3 +23,9 @@ sft_8b/results/**/tokenizer.json
 
 # llama.cpp / quantization caches
 *.gguf
+
+# Structured-CoT run artifacts. Each run writes ~MB of raw LLM traces to
+# structured_cot/results/<run_name>/; we treat them like the SFT eval
+# dumps — the summary stats live in the paper, the JSONL is regenerable.
+# LSF stderr/stdout also land under results/lsf/.
+structured_cot/results/
