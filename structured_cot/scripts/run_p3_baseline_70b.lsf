@@ -1,0 +1,79 @@
+#!/bin/bash
+#BSUB -J cot_p3_70b
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 12:00
+#BSUB -o structured_cot/results/lsf/p3_baseline_70b.%J.out
+#BSUB -e structured_cot/results/lsf/p3_baseline_70b.%J.err
+#BSUB -L /bin/bash
+
+# Protocol 3 baseline: Structured CoT (Llama-3.3-70B-Instruct) evaluated on
+# GOLD chat_logs at every mturk_agent_1 turn — matched support with the
+# Bayesian teacher's turn_level_eval run (n≈87 accept, n≈86 bid on 150 dlg).
+#
+# This is NOT a replay of Protocol 1 self-play; it is a fresh LLM call per
+# turn so the baseline cannot early-terminate before human decision points.
+#
+# Submit:
+#   bsub < structured_cot/scripts/run_p3_baseline_70b.lsf
+# Override model path:
+#   bsub -env "all, MODEL_ID=/path/to/Llama-3.3-70B-Instruct" < ... >
+#
+# Wallclock: ~1054 forwards × (20–40 s) ⇒ budget 8–12 h on H100; -W 12:00.
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+MODEL_ID="${MODEL_ID:-}"
+OUT="${OUT:-opponent_model/results/turn_eval_structured_cot_p3_live_70b_m1_150}"
+DATA="${DATA:-data/casino_test.json}"
+ANN="${ANN:-CaSiNo/data/casino_ann.json}"
+MAX_DLG="${MAX_DLG:-150}"
+
+mkdir -p structured_cot/results/lsf
+mkdir -p "$OUT"
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+nvidia-smi --query-gpu=index,name,memory.total --format=csv || true
+echo "OUT=$OUT  DATA=$DATA  MAX_DLG=$MAX_DLG  MODEL_ID=${MODEL_ID:-<default 70B snapshot>}"
+echo "========================================================================"
+
+EXTRA=()
+if [[ -n "$MODEL_ID" ]]; then
+  EXTRA+=(--model-id "$MODEL_ID")
+fi
+
+"$CASINO_PY" -m opponent_model.turn_eval_run \
+    --data             "$DATA" \
+    --output-dir       "$OUT" \
+    --agent            structured_cot_live \
+    "${EXTRA[@]}" \
+    --annotations      "$ANN" \
+    --perspectives     mturk_agent_1 \
+    --max-dialogues    "$MAX_DLG" \
+    --max-new-tokens   800 \
+    --temperature      0.3 \
+    --structured-cot-seed 2024 \
+    --structured-cot-parse-log "$OUT/parse_failures.jsonl"
+
+echo "=== done at $(date) ==="

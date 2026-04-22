@@ -96,7 +96,8 @@ def _build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--max-dialogues", type=int, default=None)
     p.add_argument("--agent",
                    choices=("uniform", "hybrid", "sft",
-                            "bayesian", "structured_cot_replay"),
+                            "bayesian", "structured_cot_replay",
+                            "structured_cot_live"),
                    default="uniform",
                    help="which TurnLevelAgent to evaluate.")
 
@@ -109,7 +110,8 @@ def _build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--dummy-llm", action="store_true",
                    help="use the deterministic dummy LLM (no GPU).")
     p.add_argument("--model-id", default=None,
-                   help="HF model id / local snapshot path (hybrid agent).")
+                   help="HF model id / local snapshot path (hybrid / structured_cot_live). "
+                        "structured_cot_live defaults to Llama-3.3-70B-Instruct snapshot.")
 
     # sft / bayesian args
     p.add_argument("--base-model", default=None,
@@ -138,6 +140,12 @@ def _build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--replay-turns-path", default=None,
                    help="path to a finished Protocol-1 turns.jsonl "
                         "(structured_cot_replay agent).")
+
+    # structured-cot live (Protocol 3 — gold history, full support)
+    p.add_argument("--structured-cot-seed", type=int, default=2024,
+                   help="RNG seed forwarded to StructuredLLMClient (structured_cot_live).")
+    p.add_argument("--structured-cot-parse-log", default=None,
+                   help="optional JSONL path for parse failures (structured_cot_live).")
 
     # hybrid knobs (matched to opponent_model/eval_run.py defaults)
     p.add_argument("--likelihood-temperature", type=float, default=25.0)
@@ -227,6 +235,34 @@ def _build_agent(args: argparse.Namespace) -> Any:
             strategy_classifier=KeywordStrategyClassifier(),
         )
 
+    if args.agent == "structured_cot_live":
+        from pathlib import Path as _Path
+
+        from structured_cot.live_turn_agent import StructuredCoTLiveTurnAgent
+        if args.dummy_llm:
+            from structured_cot.llm_client import DummyStructuredLLM
+            llm = DummyStructuredLLM()
+        else:
+            from structured_cot.llm_client import LLAMA_33_70B_DEFAULT, StructuredLLMClient
+            mid = args.model_id or LLAMA_33_70B_DEFAULT
+            llm = StructuredLLMClient(
+                model_id=mid,
+                default_max_tokens=args.max_new_tokens,
+                default_temperature=args.temperature,
+                seed=args.structured_cot_seed,
+            )
+        plog = (
+            _Path(args.structured_cot_parse_log)
+            if args.structured_cot_parse_log else None
+        )
+        return StructuredCoTLiveTurnAgent(
+            llm,
+            max_tokens=args.max_new_tokens,
+            temperature=args.temperature,
+            parse_log_path=plog,
+            strategy_classifier=KeywordStrategyClassifier(),
+        )
+
     raise ValueError(f"unknown agent type {args.agent!r}")
 
 
@@ -260,8 +296,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     log.info("Built agent: %s", type(agent).__name__)
 
     # Stamp dialogue_id onto every chat_logs turn so the replay adapter
-    # can match turns without ambiguity. No-op for other agents.
-    if args.agent == "structured_cot_replay":
+    # can match turns without ambiguity. ``turn_level_eval`` also stamps
+    # ``dialogue_id`` on history entries; this keeps JSON dialogues self-contained.
+    if args.agent in ("structured_cot_replay", "structured_cot_live"):
         from structured_cot.replay_turn_agent import attach_dialogue_ids
         dialogues = attach_dialogue_ids(dialogues)
 

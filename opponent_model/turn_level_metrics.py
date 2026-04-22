@@ -560,10 +560,15 @@ def turn_level_eval(
 
             ann_lookup = build_annotation_lookup(anns, chat_logs)
 
+            def _stamp_turn(tn: Mapping[str, Any]) -> Dict[str, Any]:
+                d = dict(tn)
+                d.setdefault("dialogue_id", did)
+                return d
+
             history: List[Dict[str, Any]] = []
             for t, turn in enumerate(chat_logs):
                 if turn.get("id") != perspective:
-                    history.append(dict(turn))
+                    history.append(_stamp_turn(turn))
                     continue
 
                 pending = last_pending_offer(history, perspective=perspective)
@@ -583,7 +588,7 @@ def turn_level_eval(
                         "(perspective %s); skipping turn.",
                         did, t, perspective,
                     )
-                    history.append(dict(turn))
+                    history.append(_stamp_turn(turn))
                     continue
 
                 pred = dict(pred_full)
@@ -664,7 +669,7 @@ def turn_level_eval(
                 if on_record is not None:
                     on_record(rec)
 
-                history.append(dict(turn))
+                history.append(_stamp_turn(turn))
 
     summary = aggregate_turn_metrics(
         accept_pairs=accept_pairs,

@@ -1,0 +1,97 @@
+#!/bin/bash
+#BSUB -J scot_p3_70b
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=2"
+# Llama-3.3-70B bf16 ≈ 140 GB; 2×H100-NVL (2×80 = 160 GB HBM3 with NVLink)
+# is the cheapest fit. device_map="auto" shards across both cards.
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 4:00
+#BSUB -o structured_cot/results/lsf/scot_p3_70b.%J.out
+#BSUB -e structured_cot/results/lsf/scot_p3_70b.%J.err
+#BSUB -L /bin/bash
+
+# ── Protocol-3 re-evaluation of Structured-CoT 70B baseline ────────────────
+#
+# Motivation: the original Protocol-1 self-play terminates each dialogue
+# when the baseline emits "accept", which systematically strips 68% of
+# the gold mt1 accept-decision turns from its evaluation support (see
+# structured_cot/baseline_weaknesses.md and protocol_alignment_audit.md).
+# To make the Bayesian-teacher comparison airtight, we re-query the 70B
+# under Protocol 3 at every gold mt1 decision turn with gold history,
+# then score through the same turn_level_eval harness used for the
+# Bayesian teacher.
+#
+# Scope: we only call the LLM on mt1 turns whose gold action is
+# Submit-/Accept-/Reject-Deal or Walk-Away — those are the only turns
+# the harness counts for accept F1 and bid cosine. This trims ~900
+# candidate turns to ~175, for a ~1.5 h GPU run instead of ~8 h.
+#
+# Submit:
+#   bsub < structured_cot/scripts/run_protocol3_baseline_70b.lsf
+#
+# Override at submit time via the heredoc wrapper pattern (Minerva drops
+# user-defined vars from bsub -env), e.g. the full test set:
+#   NUM_DIALOGUES=150 RUN_NAME=protocol3_70b_decision_only \
+#       bsub < structured_cot/scripts/run_protocol3_baseline_70b.lsf
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+mkdir -p structured_cot/results/lsf
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+echo "Interpreter: $CASINO_PY"
+"$CASINO_PY" -c "import sys, numpy; print('python', sys.executable); print('numpy ', numpy.__version__)"
+echo "GPUs visible:"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+NUM_DIALOGUES="${NUM_DIALOGUES:-150}"
+DATA="${DATA:-data/casino_test.json}"
+AGENT_ROLE="${AGENT_ROLE:-mturk_agent_1}"
+MAX_TOKENS="${MAX_TOKENS:-800}"
+TEMPERATURE="${TEMPERATURE:-0.3}"
+SEED="${SEED:-2024}"
+RUN_NAME="${RUN_NAME:-protocol3_70b_decision_only_${LSB_JOBID}}"
+
+echo "NUM_DIALOGUES=$NUM_DIALOGUES  AGENT_ROLE=$AGENT_ROLE  RUN_NAME=$RUN_NAME"
+
+"$CASINO_PY" -m structured_cot.run_protocol3_baseline \
+    --data           "$DATA" \
+    --num-dialogues  "$NUM_DIALOGUES" \
+    --agent-role     "$AGENT_ROLE" \
+    --backend        llama_70b \
+    --max-tokens     "$MAX_TOKENS" \
+    --temperature    "$TEMPERATURE" \
+    --seed           "$SEED" \
+    --run-name       "$RUN_NAME"
+
+echo "=== turn_level_eval scoring (replay adapter, matched support) ==="
+"$CASINO_PY" -m opponent_model.turn_eval_run \
+    --data               "$DATA" \
+    --agent              structured_cot_replay \
+    --replay-turns-path  "structured_cot/results/${RUN_NAME}/turns.jsonl" \
+    --output-dir         "structured_cot/results/${RUN_NAME}/turn_level_eval" \
+    --max-dialogues      "$NUM_DIALOGUES" \
+    --perspectives       mturk_agent_1 \
+    --annotations        "CaSiNo/data/casino_ann.json"
+
+echo "=== done at $(date) ==="
