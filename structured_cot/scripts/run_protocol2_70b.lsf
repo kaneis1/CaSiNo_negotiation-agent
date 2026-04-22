@@ -1,0 +1,85 @@
+#!/bin/bash
+#BSUB -J scot_p2_70b
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=2"
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 16:00
+#BSUB -o structured_cot/results/lsf/scot_p2_70b.%J.out
+#BSUB -e structured_cot/results/lsf/scot_p2_70b.%J.err
+#BSUB -L /bin/bash
+
+# ── Structured-CoT vs retrieval opponent, end-to-end outcomes ──────────────
+#
+# Protocol 2: the agent plays one side at Llama-3.3-70B; the opponent is
+# a TF-IDF kNN retriever over data/casino_train.json (bucketed by the
+# opponent's priority ordering so retrievals are strategically comparable).
+#
+# Wallclock estimate (same 70B pipeline as Protocol 1):
+#   * ~25 s / agent-turn. We cap at 25 agent turns / dialogue but phantom-
+#     accepts tend to end earlier — Protocol 1 averaged ~6 turns/dlg.
+#   * 150 dialogues × ~7 turns/dlg × 25 s/turn ≈ 7.3 h. -W 16:00 leaves
+#     >2x headroom.
+#
+# Submit:
+#   bsub < structured_cot/scripts/run_protocol2_70b.lsf
+#
+# Override knobs at submit time, e.g. a 20-dialogue smoke on the real 70B:
+#   NUM_DIALOGUES=20 RUN_NAME=protocol2_70b_smoke \
+#       bsub < structured_cot/scripts/run_protocol2_70b.lsf
+
+# See opponent_model/scripts/run_hybrid_eval.lsf re: `set -u` + conda.
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+mkdir -p structured_cot/results/lsf
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+echo "Interpreter: $CASINO_PY"
+"$CASINO_PY" -c "import sys, numpy; print('python', sys.executable); print('numpy ', numpy.__version__)"
+echo "GPUs visible:"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+NUM_DIALOGUES="${NUM_DIALOGUES:-150}"
+TEST_DATA="${TEST_DATA:-data/casino_test.json}"
+TRAIN_DATA="${TRAIN_DATA:-data/casino_train.json}"
+MAX_TOKENS="${MAX_TOKENS:-800}"
+TEMPERATURE="${TEMPERATURE:-0.3}"
+RETR_TEMP="${RETR_TEMP:-0.7}"
+RETR_TOPK="${RETR_TOPK:-5}"
+SEED="${SEED:-2024}"
+RUN_NAME="${RUN_NAME:-protocol2_70b_${LSB_JOBID}}"
+
+echo "NUM_DIALOGUES=$NUM_DIALOGUES  RUN_NAME=$RUN_NAME"
+
+"$CASINO_PY" -m structured_cot.run_protocol2 \
+    --test-data               "$TEST_DATA" \
+    --train-data              "$TRAIN_DATA" \
+    --num-dialogues           "$NUM_DIALOGUES" \
+    --backend                 llama_70b \
+    --max-tokens              "$MAX_TOKENS" \
+    --temperature             "$TEMPERATURE" \
+    --retrieval-temperature   "$RETR_TEMP" \
+    --retrieval-top-k         "$RETR_TOPK" \
+    --seed                    "$SEED" \
+    --run-name                "$RUN_NAME"
+
+echo "=== done at $(date) ==="
