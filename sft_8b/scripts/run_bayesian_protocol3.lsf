@@ -1,0 +1,176 @@
+#!/bin/bash
+#BSUB -J sft8b_bayes_p3
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 04:00
+#BSUB -o sft_8b/results/lsf/bayes_p3.%J.out
+#BSUB -e sft_8b/results/lsf/bayes_p3.%J.err
+#BSUB -L /bin/bash
+
+# Bayesian teacher (SFT-8B posterior + λ-menu planner) evaluated against
+# the 150-dialogue held-out test set through opponent_model.turn_level_eval.
+# A parallel structured_cot replay pass is run right after for an
+# apples-to-apples head-to-head against the Abdelnabi baseline.
+#
+# Budget estimate:
+#   150 dialogues × ~5 agent-turns × K=16 MC samples per turn.
+#   On H100-NVL, one K=16 batched forward @ 96 new tokens ≈ 2.5 s. Plus
+#   ~90 s of model load. Total ≈ 35-45 min. -W 04:00 is generous.
+#
+# Submit:
+#   bsub < sft_8b/scripts/run_bayesian_protocol3.lsf
+# Or override knobs:
+#   bsub -env "all, LAMBDA=1.0, POSTERIOR_K=16, PERSPECTIVES=mturk_agent_1" \
+#        < sft_8b/scripts/run_bayesian_protocol3.lsf
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+# ── Knobs (all overridable via bsub -env "all, KEY=VAL, ...") ──────────────
+BASE_MODEL="${BASE_MODEL:-/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct}"
+ADAPTER="${ADAPTER:-sft_8b/results/lora_run/lora_best}"
+DATA="${DATA:-data/casino_test.json}"
+ANNOTATIONS="${ANNOTATIONS:-CaSiNo/data/casino_ann.json}"
+MAX_DIALOGUES="${MAX_DIALOGUES:-150}"
+PERSPECTIVES="${PERSPECTIVES:-mturk_agent_1}"
+
+LAMBDA="${LAMBDA:-1.0}"
+POSTERIOR_K="${POSTERIOR_K:-16}"
+POSTERIOR_T="${POSTERIOR_T:-0.7}"
+MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-96}"
+
+# Accept-rule knobs (see sft_8b/bayesian_agent.py for the rationale).
+# Grid search on the saved λ=1.0 turn records pushed F1 from 0.746 (naive
+# argmax) → 0.892 at margin=5, floor=0.50. Defaults match that choice.
+ACCEPT_MARGIN="${ACCEPT_MARGIN:-5}"
+ACCEPT_FLOOR="${ACCEPT_FLOOR:-0.50}"
+
+REPLAY_TURNS="${REPLAY_TURNS:-structured_cot/results/protocol1_70b_full/turns.jsonl}"
+RUN_TAG="${RUN_TAG:-bayesian_lambda${LAMBDA}_m${ACCEPT_MARGIN}_f${ACCEPT_FLOOR}_full150}"
+
+BAYES_OUT="opponent_model/results/turn_eval_${RUN_TAG}"
+REPLAY_OUT="opponent_model/results/turn_eval_structured_cot_replay_full150"
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+nvidia-smi --query-gpu=index,name,memory.total --format=csv || true
+echo "BASE_MODEL=$BASE_MODEL"
+echo "ADAPTER=$ADAPTER"
+echo "DATA=$DATA  MAX_DIALOGUES=$MAX_DIALOGUES  PERSPECTIVES=$PERSPECTIVES"
+echo "LAMBDA=$LAMBDA  K=$POSTERIOR_K  T=$POSTERIOR_T  MAX_NEW_TOKENS=$MAX_NEW_TOKENS"
+echo "ACCEPT_MARGIN=$ACCEPT_MARGIN  ACCEPT_FLOOR=$ACCEPT_FLOOR"
+echo "BAYES_OUT=$BAYES_OUT"
+echo "REPLAY_OUT=$REPLAY_OUT"
+echo "========================================================================"
+
+mkdir -p sft_8b/results/lsf
+mkdir -p "$BAYES_OUT" "$REPLAY_OUT"
+
+# ── 1. Structured-CoT replay (CPU only; ~1 min) ────────────────────────────
+echo ""
+echo "=== [1/2] Structured-CoT replay through turn_level_eval ==="
+"$CASINO_PY" -m opponent_model.turn_eval_run \
+    --data             "$DATA" \
+    --output-dir       "$REPLAY_OUT" \
+    --agent            structured_cot_replay \
+    --replay-turns-path "$REPLAY_TURNS" \
+    --annotations      "$ANNOTATIONS" \
+    --perspectives     "$PERSPECTIVES" \
+    --max-dialogues    "$MAX_DIALOGUES"
+
+# ── 2. Bayesian teacher (SFT-8B + λ-menu; GPU) ─────────────────────────────
+echo ""
+echo "=== [2/2] Bayesian teacher (λ=$LAMBDA) through turn_level_eval ==="
+"$CASINO_PY" -m opponent_model.turn_eval_run \
+    --data             "$DATA" \
+    --output-dir       "$BAYES_OUT" \
+    --agent            bayesian \
+    --base-model       "$BASE_MODEL" \
+    --adapter          "$ADAPTER" \
+    --annotations      "$ANNOTATIONS" \
+    --perspectives     "$PERSPECTIVES" \
+    --max-dialogues    "$MAX_DIALOGUES" \
+    --lambda           "$LAMBDA" \
+    --posterior-k      "$POSTERIOR_K" \
+    --posterior-temperature "$POSTERIOR_T" \
+    --accept-margin    "$ACCEPT_MARGIN" \
+    --accept-floor     "$ACCEPT_FLOOR" \
+    --max-new-tokens   "$MAX_NEW_TOKENS" \
+    --temperature      0.7
+
+# ── 3. Head-to-head summary ────────────────────────────────────────────────
+echo ""
+echo "=== Head-to-head: Bayesian vs Structured-CoT replay ==="
+"$CASINO_PY" <<PY
+import json
+from pathlib import Path
+
+def load(p): return json.loads(Path(p).read_text())
+
+bayes  = load("$BAYES_OUT/turn_summary.json")
+replay = load("$REPLAY_OUT/turn_summary.json")
+
+def fmt(m, k, default=None):
+    v = m.get(k) or {}
+    return v if v else default
+
+def line(label, a, b):
+    print(f"  {label:<20}  baseline={a!s:<18}  bayesian={b!s:<18}")
+
+print("")
+print("Agent        : Abdelnabi Structured-CoT      vs  Bayesian (SFT-8B, λ=$LAMBDA)")
+print("N dialogues  :", replay["n_dialogues"], " / ", bayes["n_dialogues"])
+print("N records    :", replay["n_records"],  " / ", bayes["n_records"])
+print("")
+
+acc_b = bayes["accept"]; acc_r = replay["accept"]
+line("accept F1",    f"{acc_r.get('f1'):.4f} (n={acc_r.get('support')})",
+                     f"{acc_b.get('f1'):.4f} (n={acc_b.get('support')})")
+line("accept P/R",   f"{acc_r.get('precision'):.3f}/{acc_r.get('recall'):.3f}",
+                     f"{acc_b.get('precision'):.3f}/{acc_b.get('recall'):.3f}")
+
+bc_b = bayes["bid_cosine"]; bc_r = replay["bid_cosine"]
+line("bid cosine",   f"{bc_r.get('mean'):.4f} (n={bc_r.get('support')})",
+                     f"{bc_b.get('mean'):.4f} (n={bc_b.get('support')})")
+
+st_b = bayes["strategy_macro_f1"]; st_r = replay["strategy_macro_f1"]
+line("strategy F1",  f"{st_r.get('macro_f1'):.4f} (n={st_r.get('support')})",
+                     f"{st_b.get('macro_f1'):.4f} (n={st_b.get('support')})")
+
+br_b = bayes["brier"]; br_r = replay["brier"]
+br_r_val = br_r.get("mean") if br_r else None
+br_b_val = br_b.get("mean") if br_b else None
+line("Brier (mean)", f"{br_r_val}" if br_r_val is not None else "n/a",
+                     f"{br_b_val:.4f} (n={br_b.get('support')})" if br_b_val is not None else "n/a")
+
+print("")
+b_f1 = acc_b.get("f1") or 0.0
+r_f1 = acc_r.get("f1") or 0.0
+print(f"Accept-F1 delta (bayesian − baseline): {b_f1 - r_f1:+.4f}")
+if b_f1 < r_f1:
+    print("⚠️  Bayesian teacher UNDERPERFORMS baseline on accept F1 — STOP AND DEBUG.")
+else:
+    print("✅  Bayesian teacher ≥ baseline on accept F1.")
+PY
+
+echo ""
+echo "=== done at $(date) ==="

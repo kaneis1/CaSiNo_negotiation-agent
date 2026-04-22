@@ -509,10 +509,21 @@ def turn_level_eval(
     records: List[TurnRecord] = []
 
     perspectives = tuple(perspectives)
-    if len(perspectives) != 2:
+    if not 1 <= len(perspectives) <= 2:
         raise ValueError(
-            f"perspectives must be a 2-tuple of role ids; got {perspectives!r}"
+            f"perspectives must be a 1- or 2-tuple of role ids; got {perspectives!r}"
         )
+
+    # Canonical CaSiNo role pair — used to infer the opponent when the
+    # caller restricts `perspectives` to a single role (e.g. for an
+    # apples-to-apples replay comparison where the baseline only has
+    # data for one side).
+    _ROLE_PAIR = ("mturk_agent_1", "mturk_agent_2")
+
+    def _infer_opp(role: str) -> str:
+        if len(perspectives) == 2:
+            return perspectives[1] if role == perspectives[0] else perspectives[0]
+        return _ROLE_PAIR[1] if role == _ROLE_PAIR[0] else _ROLE_PAIR[0]
 
     for di, dialogue in enumerate(dialogues):
         if max_dialogues is not None and di >= max_dialogues:
@@ -528,7 +539,7 @@ def turn_level_eval(
         )
 
         for perspective in perspectives:
-            opp_role = perspectives[1] if perspective == perspectives[0] else perspectives[0]
+            opp_role = _infer_opp(perspective)
             try:
                 my_priorities = pinfo[perspective]["value2issue"]
                 opp_priorities = pinfo[opp_role]["value2issue"]

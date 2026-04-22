@@ -231,5 +231,49 @@ class SftModelFn:
         new_tokens = output_ids[0, input_ids.shape[1]:]
         return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
+    # ── Batched sampling (used by sft_8b.posterior for Monte-Carlo posteriors)
+    def generate_raw(
+        self,
+        user_prompt: str,
+        *,
+        K: int = 16,
+        temperature: float = 0.7,
+    ) -> List[str]:
+        """Draw ``K`` independent samples from the SFT model at temperature T.
+
+        Returns the decoded text of each sample (assistant output only).
+        Batched via ``num_return_sequences`` so all K go through one forward
+        pass — ~linear in K's memory footprint on the K-V cache side, not in
+        wallclock. K=16 at max_new_tokens=96 is comfortably under 1 GB of
+        extra activations on an 8B model on H100.
+        """
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user",   "content": user_prompt},
+        ]
+        input_ids = self.tokenizer.apply_chat_template(
+            messages, add_generation_prompt=True, return_tensors="pt",
+        ).to(self.model.device)
+        attention_mask = torch.ones_like(input_ids)
+
+        with torch.inference_mode():
+            output_ids = self.model.generate(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                max_new_tokens=self.max_new_tokens,
+                do_sample=True,
+                temperature=float(temperature),
+                num_return_sequences=int(K),
+                pad_token_id=self.tokenizer.pad_token_id,
+                eos_token_id=self.tokenizer.eos_token_id,
+            )
+
+        # output_ids: (K, input_len + new_tokens) — slice off the shared prefix.
+        new_tokens_slice = output_ids[:, input_ids.shape[1]:]
+        return [
+            self.tokenizer.decode(row, skip_special_tokens=True).strip()
+            for row in new_tokens_slice
+        ]
+
 
 __all__ = ["SftModelFn", "parse_response", "DEFAULT_SATISFACTION_FALLBACK"]
