@@ -1,0 +1,656 @@
+Sender: LSF System <lsfadmin@lg02e15>
+Subject: Job 239120350: <sft8b_eyeball> in cluster <chimera> Done
+
+Job <sft8b_eyeball> was submitted from host <lg03a01> by user <cuiz02> in cluster <chimera> at Tue Apr 21 22:59:10 2026
+Job was executed on host(s) <4*lg02e15>, in queue <gpu>, as user <cuiz02> in cluster <chimera> at Tue Apr 21 22:59:15 2026
+</hpc/users/cuiz02> was used as the home directory.
+</sc/arion/projects/lin_lab/complexbehavior/CaSino> was used as the working directory.
+Started at Tue Apr 21 22:59:15 2026
+Terminated at Tue Apr 21 23:01:19 2026
+Results reported at Tue Apr 21 23:01:19 2026
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/bash
+#BSUB -J sft8b_eyeball
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 01:00
+#BSUB -o sft_8b/results/lsf.eyeball.%J.out
+#BSUB -e sft_8b/results/lsf.eyeball.%J.err
+#BSUB -L /bin/bash
+
+# Eyeball diagnostic: posterior + menu on 5 held-out dialogues using the
+# main (non-CV) SFT-8B + LoRA adapter.
+#
+# Budget: 5 dialogues × max_k=5 × K=16 samples per posterior = 400 samples
+# via 25 batched forward passes. On H100-NVL each batch of K=16 completions
+# at 96 new tokens is ~2 s, plus 90 s model load. Total ~3-4 min; -W 01:00
+# is an overabundance of headroom.
+#
+# Submit:  bsub < sft_8b/scripts/run_eyeball_posterior_menu.lsf
+# Output:  sft_8b/results/lsf.eyeball.<jobid>.out  (the formatted report)
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+N_DIALOGUES="${N_DIALOGUES:-5}"
+MAX_K="${MAX_K:-5}"
+K_SAMPLES="${K_SAMPLES:-16}"
+TEMPERATURE="${TEMPERATURE:-0.7}"
+LAMBDAS="${LAMBDAS:-0.2,0.5,0.8}"
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+
+(... more ...)
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   81.00 sec.
+    Max Memory :                                 1611 MB
+    Average Memory :                             675.00 MB
+    Total Requested Memory :                     160000.00 MB
+    Delta Memory :                               158389.00 MB
+    Max Swap :                                   -
+    Max Processes :                              9
+    Max Threads :                                25
+    Run time :                                   124 sec.
+    Turnaround time :                            129 sec.
+
+The output (if any) follows:
+
+=== job 239120350 on lg02e15 at Tue Apr 21 22:59:18 EDT 2026 ===
+index, name, memory.total [MiB]
+0, NVIDIA H100 80GB HBM3, 81559 MiB
+N_DIALOGUES=5  MAX_K=5  K=16  T=0.7  λ=0.2,0.5,0.8
+Model loaded in 83.0s (base=/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct, adapter=sft_8b/results/lora_run/lora_best)
+
+==============================================================================
+Dialogue 548   (me_role=mturk_agent_1, perspective #1/5)
+  my priorities: High=Water  Medium=Food  Low=Firewood
+  GROUND-TRUTH opponent: High=Food  Medium=Firewood  Low=Water
+==============================================================================
+
+[k=1]   entropy=2.227 bits   truth_mass=0.19   K=16   elapsed=3.7s
+  top-3 posterior: [Foo>Wat>Fir] 0.31  [Wat>Fir>Foo] 0.25  [Foo>Fir>Wat] 0.19
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.69  score= 33.74
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.25  score= 32.85
+    #4  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 4.06  score= 31.81
+    #5  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.38  score= 31.48
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.69  score= 34.84
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.25  score= 34.12
+    #4  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.38  score= 33.69
+    #5  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 4.06  score= 33.03
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.69  score= 35.95
+    #3  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.38  score= 35.90
+    #4  self=(F3 W3 Fw0)  opp=(F0 W0 Fw3)  U_self=27  E[U_opp]=11.06  score= 35.85
+    #5  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.25  score= 35.40
+
+[k=2]   entropy=1.649 bits   truth_mass=0.50   K=16   elapsed=1.0s
+  top-3 posterior: [Foo>Fir>Wat] 0.50  [Foo>Wat>Fir] 0.31  [Wat>Foo>Fir] 0.12
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.56  score= 33.71
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.75  score= 32.95
+    #4  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 3.69  score= 31.74
+    #5  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.12  score= 31.43
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.56  score= 34.78
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.75  score= 34.38
+    #4  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.12  score= 33.56
+    #5  self=(F2 W3 Fw2)  opp=(F1 W0 Fw1)  U_self=29  E[U_opp]= 8.31  score= 33.16
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.56  score= 35.85
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.75  score= 35.80
+    #4  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.12  score= 35.70
+    #5  self=(F2 W3 Fw2)  opp=(F1 W0 Fw1)  U_self=29  E[U_opp]= 8.31  score= 35.65
+
+[k=3]   entropy=1.000 bits   truth_mass=0.50   K=16   elapsed=1.0s
+  top-3 posterior: [Foo>Wat>Fir] 0.50  [Foo>Fir>Wat] 0.50
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.50  score= 33.70
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 5.00  score= 33.00
+    #4  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 3.50  score= 31.70
+    #5  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.00  score= 31.40
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.50  score= 34.75
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 5.00  score= 34.50
+    #4  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.00  score= 33.50
+    #5  self=(F2 W3 Fw2)  opp=(F1 W0 Fw1)  U_self=29  E[U_opp]= 8.50  score= 33.25
+  λ=0.8  top-5 menu:
+    #1  self=(F0 W3 Fw3)  opp=(F3 W0 Fw0)  U_self=24  E[U_opp]=15.00  score= 36.00
+    #2  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=28  E[U_opp]=10.00  score= 36.00
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 5.00  score= 36.00
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F0 W3 Fw2)  opp=(F3 W0 Fw1)  U_self=21  E[U_opp]=18.50  score= 35.80
+
+[k=4]   entropy=0.989 bits   truth_mass=0.56   K=16   elapsed=1.1s
+  top-3 posterior: [Foo>Fir>Wat] 0.56  [Foo>Wat>Fir] 0.44
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.56  score= 33.71
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 5.00  score= 33.00
+    #4  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 3.44  score= 31.69
+    #5  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.12  score= 31.43
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.56  score= 34.78
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 5.00  score= 34.50
+    #4  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.12  score= 33.56
+    #5  self=(F2 W3 Fw2)  opp=(F1 W0 Fw1)  U_self=29  E[U_opp]= 8.56  score= 33.28
+  λ=0.8  top-5 menu:
+    #1  self=(F0 W3 Fw3)  opp=(F3 W0 Fw0)  U_self=24  E[U_opp]=15.00  score= 36.00
+    #2  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=28  E[U_opp]=10.00  score= 36.00
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 5.00  score= 36.00
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F0 W3 Fw2)  opp=(F3 W0 Fw1)  U_self=21  E[U_opp]=18.56  score= 35.85
+
+[k=5]   entropy=1.000 bits   truth_mass=0.50   K=16   elapsed=1.1s
+  top-3 posterior: [Foo>Wat>Fir] 0.50  [Foo>Fir>Wat] 0.50
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.50  score= 33.70
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 5.00  score= 33.00
+    #4  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 3.50  score= 31.70
+    #5  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.00  score= 31.40
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.50  score= 34.75
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 5.00  score= 34.50
+    #4  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.00  score= 33.50
+    #5  self=(F2 W3 Fw2)  opp=(F1 W0 Fw1)  U_self=29  E[U_opp]= 8.50  score= 33.25
+  λ=0.8  top-5 menu:
+    #1  self=(F0 W3 Fw3)  opp=(F3 W0 Fw0)  U_self=24  E[U_opp]=15.00  score= 36.00
+    #2  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=28  E[U_opp]=10.00  score= 36.00
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 5.00  score= 36.00
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F0 W3 Fw2)  opp=(F3 W0 Fw1)  U_self=21  E[U_opp]=18.50  score= 35.80
+
+==============================================================================
+Dialogue 953   (me_role=mturk_agent_1, perspective #2/5)
+  my priorities: High=Firewood  Medium=Water  Low=Food
+  GROUND-TRUTH opponent: High=Firewood  Medium=Water  Low=Food
+==============================================================================
+
+[k=1]   entropy=2.180 bits   truth_mass=0.31   K=16   elapsed=1.0s
+  top-3 posterior: [Fir>Wat>Foo] 0.31  [Foo>Wat>Fir] 0.25  [Fir>Foo>Wat] 0.19
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 4.06  score= 33.81
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 3.69  score= 32.74
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 4.25  score= 31.85
+    #5  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 8.12  score= 31.62
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 4.06  score= 35.03
+    #3  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 8.12  score= 34.06
+    #4  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 3.69  score= 33.84
+    #5  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 4.25  score= 33.12
+  λ=0.8  top-5 menu:
+    #1  self=(F0 W3 Fw3)  opp=(F3 W0 Fw0)  U_self=27  E[U_opp]=12.19  score= 36.75
+    #2  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 8.12  score= 36.50
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 4.06  score= 36.25
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F0 W2 Fw3)  opp=(F3 W1 Fw0)  U_self=23  E[U_opp]=15.88  score= 35.70
+
+[k=2]   entropy=2.352 bits   truth_mass=0.31   K=16   elapsed=1.0s
+  top-3 posterior: [Fir>Wat>Foo] 0.31  [Fir>Foo>Wat] 0.25  [Wat>Fir>Foo] 0.19
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 3.62  score= 33.73
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 4.00  score= 32.80
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 4.38  score= 31.88
+    #5  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 7.25  score= 31.45
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 3.62  score= 34.81
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 4.00  score= 34.00
+    #4  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 7.25  score= 33.62
+    #5  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 4.38  score= 33.19
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 3.62  score= 35.90
+    #3  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 7.25  score= 35.80
+    #4  self=(F0 W3 Fw3)  opp=(F3 W0 Fw0)  U_self=27  E[U_opp]=10.88  score= 35.70
+    #5  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 4.00  score= 35.20
+
+[k=3]   entropy=0.811 bits   truth_mass=0.00   K=16   elapsed=1.0s
+  top-3 posterior: [Wat>Foo>Fir] 0.75  [Wat>Fir>Foo] 0.25
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 3.75  score= 33.75
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 5.00  score= 33.00
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 3.25  score= 31.65
+    #5  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 7.50  score= 31.50
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 3.75  score= 34.88
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 5.00  score= 34.50
+    #4  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 7.50  score= 33.75
+    #5  self=(F2 W2 Fw3)  opp=(F1 W1 Fw0)  U_self=29  E[U_opp]= 8.75  score= 33.38
+  λ=0.8  top-5 menu:
+    #1  self=(F0 W0 Fw3)  opp=(F3 W3 Fw0)  U_self=15  E[U_opp]=26.25  score= 36.00
+    #2  self=(F0 W1 Fw3)  opp=(F3 W2 Fw0)  U_self=19  E[U_opp]=21.25  score= 36.00
+    #3  self=(F0 W2 Fw3)  opp=(F3 W1 Fw0)  U_self=23  E[U_opp]=16.25  score= 36.00
+    #4  self=(F0 W3 Fw3)  opp=(F3 W0 Fw0)  U_self=27  E[U_opp]=11.25  score= 36.00
+    #5  self=(F1 W0 Fw3)  opp=(F2 W3 Fw0)  U_self=18  E[U_opp]=22.50  score= 36.00
+
+[k=4]   entropy=0.896 bits   truth_mass=0.00   K=16   elapsed=1.1s
+  top-3 posterior: [Wat>Foo>Fir] 0.69  [Wat>Fir>Foo] 0.31
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 3.69  score= 33.74
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 5.00  score= 33.00
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 3.31  score= 31.66
+    #5  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 7.38  score= 31.48
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 3.69  score= 34.84
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 5.00  score= 34.50
+    #4  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 7.38  score= 33.69
+    #5  self=(F2 W2 Fw3)  opp=(F1 W1 Fw0)  U_self=29  E[U_opp]= 8.69  score= 33.34
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W0 Fw3)  opp=(F0 W3 Fw0)  U_self=24  E[U_opp]=15.00  score= 36.00
+    #2  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=28  E[U_opp]=10.00  score= 36.00
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 5.00  score= 36.00
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F2 W0 Fw3)  opp=(F1 W3 Fw0)  U_self=21  E[U_opp]=18.69  score= 35.95
+
+[k=5]   entropy=0.896 bits   truth_mass=0.00   K=16   elapsed=1.1s
+  top-3 posterior: [Wat>Foo>Fir] 0.69  [Wat>Fir>Foo] 0.31
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 3.69  score= 33.74
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 5.00  score= 33.00
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 3.31  score= 31.66
+    #5  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 7.38  score= 31.48
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=33  E[U_opp]= 3.69  score= 34.84
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 5.00  score= 34.50
+    #4  self=(F1 W3 Fw3)  opp=(F2 W0 Fw0)  U_self=30  E[U_opp]= 7.38  score= 33.69
+    #5  self=(F2 W2 Fw3)  opp=(F1 W1 Fw0)  U_self=29  E[U_opp]= 8.69  score= 33.34
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W0 Fw3)  opp=(F0 W3 Fw0)  U_self=24  E[U_opp]=15.00  score= 36.00
+    #2  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=28  E[U_opp]=10.00  score= 36.00
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=32  E[U_opp]= 5.00  score= 36.00
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F2 W0 Fw3)  opp=(F1 W3 Fw0)  U_self=21  E[U_opp]=18.69  score= 35.95
+
+==============================================================================
+Dialogue 936   (me_role=mturk_agent_1, perspective #3/5)
+  my priorities: High=Water  Medium=Food  Low=Firewood
+  GROUND-TRUTH opponent: High=Firewood  Medium=Water  Low=Food
+==============================================================================
+
+[k=1]   entropy=2.258 bits   truth_mass=0.19   K=16   elapsed=0.9s
+  top-3 posterior: [Wat>Foo>Fir] 0.31  [Foo>Wat>Fir] 0.19  [Foo>Fir>Wat] 0.19
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.69  score= 33.74
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.06  score= 32.81
+    #4  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 4.25  score= 31.85
+    #5  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.38  score= 31.48
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.69  score= 34.84
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.06  score= 34.03
+    #4  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.38  score= 33.69
+    #5  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 4.25  score= 33.12
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.69  score= 35.95
+    #3  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.38  score= 35.90
+    #4  self=(F3 W3 Fw0)  opp=(F0 W0 Fw3)  U_self=27  E[U_opp]=11.06  score= 35.85
+    #5  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.06  score= 35.25
+
+[k=2]   entropy=2.299 bits   truth_mass=0.12   K=16   elapsed=1.0s
+  top-3 posterior: [Wat>Fir>Foo] 0.31  [Wat>Foo>Fir] 0.31  [Foo>Fir>Wat] 0.12
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.81  score= 33.76
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.75  score= 32.75
+    #4  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 4.44  score= 31.89
+    #5  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.62  score= 31.52
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.81  score= 34.91
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.75  score= 33.88
+    #4  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.62  score= 33.81
+    #5  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 4.44  score= 33.22
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw0)  opp=(F0 W0 Fw3)  U_self=27  E[U_opp]=11.44  score= 36.15
+    #2  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]= 7.62  score= 36.10
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 3.81  score= 36.05
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F2 W3 Fw0)  opp=(F1 W0 Fw3)  U_self=23  E[U_opp]=15.19  score= 35.15
+
+[k=3]   entropy=0.896 bits   truth_mass=0.69   K=16   elapsed=1.0s
+  top-3 posterior: [Fir>Wat>Foo] 0.69  [Fir>Foo>Wat] 0.31
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 5.00  score= 34.00
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.31  score= 32.66
+    #4  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]=10.00  score= 32.00
+    #5  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 3.69  score= 31.74
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 5.00  score= 35.50
+    #3  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]=10.00  score= 35.00
+    #4  self=(F3 W3 Fw0)  opp=(F0 W0 Fw3)  U_self=27  E[U_opp]=15.00  score= 34.50
+    #5  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.31  score= 33.66
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw0)  opp=(F0 W0 Fw3)  U_self=27  E[U_opp]=15.00  score= 39.00
+    #2  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]=10.00  score= 38.00
+    #3  self=(F2 W3 Fw0)  opp=(F1 W0 Fw3)  U_self=23  E[U_opp]=18.31  score= 37.65
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 5.00  score= 37.00
+    #5  self=(F3 W2 Fw0)  opp=(F0 W1 Fw3)  U_self=22  E[U_opp]=18.69  score= 36.95
+
+[k=4]   entropy=0.954 bits   truth_mass=0.38   K=16   elapsed=1.0s
+  top-3 posterior: [Fir>Foo>Wat] 0.62  [Fir>Wat>Foo] 0.38
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 5.00  score= 34.00
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.62  score= 32.73
+    #4  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]=10.00  score= 32.00
+    #5  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 3.38  score= 31.68
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 5.00  score= 35.50
+    #3  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]=10.00  score= 35.00
+    #4  self=(F3 W3 Fw0)  opp=(F0 W0 Fw3)  U_self=27  E[U_opp]=15.00  score= 34.50
+    #5  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.62  score= 33.81
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw0)  opp=(F0 W0 Fw3)  U_self=27  E[U_opp]=15.00  score= 39.00
+    #2  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]=10.00  score= 38.00
+    #3  self=(F2 W3 Fw0)  opp=(F1 W0 Fw3)  U_self=23  E[U_opp]=18.62  score= 37.90
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 5.00  score= 37.00
+    #5  self=(F2 W3 Fw1)  opp=(F1 W0 Fw2)  U_self=26  E[U_opp]=13.62  score= 36.90
+
+[k=5]   entropy=0.954 bits   truth_mass=0.38   K=16   elapsed=1.0s
+  top-3 posterior: [Fir>Foo>Wat] 0.62  [Fir>Wat>Foo] 0.38
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 5.00  score= 34.00
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.62  score= 32.73
+    #4  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]=10.00  score= 32.00
+    #5  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=31  E[U_opp]= 3.38  score= 31.68
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 5.00  score= 35.50
+    #3  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]=10.00  score= 35.00
+    #4  self=(F3 W3 Fw0)  opp=(F0 W0 Fw3)  U_self=27  E[U_opp]=15.00  score= 34.50
+    #5  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.62  score= 33.81
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw0)  opp=(F0 W0 Fw3)  U_self=27  E[U_opp]=15.00  score= 39.00
+    #2  self=(F3 W3 Fw1)  opp=(F0 W0 Fw2)  U_self=30  E[U_opp]=10.00  score= 38.00
+    #3  self=(F2 W3 Fw0)  opp=(F1 W0 Fw3)  U_self=23  E[U_opp]=18.62  score= 37.90
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=33  E[U_opp]= 5.00  score= 37.00
+    #5  self=(F2 W3 Fw1)  opp=(F1 W0 Fw2)  U_self=26  E[U_opp]=13.62  score= 36.90
+
+==============================================================================
+Dialogue 102   (me_role=mturk_agent_1, perspective #4/5)
+  my priorities: High=Food  Medium=Firewood  Low=Water
+  GROUND-TRUTH opponent: High=Food  Medium=Firewood  Low=Water
+==============================================================================
+
+[k=1]   entropy=2.399 bits   truth_mass=0.31   K=16   elapsed=1.0s
+  top-3 posterior: [Foo>Fir>Wat] 0.31  [Foo>Wat>Fir] 0.25  [Wat>Foo>Fir] 0.12
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.88  score= 33.77
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 3.81  score= 32.76
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 4.31  score= 31.86
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.75  score= 31.55
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.88  score= 34.94
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 3.81  score= 33.91
+    #4  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.75  score= 33.88
+    #5  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 4.31  score= 33.16
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W0 Fw3)  opp=(F0 W3 Fw0)  U_self=27  E[U_opp]=11.62  score= 36.30
+    #2  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.75  score= 36.20
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.88  score= 36.10
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F3 W0 Fw2)  opp=(F0 W3 Fw1)  U_self=23  E[U_opp]=15.44  score= 35.35
+
+[k=2]   entropy=2.430 bits   truth_mass=0.12   K=16   elapsed=1.0s
+  top-3 posterior: [Foo>Wat>Fir] 0.31  [Wat>Fir>Foo] 0.19  [Fir>Foo>Wat] 0.19
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.94  score= 33.79
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 3.94  score= 32.79
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 4.12  score= 31.82
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.88  score= 31.57
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.94  score= 34.97
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 3.94  score= 33.97
+    #4  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.88  score= 33.94
+    #5  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 4.12  score= 33.06
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W0 Fw3)  opp=(F0 W3 Fw0)  U_self=27  E[U_opp]=11.81  score= 36.45
+    #2  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.88  score= 36.30
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.94  score= 36.15
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F3 W0 Fw2)  opp=(F0 W3 Fw1)  U_self=23  E[U_opp]=15.75  score= 35.60
+
+[k=3]   entropy=0.544 bits   truth_mass=0.88   K=16   elapsed=1.0s
+  top-3 posterior: [Foo>Fir>Wat] 0.88  [Foo>Wat>Fir] 0.12
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.12  score= 33.62
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 3.88  score= 32.77
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 5.00  score= 32.00
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 6.25  score= 31.25
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.12  score= 34.56
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 3.88  score= 33.94
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 5.00  score= 33.50
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 6.25  score= 33.12
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.12  score= 35.50
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 3.88  score= 35.10
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 5.00  score= 35.00
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 6.25  score= 35.00
+
+[k=4]   entropy=0.544 bits   truth_mass=0.88   K=16   elapsed=1.0s
+  top-3 posterior: [Foo>Fir>Wat] 0.88  [Foo>Wat>Fir] 0.12
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.12  score= 33.62
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 3.88  score= 32.77
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 5.00  score= 32.00
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 6.25  score= 31.25
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.12  score= 34.56
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 3.88  score= 33.94
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 5.00  score= 33.50
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 6.25  score= 33.12
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.12  score= 35.50
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 3.88  score= 35.10
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 5.00  score= 35.00
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 6.25  score= 35.00
+
+[k=5]   entropy=-0.000 bits   truth_mass=1.00   K=16   elapsed=1.1s
+  top-3 posterior: [Foo>Fir>Wat] 1.00
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.00  score= 33.60
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 4.00  score= 32.80
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 5.00  score= 32.00
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 6.00  score= 31.20
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.00  score= 34.50
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 4.00  score= 34.00
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 5.00  score= 33.50
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 6.00  score= 33.00
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.00  score= 35.40
+    #3  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=32  E[U_opp]= 4.00  score= 35.20
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=31  E[U_opp]= 5.00  score= 35.00
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 6.00  score= 34.80
+
+==============================================================================
+Dialogue 571   (me_role=mturk_agent_1, perspective #5/5)
+  my priorities: High=Firewood  Medium=Food  Low=Water
+  GROUND-TRUTH opponent: High=Firewood  Medium=Water  Low=Food
+==============================================================================
+
+[k=1]   entropy=2.453 bits   truth_mass=0.19   K=16   elapsed=0.9s
+  top-3 posterior: [Foo>Fir>Wat] 0.25  [Fir>Foo>Wat] 0.25  [Fir>Wat>Foo] 0.19
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.69  score= 33.74
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.12  score= 32.83
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 4.19  score= 31.84
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.38  score= 31.48
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.69  score= 34.84
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.12  score= 34.06
+    #4  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.38  score= 33.69
+    #5  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 4.19  score= 33.09
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.69  score= 35.95
+    #3  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.38  score= 35.90
+    #4  self=(F3 W0 Fw3)  opp=(F0 W3 Fw0)  U_self=27  E[U_opp]=11.06  score= 35.85
+    #5  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.12  score= 35.30
+
+[k=2]   entropy=2.406 bits   truth_mass=0.12   K=16   elapsed=1.0s
+  top-3 posterior: [Fir>Foo>Wat] 0.38  [Foo>Wat>Fir] 0.12  [Wat>Foo>Fir] 0.12
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.75  score= 33.75
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.00  score= 32.80
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 4.25  score= 31.85
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.50  score= 31.50
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.75  score= 34.88
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 4.00  score= 34.00
+    #4  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.50  score= 33.75
+    #5  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 4.25  score= 33.12
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W0 Fw3)  opp=(F0 W3 Fw0)  U_self=27  E[U_opp]=11.25  score= 36.00
+    #2  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.50  score= 36.00
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.75  score= 36.00
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F2 W0 Fw3)  opp=(F1 W3 Fw0)  U_self=23  E[U_opp]=15.25  score= 35.20
+
+[k=3]   entropy=-0.000 bits   truth_mass=1.00   K=16   elapsed=1.0s
+  top-3 posterior: [Fir>Wat>Foo] 1.00
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 4.00  score= 33.80
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.00  score= 32.60
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 5.00  score= 32.00
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 8.00  score= 31.60
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 4.00  score= 35.00
+    #3  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 8.00  score= 34.00
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.00  score= 33.50
+    #5  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 5.00  score= 33.50
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W0 Fw3)  opp=(F0 W3 Fw0)  U_self=27  E[U_opp]=12.00  score= 36.60
+    #2  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 8.00  score= 36.40
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 4.00  score= 36.20
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F3 W0 Fw2)  opp=(F0 W3 Fw1)  U_self=22  E[U_opp]=17.00  score= 35.60
+
+[k=4]   entropy=0.544 bits   truth_mass=0.88   K=16   elapsed=1.0s
+  top-3 posterior: [Fir>Wat>Foo] 0.88  [Wat>Fir>Foo] 0.12
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 4.12  score= 33.83
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.00  score= 32.60
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 4.88  score= 31.98
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 8.25  score= 31.65
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 4.12  score= 35.06
+    #3  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 8.25  score= 34.12
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.00  score= 33.50
+    #5  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 4.88  score= 33.44
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W0 Fw3)  opp=(F0 W3 Fw0)  U_self=27  E[U_opp]=12.38  score= 36.90
+    #2  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 8.25  score= 36.60
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 4.12  score= 36.30
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F3 W0 Fw2)  opp=(F0 W3 Fw1)  U_self=22  E[U_opp]=17.25  score= 35.80
+
+[k=5]   entropy=0.337 bits   truth_mass=0.94   K=16   elapsed=1.0s
+  top-3 posterior: [Fir>Wat>Foo] 0.94  [Fir>Foo>Wat] 0.06
+  λ=0.2  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.94  score= 33.79
+    #3  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.06  score= 32.61
+    #4  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 5.00  score= 32.00
+    #5  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.88  score= 31.57
+  λ=0.5  top-5 menu:
+    #1  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #2  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.94  score= 34.97
+    #3  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.88  score= 33.94
+    #4  self=(F2 W3 Fw3)  opp=(F1 W0 Fw0)  U_self=32  E[U_opp]= 3.06  score= 33.53
+    #5  self=(F3 W3 Fw2)  opp=(F0 W0 Fw1)  U_self=31  E[U_opp]= 5.00  score= 33.50
+  λ=0.8  top-5 menu:
+    #1  self=(F3 W0 Fw3)  opp=(F0 W3 Fw0)  U_self=27  E[U_opp]=11.81  score= 36.45
+    #2  self=(F3 W1 Fw3)  opp=(F0 W2 Fw0)  U_self=30  E[U_opp]= 7.88  score= 36.30
+    #3  self=(F3 W2 Fw3)  opp=(F0 W1 Fw0)  U_self=33  E[U_opp]= 3.94  score= 36.15
+    #4  self=(F3 W3 Fw3)  opp=(F0 W0 Fw0)  U_self=36  E[U_opp]= 0.00  score= 36.00
+    #5  self=(F3 W0 Fw2)  opp=(F0 W3 Fw1)  U_self=22  E[U_opp]=16.81  score= 35.45
+
+──────────────────────────────────────────────────────────────────────────────
+Total elapsed: 28.0s
+=== done at Tue Apr 21 23:01:17 EDT 2026 ===
+
+
+PS:
+
+Read file <sft_8b/results/lsf.eyeball.239120350.err> for stderr output of this job.
+

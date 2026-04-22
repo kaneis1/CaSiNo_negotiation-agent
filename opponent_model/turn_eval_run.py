@@ -94,8 +94,16 @@ def _build_argparser() -> argparse.ArgumentParser:
                    help="casino_ann.json with per-utterance strategy tags. "
                         "If omitted, falls back to dialogue.annotations if present.")
     p.add_argument("--max-dialogues", type=int, default=None)
-    p.add_argument("--agent", choices=("uniform", "hybrid", "sft"), default="uniform",
+    p.add_argument("--agent",
+                   choices=("uniform", "hybrid", "sft",
+                            "bayesian", "structured_cot_replay"),
+                   default="uniform",
                    help="which TurnLevelAgent to evaluate.")
+
+    # perspective restriction (handy for apples-to-apples comparisons
+    # against a Protocol-1 replay that only covers mturk_agent_1).
+    p.add_argument("--perspectives", default="mturk_agent_1,mturk_agent_2",
+                   help="comma-separated list of perspective role ids to score on.")
 
     # hybrid / sft shared LLM args
     p.add_argument("--dummy-llm", action="store_true",
@@ -103,13 +111,33 @@ def _build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--model-id", default=None,
                    help="HF model id / local snapshot path (hybrid agent).")
 
-    # sft args
+    # sft / bayesian args
     p.add_argument("--base-model", default=None,
-                   help="base model path for the SFT adapter (sft agent).")
+                   help="base model path for the SFT adapter (sft / bayesian agents).")
     p.add_argument("--adapter", default=None,
-                   help="LoRA adapter directory (sft agent).")
+                   help="LoRA adapter directory (sft / bayesian agents).")
     p.add_argument("--max-new-tokens", type=int, default=128)
     p.add_argument("--temperature", type=float, default=0.0)
+
+    # bayesian agent knobs
+    p.add_argument("--lambda", dest="lambda_", type=float, default=1.0,
+                   help="λ style knob for the menu builder (bayesian agent).")
+    p.add_argument("--posterior-k", type=int, default=16,
+                   help="# MC samples for the SFT posterior (bayesian agent).")
+    p.add_argument("--posterior-temperature", type=float, default=0.7,
+                   help="sampling temperature for the SFT posterior (bayesian agent).")
+    p.add_argument("--accept-margin", type=int, default=5,
+                   help="continuation-cost margin in the accept rule "
+                        "(bayesian agent); 0 = strict argmax.")
+    p.add_argument("--accept-floor", type=float, default=0.50,
+                   help="Pareto floor (fraction of MAX_SELF_POINTS=36) in "
+                        "the accept rule; an offer at or above this fraction "
+                        "is accepted unconditionally. 1.0 disables the floor.")
+
+    # structured-cot replay knobs
+    p.add_argument("--replay-turns-path", default=None,
+                   help="path to a finished Protocol-1 turns.jsonl "
+                        "(structured_cot_replay agent).")
 
     # hybrid knobs (matched to opponent_model/eval_run.py defaults)
     p.add_argument("--likelihood-temperature", type=float, default=25.0)
@@ -163,6 +191,42 @@ def _build_agent(args: argparse.Namespace) -> Any:
         )
         return SftTurnAgent(sft, strategy_classifier=KeywordStrategyClassifier())
 
+    if args.agent == "bayesian":
+        from sft_8b.predict import SftModelFn
+        from sft_8b.bayesian_agent import BayesianTurnAgent
+        if args.base_model is None:
+            raise ValueError("--base-model is required for bayesian agent.")
+        # K samples need do_sample=True; temperature at load-time is ignored
+        # by generate_raw() which passes `posterior_temperature` directly,
+        # but we still need max_new_tokens tuned for ~96 tokens of JSON.
+        sft = SftModelFn(
+            base_model=args.base_model,
+            adapter_path=args.adapter,
+            max_new_tokens=args.max_new_tokens,
+            temperature=args.temperature,
+        )
+        return BayesianTurnAgent(
+            sft,
+            lambda_=args.lambda_,
+            K=args.posterior_k,
+            temperature=args.posterior_temperature,
+            accept_margin=args.accept_margin,
+            accept_floor=args.accept_floor,
+            strategy_classifier=KeywordStrategyClassifier(),
+        )
+
+    if args.agent == "structured_cot_replay":
+        from structured_cot.replay_turn_agent import StructuredCoTReplayAgent
+        if args.replay_turns_path is None:
+            raise ValueError(
+                "--replay-turns-path is required for structured_cot_replay agent."
+            )
+        from pathlib import Path as _Path
+        return StructuredCoTReplayAgent(
+            _Path(args.replay_turns_path),
+            strategy_classifier=KeywordStrategyClassifier(),
+        )
+
     raise ValueError(f"unknown agent type {args.agent!r}")
 
 
@@ -195,6 +259,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     agent = _build_agent(args)
     log.info("Built agent: %s", type(agent).__name__)
 
+    # Stamp dialogue_id onto every chat_logs turn so the replay adapter
+    # can match turns without ambiguity. No-op for other agents.
+    if args.agent == "structured_cot_replay":
+        from structured_cot.replay_turn_agent import attach_dialogue_ids
+        dialogues = attach_dialogue_ids(dialogues)
+
     records_path = output_dir / "turn_records.jsonl"
     if records_path.exists():
         records_path.unlink()
@@ -203,10 +273,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     def _on_record(r: TurnRecord) -> None:
         rec_writer.write(json.dumps(asdict(r), default=str) + "\n")
 
+    perspectives = tuple(
+        p.strip() for p in args.perspectives.split(",") if p.strip()
+    )
+    log.info("Perspectives scored: %s", perspectives)
+
     t0 = time.time()
     result = turn_level_eval(
         dialogues=dialogues,
         agent=agent,
+        perspectives=perspectives,
         annotations_by_dialogue=ann_lookup or None,
         on_record=_on_record,
     )

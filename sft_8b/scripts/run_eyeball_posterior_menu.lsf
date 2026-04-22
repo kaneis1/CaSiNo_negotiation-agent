@@ -1,0 +1,62 @@
+#!/bin/bash
+#BSUB -J sft8b_eyeball
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 01:00
+#BSUB -o sft_8b/results/lsf.eyeball.%J.out
+#BSUB -e sft_8b/results/lsf.eyeball.%J.err
+#BSUB -L /bin/bash
+
+# Eyeball diagnostic: posterior + menu on 5 held-out dialogues using the
+# main (non-CV) SFT-8B + LoRA adapter.
+#
+# Budget: 5 dialogues × max_k=5 × K=16 samples per posterior = 400 samples
+# via 25 batched forward passes. On H100-NVL each batch of K=16 completions
+# at 96 new tokens is ~2 s, plus 90 s model load. Total ~3-4 min; -W 01:00
+# is an overabundance of headroom.
+#
+# Submit:  bsub < sft_8b/scripts/run_eyeball_posterior_menu.lsf
+# Output:  sft_8b/results/lsf.eyeball.<jobid>.out  (the formatted report)
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+N_DIALOGUES="${N_DIALOGUES:-5}"
+MAX_K="${MAX_K:-5}"
+K_SAMPLES="${K_SAMPLES:-16}"
+TEMPERATURE="${TEMPERATURE:-0.7}"
+LAMBDAS="${LAMBDAS:-0.0,1.0,2.0}"
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+echo "N_DIALOGUES=$N_DIALOGUES  MAX_K=$MAX_K  K=$K_SAMPLES  T=$TEMPERATURE  λ=$LAMBDAS"
+
+"$CASINO_PY" -m sft_8b.eyeball_posterior_menu \
+    --n-dialogues "$N_DIALOGUES" \
+    --max-k       "$MAX_K" \
+    --K           "$K_SAMPLES" \
+    --temperature "$TEMPERATURE" \
+    --lambdas     "$LAMBDAS" \
+    --log-level   WARNING
+
+echo "=== done at $(date) ==="

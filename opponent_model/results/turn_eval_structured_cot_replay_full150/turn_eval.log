@@ -1,0 +1,30 @@
+2026-04-22 00:11:26 | INFO    | Args: {'data': 'data/casino_test.json', 'output_dir': 'opponent_model/results/turn_eval_structured_cot_replay_full150', 'annotations': 'CaSiNo/data/casino_ann.json', 'max_dialogues': 150, 'agent': 'structured_cot_replay', 'perspectives': 'mturk_agent_1', 'dummy_llm': False, 'model_id': None, 'base_model': None, 'adapter': None, 'max_new_tokens': 128, 'temperature': 0.0, 'lambda_': 1.0, 'posterior_k': 16, 'posterior_temperature': 0.7, 'replay_turns_path': 'structured_cot/results/protocol1_70b_full/turns.jsonl', 'likelihood_temperature': 25.0, 'likelihood_clip': '-3,3'}
+2026-04-22 00:11:26 | INFO    | Loaded 150 dialogues from data/casino_test.json
+2026-04-22 00:11:27 | INFO    | Annotations: 396 dialogues with strategy tags (from CaSiNo/data/casino_ann.json).
+2026-04-22 00:11:27 | INFO    | Built agent: StructuredCoTReplayAgent
+2026-04-22 00:11:27 | INFO    | Perspectives scored: ('mturk_agent_1',)
+2026-04-22 00:11:27 | INFO    | Eval finished in 0.1s
+2026-04-22 00:11:27 | INFO    | 
+turn_level_eval: 1054 per-turn predictions
+
+  accept F1              0.809   (n=28, P=0.826 R=0.792, acc=0.679)
+  bid cosine             0.852   (n=14)
+  strategy macro-F1      0.133   (n=269, |labels|=10)
+  Brier (posterior)        nan   (n=0)
+2026-04-22 00:11:27 | INFO    | Wrote opponent_model/results/turn_eval_structured_cot_replay_full150/turn_summary.json
+2026-04-22 00:11:27 | INFO    | Wrote opponent_model/results/turn_eval_structured_cot_replay_full150/turn_records.jsonl (1054 records)
+2026-04-22 01:00:25 | INFO    | Args: {'data': 'data/casino_test.json', 'output_dir': 'opponent_model/results/turn_eval_structured_cot_replay_full150', 'annotations': 'CaSiNo/data/casino_ann.json', 'max_dialogues': 150, 'agent': 'structured_cot_replay', 'perspectives': 'mturk_agent_1', 'dummy_llm': False, 'model_id': None, 'base_model': None, 'adapter': None, 'max_new_tokens': 128, 'temperature': 0.0, 'lambda_': 1.0, 'posterior_k': 16, 'posterior_temperature': 0.7, 'accept_margin': 5, 'accept_floor': 0.5, 'replay_turns_path': 'structured_cot/results/protocol1_70b_full/turns.jsonl', 'likelihood_temperature': 25.0, 'likelihood_clip': '-3,3'}
+2026-04-22 01:00:25 | INFO    | Loaded 150 dialogues from data/casino_test.json
+2026-04-22 01:00:25 | INFO    | Annotations: 396 dialogues with strategy tags (from CaSiNo/data/casino_ann.json).
+2026-04-22 01:00:26 | INFO    | Built agent: StructuredCoTReplayAgent
+2026-04-22 01:00:26 | INFO    | Perspectives scored: ('mturk_agent_1',)
+2026-04-22 01:00:26 | INFO    | Eval finished in 0.1s
+2026-04-22 01:00:26 | INFO    | 
+turn_level_eval: 1054 per-turn predictions
+
+  accept F1              0.809   (n=28, P=0.826 R=0.792, acc=0.679)
+  bid cosine             0.852   (n=14)
+  strategy macro-F1      0.133   (n=269, |labels|=10)
+  Brier (posterior)        nan   (n=0)
+2026-04-22 01:00:26 | INFO    | Wrote opponent_model/results/turn_eval_structured_cot_replay_full150/turn_summary.json
+2026-04-22 01:00:26 | INFO    | Wrote opponent_model/results/turn_eval_structured_cot_replay_full150/turn_records.jsonl (1054 records)

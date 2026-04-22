@@ -1,0 +1,153 @@
+Sender: LSF System <lsfadmin@lg03e04>
+Subject: Job 239135223: <sft8b_bayes_p3> in cluster <chimera> Done
+
+Job <sft8b_bayes_p3> was submitted from host <lg03a01> by user <cuiz02> in cluster <chimera> at Wed Apr 22 00:05:59 2026
+Job was executed on host(s) <4*lg03e04>, in queue <gpu>, as user <cuiz02> in cluster <chimera> at Wed Apr 22 00:11:21 2026
+</hpc/users/cuiz02> was used as the home directory.
+</sc/arion/projects/lin_lab/complexbehavior/CaSino> was used as the working directory.
+Started at Wed Apr 22 00:11:21 2026
+Terminated at Wed Apr 22 00:29:51 2026
+Results reported at Wed Apr 22 00:29:51 2026
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/bash
+#BSUB -J sft8b_bayes_p3
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 04:00
+#BSUB -o sft_8b/results/lsf/bayes_p3.%J.out
+#BSUB -e sft_8b/results/lsf/bayes_p3.%J.err
+#BSUB -L /bin/bash
+
+# Bayesian teacher (SFT-8B posterior + λ-menu planner) evaluated against
+# the 150-dialogue held-out test set through opponent_model.turn_level_eval.
+# A parallel structured_cot replay pass is run right after for an
+# apples-to-apples head-to-head against the Abdelnabi baseline.
+#
+# Budget estimate:
+#   150 dialogues × ~5 agent-turns × K=16 MC samples per turn.
+#   On H100-NVL, one K=16 batched forward @ 96 new tokens ≈ 2.5 s. Plus
+#   ~90 s of model load. Total ≈ 35-45 min. -W 04:00 is generous.
+#
+# Submit:
+#   bsub < sft_8b/scripts/run_bayesian_protocol3.lsf
+# Or override knobs:
+#   bsub -env "all, LAMBDA=1.0, POSTERIOR_K=16, PERSPECTIVES=mturk_agent_1" \
+#        < sft_8b/scripts/run_bayesian_protocol3.lsf
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+# ── Knobs (all overridable via bsub -env "all, KEY=VAL, ...") ──────────────
+BASE_MODEL="${BASE_MODEL:-/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct}"
+
+(... more ...)
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   1168.00 sec.
+    Max Memory :                                 1619 MB
+    Average Memory :                             1516.06 MB
+    Total Requested Memory :                     160000.00 MB
+    Delta Memory :                               158381.00 MB
+    Max Swap :                                   -
+    Max Processes :                              9
+    Max Threads :                                25
+    Run time :                                   1110 sec.
+    Turnaround time :                            1432 sec.
+
+The output (if any) follows:
+
+=== job 239135223 on lg03e04 at Wed Apr 22 00:11:23 EDT 2026 ===
+index, name, memory.total [MiB]
+0, NVIDIA H100 80GB HBM3, 81559 MiB
+BASE_MODEL=/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct
+ADAPTER=sft_8b/results/lora_run/lora_best
+DATA=data/casino_test.json  MAX_DIALOGUES=150  PERSPECTIVES=mturk_agent_1
+LAMBDA=1.0  K=16  T=0.7  MAX_NEW_TOKENS=96
+BAYES_OUT=opponent_model/results/turn_eval_bayesian_lambda1.0_full150
+REPLAY_OUT=opponent_model/results/turn_eval_structured_cot_replay_full150
+========================================================================
+
+=== [1/2] Structured-CoT replay through turn_level_eval ===
+2026-04-22 00:11:26 | INFO    | Args: {'data': 'data/casino_test.json', 'output_dir': 'opponent_model/results/turn_eval_structured_cot_replay_full150', 'annotations': 'CaSiNo/data/casino_ann.json', 'max_dialogues': 150, 'agent': 'structured_cot_replay', 'perspectives': 'mturk_agent_1', 'dummy_llm': False, 'model_id': None, 'base_model': None, 'adapter': None, 'max_new_tokens': 128, 'temperature': 0.0, 'lambda_': 1.0, 'posterior_k': 16, 'posterior_temperature': 0.7, 'replay_turns_path': 'structured_cot/results/protocol1_70b_full/turns.jsonl', 'likelihood_temperature': 25.0, 'likelihood_clip': '-3,3'}
+2026-04-22 00:11:26 | INFO    | Loaded 150 dialogues from data/casino_test.json
+2026-04-22 00:11:27 | INFO    | Annotations: 396 dialogues with strategy tags (from CaSiNo/data/casino_ann.json).
+2026-04-22 00:11:27 | INFO    | Built agent: StructuredCoTReplayAgent
+2026-04-22 00:11:27 | INFO    | Perspectives scored: ('mturk_agent_1',)
+2026-04-22 00:11:27 | INFO    | Eval finished in 0.1s
+2026-04-22 00:11:27 | INFO    | 
+turn_level_eval: 1054 per-turn predictions
+
+  accept F1              0.809   (n=28, P=0.826 R=0.792, acc=0.679)
+  bid cosine             0.852   (n=14)
+  strategy macro-F1      0.133   (n=269, |labels|=10)
+  Brier (posterior)        nan   (n=0)
+2026-04-22 00:11:27 | INFO    | Wrote opponent_model/results/turn_eval_structured_cot_replay_full150/turn_summary.json
+2026-04-22 00:11:27 | INFO    | Wrote opponent_model/results/turn_eval_structured_cot_replay_full150/turn_records.jsonl (1054 records)
+
+=== [2/2] Bayesian teacher (λ=1.0) through turn_level_eval ===
+2026-04-22 00:11:27 | INFO    | Args: {'data': 'data/casino_test.json', 'output_dir': 'opponent_model/results/turn_eval_bayesian_lambda1.0_full150', 'annotations': 'CaSiNo/data/casino_ann.json', 'max_dialogues': 150, 'agent': 'bayesian', 'perspectives': 'mturk_agent_1', 'dummy_llm': False, 'model_id': None, 'base_model': '/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct', 'adapter': 'sft_8b/results/lora_run/lora_best', 'max_new_tokens': 96, 'temperature': 0.7, 'lambda_': 1.0, 'posterior_k': 16, 'posterior_temperature': 0.7, 'replay_turns_path': None, 'likelihood_temperature': 25.0, 'likelihood_clip': '-3,3'}
+2026-04-22 00:11:27 | INFO    | Loaded 150 dialogues from data/casino_test.json
+2026-04-22 00:11:27 | INFO    | Annotations: 396 dialogues with strategy tags (from CaSiNo/data/casino_ann.json).
+2026-04-22 00:12:52 | INFO    | Built agent: BayesianTurnAgent
+2026-04-22 00:12:52 | INFO    | Perspectives scored: ('mturk_agent_1',)
+2026-04-22 00:29:44 | INFO    | Eval finished in 1011.6s
+2026-04-22 00:29:44 | INFO    | 
+turn_level_eval: 1054 per-turn predictions
+
+  accept F1              0.746   (n=87, P=0.847 R=0.667, acc=0.609)
+  bid cosine             0.752   (n=86)
+  strategy macro-F1      0.048   (n=350, |labels|=10)
+  Brier (posterior)      0.087   (n=1054)
+2026-04-22 00:29:44 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_lambda1.0_full150/turn_summary.json
+2026-04-22 00:29:44 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_lambda1.0_full150/turn_records.jsonl (1054 records)
+
+=== Head-to-head: Bayesian vs Structured-CoT replay ===
+
+Agent        : Abdelnabi Structured-CoT      vs  Bayesian (SFT-8B, λ=1.0)
+N dialogues  : 150  /  150
+N records    : 1054  /  1054
+
+  accept F1             baseline=0.8085 (n=28)       bayesian=0.7463 (n=87)     
+  accept P/R            baseline=0.826/0.792         bayesian=0.847/0.667       
+  bid cosine            baseline=0.8521 (n=14)       bayesian=0.7518 (n=86)     
+  strategy F1           baseline=0.1331 (n=269)      bayesian=0.0485 (n=350)    
+  Brier (mean)          baseline=nan                 bayesian=0.0873 (n=1054)   
+
+Accept-F1 delta (bayesian − baseline): -0.0622
+⚠️  Bayesian teacher UNDERPERFORMS baseline on accept F1 — STOP AND DEBUG.
+
+=== done at Wed Apr 22 00:29:51 EDT 2026 ===
+
+
+PS:
+
+Read file <sft_8b/results/lsf/bayes_p3.239135223.err> for stderr output of this job.
+
