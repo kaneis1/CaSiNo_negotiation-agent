@@ -1,0 +1,82 @@
+#!/bin/bash
+#BSUB -J day7_distill
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+#BSUB -R "h100nvl rusage[mem=50000] span[hosts=1]"
+#BSUB -n 2
+#BSUB -W 08:00
+#BSUB -o sft_8b/results/lsf/day7_distill.%J.out
+#BSUB -e sft_8b/results/lsf/day7_distill.%J.err
+#BSUB -L /bin/bash
+
+# Day 7 distillation corpus build:
+# top-30% Q_w trajectories -> posterior + utility/epistemic menus -> JSONL.
+#
+# Full run:
+#   bsub < sft_8b/scripts/run_distill_data.lsf
+#
+# Smoke override:
+#   bsub -env "all, OUT=sft_8b/results/distill/smoke, STYLES=0.2, MAX_TRAJECTORIES=3, POSTERIOR_K=2" \
+#        < sft_8b/scripts/run_distill_data.lsf
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+mkdir -p sft_8b/results/lsf
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+export TRANSFORMERS_NO_ADVISORY_WARNINGS=1
+
+BASE_MODEL="${BASE_MODEL:-/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct}"
+ADAPTER="${ADAPTER:-sft_8b/results/lora_run/lora_best}"
+OUT="${OUT:-sft_8b/results/distill/day7}"
+STYLES="${STYLES:-0.2,0.5,0.8}"
+POSTERIOR_K="${POSTERIOR_K:-16}"
+POSTERIOR_T="${POSTERIOR_T:-0.7}"
+MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-96}"
+SEED="${SEED:-2024}"
+
+EXTRA=()
+if [[ -n "${MAX_TRAJECTORIES:-}" ]]; then
+    EXTRA+=(--max-trajectories "$MAX_TRAJECTORIES")
+fi
+
+mkdir -p "$OUT"
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+nvidia-smi --query-gpu=index,name,memory.total --format=csv || true
+echo "OUT=$OUT"
+echo "STYLES=$STYLES"
+echo "BASE_MODEL=$BASE_MODEL"
+echo "ADAPTER=$ADAPTER"
+echo "POSTERIOR_K=$POSTERIOR_K POSTERIOR_T=$POSTERIOR_T MAX_NEW_TOKENS=$MAX_NEW_TOKENS"
+echo "========================================================================"
+
+"$CASINO_PY" -m sft_8b.build_distill_data \
+    --styles "$STYLES" \
+    --output-dir "$OUT" \
+    --base-model "$BASE_MODEL" \
+    --adapter "$ADAPTER" \
+    --posterior-k "$POSTERIOR_K" \
+    --posterior-temperature "$POSTERIOR_T" \
+    --max-new-tokens "$MAX_NEW_TOKENS" \
+    --seed "$SEED" \
+    "${EXTRA[@]}"
+
+echo "=== done at $(date) ==="

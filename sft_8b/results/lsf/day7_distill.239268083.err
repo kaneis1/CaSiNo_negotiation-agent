@@ -1,0 +1,11 @@
+fatal: Needed a single revision
+/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+01:41:55 | INFO    | Loading base model: /sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct
+`torch_dtype` is deprecated! Use `dtype` instead!
+01:42:08 | INFO    | We will use 90% of the memory on device 0 for storing the model, and 10% for the buffer to avoid OOM. You can set `max_memory` in to a higher value to use more memory (at your own risk).
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:04<00:14,  4.99s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:09<00:09,  4.96s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:14<00:04,  4.90s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:16<00:00,  3.49s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:16<00:00,  4.02s/it]
+01:42:27 | INFO    | Attaching LoRA adapter: sft_8b/results/lora_run/lora_best
+02:59:49 | INFO    | Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+02:59:49 | INFO    | Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+02:59:49 | INFO    | Wrote 10293 rows -> sft_8b/results/distill/day7/day7_distill.jsonl

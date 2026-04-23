@@ -1,0 +1,98 @@
+{
+  "output_dir": "sft_8b/results/distill/day7",
+  "distill_jsonl": "sft_8b/results/distill/day7/day7_distill.jsonl",
+  "config_json": "sft_8b/results/distill/day7/day7_config.json",
+  "failures_jsonl": "sft_8b/results/distill/day7/day7_failures.jsonl",
+  "posterior_cache_jsonl": "sft_8b/results/distill/day7/day7_posterior_cache.unknown.jsonl",
+  "n_attempted_bursts": 10293,
+  "n_rows": 10293,
+  "failure_rate": 0.0,
+  "failures": {},
+  "rows_by_style": {
+    "cooperative": 3417,
+    "balanced": 3422,
+    "competitive": 3454
+  },
+  "rows_by_intent": {
+    "utter": 8668,
+    "reject": 33,
+    "accept": 732,
+    "offer": 836,
+    "counter": 24
+  },
+  "rows_by_perspective": {
+    "mturk_agent_2": 5170,
+    "mturk_agent_1": 5123
+  },
+  "rows_by_n_opp_utterances_seen": {
+    "0": 805,
+    "1": 1548,
+    "2": 1548,
+    "3": 1548,
+    "4": 1548,
+    "5": 2130,
+    "6": 717,
+    "7": 283,
+    "8": 74,
+    "9": 45,
+    "10": 20,
+    "11": 14,
+    "12": 7,
+    "13": 6
+  },
+  "rows_by_burst_size": {
+    "1": 10236,
+    "2": 57
+  },
+  "posterior_cache": {
+    "path": "sft_8b/results/distill/day7/day7_posterior_cache.unknown.jsonl",
+    "hits": 5504,
+    "misses": 4789,
+    "hit_rate": 0.5347323423686,
+    "n_entries_loaded_or_written": 4789
+  },
+  "posterior_latency_seconds": {
+    "n": 4789,
+    "mean": 0.9633901651927688,
+    "p50": 0.9564933776855469,
+    "p95": 1.1052708625793457
+  },
+  "config": {
+    "styles": [
+      "cooperative",
+      "balanced",
+      "competitive"
+    ],
+    "style_w": {
+      "cooperative": 0.2,
+      "balanced": 0.5,
+      "competitive": 0.8
+    },
+    "style_lambda": {
+      "cooperative": 2.0,
+      "balanced": 1.0,
+      "competitive": 0.0
+    },
+    "utility_scale": {
+      "High": 5,
+      "Medium": 4,
+      "Low": 3,
+      "items_per_issue": 3
+    },
+    "posterior_model": "sft_8b_lora_posterior",
+    "model_commit": "unknown",
+    "git_dirty": true,
+    "base_model": "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct",
+    "adapter": "sft_8b/results/lora_run/lora_best",
+    "posterior_k": 16,
+    "posterior_temperature": 0.7,
+    "max_new_tokens": 96,
+    "seed": 2024,
+    "utility_top_k": 5,
+    "epistemic_top_k": 3,
+    "epistemic_menu_method": "opp_utility_variance_proxy",
+    "epistemic_menu_justification": "High variance in opponent utility across priority hypotheses identifies offers whose reception would best discriminate among the six possible opponent orderings, without requiring an extra response-model call.",
+    "burst_policy": "Collapse consecutive same-speaker chat_logs entries; the last action in the burst determines intent and non-action texts are concatenated as utterance.",
+    "counter_offer_predicate": "counter iff the most recent prior action tag from either speaker is the opponent's Submit-Deal"
+  }
+}

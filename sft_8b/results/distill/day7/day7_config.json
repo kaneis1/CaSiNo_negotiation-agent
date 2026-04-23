@@ -1,0 +1,38 @@
+{
+  "styles": [
+    "cooperative",
+    "balanced",
+    "competitive"
+  ],
+  "style_w": {
+    "cooperative": 0.2,
+    "balanced": 0.5,
+    "competitive": 0.8
+  },
+  "style_lambda": {
+    "cooperative": 2.0,
+    "balanced": 1.0,
+    "competitive": 0.0
+  },
+  "utility_scale": {
+    "High": 5,
+    "Medium": 4,
+    "Low": 3,
+    "items_per_issue": 3
+  },
+  "posterior_model": "sft_8b_lora_posterior",
+  "model_commit": "unknown",
+  "git_dirty": true,
+  "base_model": "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct",
+  "adapter": "sft_8b/results/lora_run/lora_best",
+  "posterior_k": 16,
+  "posterior_temperature": 0.7,
+  "max_new_tokens": 96,
+  "seed": 2024,
+  "utility_top_k": 5,
+  "epistemic_top_k": 3,
+  "epistemic_menu_method": "opp_utility_variance_proxy",
+  "epistemic_menu_justification": "High variance in opponent utility across priority hypotheses identifies offers whose reception would best discriminate among the six possible opponent orderings, without requiring an extra response-model call.",
+  "burst_policy": "Collapse consecutive same-speaker chat_logs entries; the last action in the burst determines intent and non-action texts are concatenated as utterance.",
+  "counter_offer_predicate": "counter iff the most recent prior action tag from either speaker is the opponent's Submit-Deal"
+}
