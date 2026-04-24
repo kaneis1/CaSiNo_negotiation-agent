@@ -53,8 +53,16 @@ def _eligible_accept_record(rec: Mapping[str, Any]) -> bool:
     )
 
 
-def _accept_map_from_jsonl(path: Path) -> Dict[Tuple[Any, int], Tuple[bool, bool]]:
-    out: Dict[Tuple[Any, int], Tuple[bool, bool]] = {}
+def _record_key(rec: Mapping[str, Any]) -> Tuple[Any, str, int]:
+    return (
+        rec["dialogue_id"],
+        str(rec.get("perspective", "")),
+        int(rec["turn_index"]),
+    )
+
+
+def _accept_map_from_jsonl(path: Path) -> Dict[Tuple[Any, str, int], Tuple[bool, bool]]:
+    out: Dict[Tuple[Any, str, int], Tuple[bool, bool]] = {}
     with path.open() as f:
         for line in f:
             line = line.strip()
@@ -63,9 +71,56 @@ def _accept_map_from_jsonl(path: Path) -> Dict[Tuple[Any, int], Tuple[bool, bool
             rec = json.loads(line)
             if not _eligible_accept_record(rec):
                 continue
-            k = (rec["dialogue_id"], int(rec["turn_index"]))
+            k = _record_key(rec)
             out[k] = (bool(rec["pred"]["accept"]), bool(rec["true"]["accept"]))
     return out
+
+
+def _action_map_from_jsonl(path: Path) -> Dict[Tuple[Any, str, int], str]:
+    out: Dict[Tuple[Any, str, int], str] = {}
+    with path.open() as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            rec = json.loads(line)
+            action = rec.get("pred", {}).get("action")
+            if action is None:
+                continue
+            out[_record_key(rec)] = str(action)
+    return out
+
+
+def _posterior_map_from_jsonl(path: Path) -> Dict[Tuple[Any, str, int], np.ndarray]:
+    out: Dict[Tuple[Any, str, int], np.ndarray] = {}
+    with path.open() as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            rec = json.loads(line)
+            posterior = rec.get("pred", {}).get("posterior")
+            if posterior is None:
+                continue
+            arr = np.asarray(posterior, dtype=float).flatten()
+            if arr.ndim != 1 or arr.size == 0:
+                continue
+            s = float(arr.sum())
+            if s <= 0:
+                continue
+            out[_record_key(rec)] = arr / s
+    return out
+
+
+def _mean_kl(p_rows: Sequence[np.ndarray], q_rows: Sequence[np.ndarray], eps: float = 1e-12) -> float:
+    vals = []
+    for p, q in zip(p_rows, q_rows):
+        p1 = np.clip(np.asarray(p, dtype=float), eps, 1.0)
+        q1 = np.clip(np.asarray(q, dtype=float), eps, 1.0)
+        p1 = p1 / p1.sum()
+        q1 = q1 / q1.sum()
+        vals.append(float(np.sum(p1 * np.log(p1 / q1))))
+    return float(np.mean(vals)) if vals else float("nan")
 
 
 def _fmt_summary(label: str, s: Dict[str, Any]) -> None:
@@ -128,7 +183,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.records_a and args.records_b:
         ma = _accept_map_from_jsonl(args.records_a)
         mb = _accept_map_from_jsonl(args.records_b)
-        keys: Set[Tuple[Any, int]] = set(ma.keys()) & set(mb.keys())
+        keys: Set[Tuple[Any, str, int]] = set(ma.keys()) & set(mb.keys())
         mismatched = [
             k for k in keys
             if ma[k][1] != mb[k][1]
@@ -156,8 +211,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(f"  Δ F1: {rb['f1'] - ra['f1']:+.4f}\n")
 
         # Matched bid cosine (same turn indices in intersection of bid-scored turns)
-        def bid_map(p: Path) -> Dict[Tuple[Any, int], Tuple[np.ndarray, np.ndarray]]:
-            m: Dict[Tuple[Any, int], Tuple[np.ndarray, np.ndarray]] = {}
+        def bid_map(p: Path) -> Dict[Tuple[Any, str, int], Tuple[np.ndarray, np.ndarray]]:
+            m: Dict[Tuple[Any, str, int], Tuple[np.ndarray, np.ndarray]] = {}
             with p.open() as f:
                 for line in f:
                     line = line.strip()
@@ -168,7 +223,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                     pb = rec["pred"].get("bid")
                     if gb is None or pb is None:
                         continue
-                    k = (rec["dialogue_id"], int(rec["turn_index"]))
+                    k = _record_key(rec)
                     m[k] = (
                         np.asarray(pb, dtype=float),
                         np.asarray(gb, dtype=float),
@@ -189,6 +244,32 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(f"  Intersection size: {len(bkeys)}")
             print(f"  {args.label_a}: mean cosine = {float(np.mean(cos_a)):.4f}")
             print(f"  {args.label_b}: mean cosine = {float(np.mean(cos_b)):.4f}\n")
+
+        ama = _action_map_from_jsonl(args.records_a)
+        amb = _action_map_from_jsonl(args.records_b)
+        akeys = set(ama.keys()) & set(amb.keys())
+        if akeys:
+            match = sum(1 for k in akeys if ama[k] == amb[k])
+            print("=== Action agreement (matched turns with explicit action labels) ===\n")
+            print(f"  Intersection size: {len(akeys)}")
+            print(f"  Exact match rate: {match / len(akeys):.4f}\n")
+
+        pma = _posterior_map_from_jsonl(args.records_a)
+        pmb = _posterior_map_from_jsonl(args.records_b)
+        pkeys = set(pma.keys()) & set(pmb.keys())
+        if pkeys:
+            pa = [pma[k] for k in sorted(pkeys)]
+            pb = [pmb[k] for k in sorted(pkeys)]
+            print("=== Posterior divergence (matched turns with both posteriors) ===\n")
+            print(f"  Intersection size: {len(pkeys)}")
+            print(
+                f"  mean KL({args.label_a} || {args.label_b}) = "
+                f"{_mean_kl(pa, pb):.6f}"
+            )
+            print(
+                f"  mean KL({args.label_b} || {args.label_a}) = "
+                f"{_mean_kl(pb, pa):.6f}\n"
+            )
 
     return 0
 

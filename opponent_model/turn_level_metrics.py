@@ -98,6 +98,8 @@ class TurnLevelAgent(Protocol):
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        dialogue_id: Any = None,
+        turn_index: Optional[int] = None,
     ) -> Mapping[str, Any]:
         """Return a dict with any subset of the keys:
 
@@ -506,6 +508,7 @@ def turn_level_eval(
     strat_pred: List[List[str]] = []
     strat_true: List[List[str]] = []
     brier_vals: List[float] = []
+    brier_by_turn_index: Dict[int, List[float]] = {}
     records: List[TurnRecord] = []
 
     perspectives = tuple(perspectives)
@@ -581,6 +584,8 @@ def turn_level_eval(
                         my_priorities=dict(my_priorities),
                         my_reasons=dict(my_reasons),
                         pending_offer=pending,
+                        dialogue_id=did,
+                        turn_index=t,
                     ) or {}
                 except Exception:
                     logger.exception(
@@ -603,6 +608,7 @@ def turn_level_eval(
                     [str(x).strip() for x in pred_strat_raw if str(x).strip()]
                     if pred_strat_raw is not None else None
                 )
+                pred_action = pred.get("action")
                 pred_posterior_raw = pred.get("posterior")
                 pred_posterior: Optional[np.ndarray] = None
                 if pred_posterior_raw is not None:
@@ -637,7 +643,9 @@ def turn_level_eval(
 
                 # ── Brier ── (always when posterior is exposed)
                 if pred_posterior is not None and true_idx is not None:
-                    brier_vals.append(normalized_brier(pred_posterior, true_idx))
+                    brier = normalized_brier(pred_posterior, true_idx)
+                    brier_vals.append(brier)
+                    brier_by_turn_index.setdefault(int(t), []).append(brier)
 
                 rec = TurnRecord(
                     dialogue_id=did,
@@ -649,6 +657,7 @@ def turn_level_eval(
                     is_action=turn.get("text") in DEAL_ACTIONS,
                     pending_offer=pending,
                     pred={
+                        "action":    pred_action,
                         "accept":    pred_accept,
                         "bid":       (pred_bid.tolist() if pred_bid is not None else None),
                         "strategy":  pred_strat,
@@ -676,6 +685,7 @@ def turn_level_eval(
         bid_pairs=bid_pairs,
         strategy_pairs=(strat_pred, strat_true),
         brier_vals=brier_vals,
+        brier_by_turn_index=brier_by_turn_index,
         label_set=label_set,
     )
     summary["n_records"] = len(records)
@@ -689,6 +699,7 @@ def aggregate_turn_metrics(
     bid_pairs: Sequence[Tuple[np.ndarray, np.ndarray]],
     strategy_pairs: Tuple[Sequence[Sequence[str]], Sequence[Sequence[str]]],
     brier_vals: Sequence[float],
+    brier_by_turn_index: Optional[Mapping[int, Sequence[float]]] = None,
     label_set: Sequence[str] = CASINO_STRATEGIES,
 ) -> Dict[str, Any]:
     """Compute the four headline metrics from already-bucketed pairs."""
@@ -707,6 +718,16 @@ def aggregate_turn_metrics(
     brier_mean = (
         float(np.mean(list(brier_vals))) if brier_vals else float("nan")
     )
+    turn_curve = []
+    for turn_index in sorted((brier_by_turn_index or {}).keys()):
+        vals = list((brier_by_turn_index or {}).get(turn_index, ()))
+        if not vals:
+            continue
+        turn_curve.append({
+            "turn_index": int(turn_index),
+            "mean": float(np.mean(vals)),
+            "support": len(vals),
+        })
 
     return {
         "accept": accept_metrics,
@@ -723,6 +744,7 @@ def aggregate_turn_metrics(
             "mean": brier_mean,
             "support": len(list(brier_vals)),
         },
+        "brier_by_turn_index": turn_curve,
     }
 
 

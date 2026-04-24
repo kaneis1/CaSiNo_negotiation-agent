@@ -49,6 +49,9 @@ OUT="${OUT:-sft_8b/results/distill/day7}"
 STYLES="${STYLES:-0.2,0.5,0.8}"
 POSTERIOR_K="${POSTERIOR_K:-16}"
 POSTERIOR_T="${POSTERIOR_T:-0.7}"
+# Day 7 posterior-sampling budget. This is intentionally smaller than the
+# Day 9 distilled-student eval budget (256), because here the model only emits
+# a compact preference JSON for posterior estimation.
 MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-96}"
 SEED="${SEED:-2024}"
 

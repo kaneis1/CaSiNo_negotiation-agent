@@ -127,19 +127,21 @@ class StructuredCoTReplayAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        dialogue_id: Any = None,
+        turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
         # turn_level_eval doesn't pass dialogue_id / turn_index directly;
         # infer from history length (== number of prior turns in chat_logs)
         # and dialogue from the most recent turn's dialogue_id if present.
         # Fallback: scan for any row whose key matches (did, len(history), my_role).
-        turn_index = len(history)
+        turn_index = int(turn_index if turn_index is not None else len(history))
 
         # Find did by scanning pending_offer or history for any 'dialogue_id'
         # embedded by the caller — CaSiNo's chat_logs entries themselves
         # don't carry a dialogue_id, so we rely on the harness wrapper
         # threading it through `history`. As a fallback, iterate over the
         # loaded lookup to find the unique row matching this (t, role).
-        did = None
+        did = dialogue_id
         for turn in history:
             if "dialogue_id" in turn:
                 did = turn["dialogue_id"]
@@ -191,6 +193,7 @@ class StructuredCoTReplayAgent:
         return {
             "accept":    accept,
             "bid":       bid,
+            "action":    action,
             "strategy":  strategy,
             "posterior": None,   # Structured CoT does not expose a posterior.
         }

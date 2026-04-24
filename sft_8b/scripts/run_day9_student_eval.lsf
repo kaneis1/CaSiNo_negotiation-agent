@@ -1,0 +1,94 @@
+#!/bin/bash
+#BSUB -J day9_student_p3
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+#BSUB -R "h10080g rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 08:00
+#BSUB -o sft_8b/results/lsf/day9_student_p3.%J.out
+#BSUB -e sft_8b/results/lsf/day9_student_p3.%J.err
+#BSUB -L /bin/bash
+
+# Day 9 distilled-student evaluation (Protocol 3 / gold history).
+#
+# One style token per run. Baseline and Bayesian teacher already have their
+# own full-run scripts; this is the student companion job so the three models
+# can be launched in parallel.
+#
+# Submit:
+#   bsub < sft_8b/scripts/run_day9_student_eval.lsf
+#
+# Override knobs:
+#   bsub -env "all,STYLE_TOKEN=balanced,MAX_DIALOGUES=150" \
+#        < sft_8b/scripts/run_day9_student_eval.lsf
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+BASE_MODEL="${BASE_MODEL:-/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct}"
+ADAPTER="${ADAPTER:-sft_8b/results/day8_lora_run/lora_best}"
+DATA="${DATA:-data/casino_test.json}"
+ANNOTATIONS="${ANNOTATIONS:-CaSiNo/data/casino_ann.json}"
+MAX_DIALOGUES="${MAX_DIALOGUES:-150}"
+PERSPECTIVES="${PERSPECTIVES:-mturk_agent_1}"
+STYLE_TOKEN="${STYLE_TOKEN:-balanced}"
+TEMPERATURE="${TEMPERATURE:-0.0}"
+
+# Student generations are materially longer than the teacher posterior JSON:
+# submit turns need enough room for the posterior block + selected_content JSON
+# + utterance. Smoke runs showed 128 truncates these; 256 is the safe default.
+STUDENT_MAX_NEW_TOKENS="${STUDENT_MAX_NEW_TOKENS:-256}"
+
+RUN_TAG="${RUN_TAG:-student_${STYLE_TOKEN}_full150}"
+OUT="${OUT:-opponent_model/results/turn_eval_${RUN_TAG}}"
+CACHE_PATH="${CACHE_PATH:-$OUT/student_cache.sqlite}"
+PARSE_LOG="${PARSE_LOG:-$OUT/student_parse_failures.jsonl}"
+
+mkdir -p sft_8b/results/lsf
+mkdir -p "$OUT"
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+nvidia-smi --query-gpu=index,name,memory.total --format=csv || true
+echo "BASE_MODEL=$BASE_MODEL"
+echo "ADAPTER=$ADAPTER"
+echo "DATA=$DATA  MAX_DIALOGUES=$MAX_DIALOGUES  PERSPECTIVES=$PERSPECTIVES"
+echo "STYLE_TOKEN=$STYLE_TOKEN  STUDENT_MAX_NEW_TOKENS=$STUDENT_MAX_NEW_TOKENS"
+echo "OUT=$OUT"
+echo "CACHE_PATH=$CACHE_PATH"
+echo "PARSE_LOG=$PARSE_LOG"
+echo "========================================================================"
+
+"$CASINO_PY" -m opponent_model.turn_eval_run \
+    --data                   "$DATA" \
+    --output-dir             "$OUT" \
+    --agent                  distilled_student \
+    --base-model             "$BASE_MODEL" \
+    --adapter                "$ADAPTER" \
+    --annotations            "$ANNOTATIONS" \
+    --perspectives           "$PERSPECTIVES" \
+    --max-dialogues          "$MAX_DIALOGUES" \
+    --style-token            "$STYLE_TOKEN" \
+    --temperature            "$TEMPERATURE" \
+    --student-max-new-tokens "$STUDENT_MAX_NEW_TOKENS" \
+    --student-cache-path     "$CACHE_PATH" \
+    --student-parse-log      "$PARSE_LOG"
+
+echo "=== done at $(date) ==="
