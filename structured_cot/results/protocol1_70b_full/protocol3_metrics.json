@@ -1,0 +1,110 @@
+{
+  "accept": {
+    "f1": 0.2435897435897436,
+    "accuracy": 0.8494897959183674,
+    "precision": 0.14393939393939395,
+    "recall": 0.7916666666666666,
+    "support": 784,
+    "confusion": {
+      "tp": 19,
+      "fp": 113,
+      "fn": 5,
+      "tn": 647
+    }
+  },
+  "bid_cosine": {
+    "mean": 0.8520975276326688,
+    "median": 0.8640388549798657,
+    "std": 0.080455572174019,
+    "min": 0.7108186533109108,
+    "max": 0.9567297464698797,
+    "support": 14
+  },
+  "strategy": {
+    "macro_f1": 0.12856481900449834,
+    "support": 297,
+    "per_label": {
+      "small-talk": {
+        "f1": 0.15,
+        "support": 68,
+        "tp": 6,
+        "fp": 6,
+        "fn": 62
+      },
+      "self-need": {
+        "f1": 0.2746781115879828,
+        "support": 60,
+        "tp": 32,
+        "fp": 141,
+        "fn": 28
+      },
+      "other-need": {
+        "f1": 0.047058823529411764,
+        "support": 26,
+        "tp": 2,
+        "fp": 57,
+        "fn": 24
+      },
+      "no-need": {
+        "f1": 0.0,
+        "support": 9,
+        "tp": 0,
+        "fp": 0,
+        "fn": 9
+      },
+      "elicit-pref": {
+        "f1": 0.18181818181818182,
+        "support": 23,
+        "tp": 7,
+        "fp": 47,
+        "fn": 16
+      },
+      "promote-coordination": {
+        "f1": 0.1839080459770115,
+        "support": 34,
+        "tp": 24,
+        "fp": 203,
+        "fn": 10
+      },
+      "vouch-fair": {
+        "f1": 0.15789473684210525,
+        "support": 36,
+        "tp": 6,
+        "fp": 34,
+        "fn": 30
+      },
+      "showing-empathy": {
+        "f1": 0.21621621621621623,
+        "support": 14,
+        "tp": 8,
+        "fp": 52,
+        "fn": 6
+      },
+      "uv-part": {
+        "f1": 0.0,
+        "support": 6,
+        "tp": 0,
+        "fp": 0,
+        "fn": 6
+      },
+      "non-strategic": {
+        "f1": 0.07407407407407407,
+        "support": 96,
+        "tp": 4,
+        "fp": 8,
+        "fn": 92
+      }
+    }
+  },
+  "brier": {
+    "note": "Not applicable: StructuredCoT agent does not expose a posterior over priority orderings. Plug in the HybridTurnAgent for Brier."
+  },
+  "counts": {
+    "n_agent_turns": 784,
+    "n_agent_accepts": 132,
+    "n_human_accepts": 24,
+    "n_human_submits": 26,
+    "n_bid_pairs": 14,
+    "n_strategy_pairs": 297
+  }
+}

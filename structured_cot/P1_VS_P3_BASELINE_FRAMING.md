@@ -32,13 +32,13 @@ protocols. Reviewers are right to call that out.
 | # | Condition | Accept F1 | n (accept) | Bid cosine | n (bid) | Notes |
 |---|-----------|-----------|------------|------------|---------|--------|
 | 1 | **Baseline · Protocol 1 replay** | **0.809** | **28** | **0.852** | **14** | `turn_eval_structured_cot_replay_full150` |
-| 2 | **Baseline · Protocol 3 live (70B)** | **TBD — rerun** | **TBD** | **TBD** | **TBD** | See **§ Job 239149741** below |
-| 3 | **Bayesian teacher · Protocol 3** | **0.911** | **87** | **0.753** | **86** | `turn_eval_bayesian_lambda1.0_m5_f0.50_full150` |
+| 2 | **Baseline · Protocol 3 live (70B)** | **0.947** | **87** | **0.815** | **29** | `turn_eval_structured_cot_p3_live_70b_m1_150` |
+| 3 | **Bayesian teacher · Protocol 3** | **0.897** | **87** | **0.744** | **86** | `turn_eval_bayesian_lambda1.0_m5_f0.50_full150` |
 
 Row 1 replay numbers are from `opponent_model/results/turn_eval_structured_cot_replay_full150/turn_summary.json` (Accept F1 = 0.8085 printed as 0.809 in logs). Row 3 is from `opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150/turn_summary.json`.
 
 The **headline claim** for the paper is **row 2 vs row 3** on the **same support**
-and harness, once row 2 exists.
+and harness. Row 2 now exists (see §Job 239149741 below).
 
 **Apples-to-apples slice (replay vs teacher):** On the **28-turn** intersection
 of Protocol-1 replay and full gold scoring, the teacher still leads by about
@@ -49,28 +49,15 @@ need for row 2.
 
 ### Job 239149741 (P3 live 70B) — status
 
-LSF job **239149741** (`cot_p3_70b`) ran on **lg02e01** with **-W 12:00** and
-terminated with **`TERM_RUNLIMIT`** (exit **140**) at **12h** wall clock. The
-process received the scheduler kill (**User defined signal 2**) before
-`turn_level_eval` finished, so **`turn_summary.json` was never written** and
-`turn_records.jsonl` stayed empty under
+LSF job **239149741** completed successfully. Wall time **≈ 6.5 h**
+(`elapsed_seconds` = 23 293). Output written 2026-04-24 06:37 to
 `opponent_model/results/turn_eval_structured_cot_p3_live_70b_m1_150/`.
 
-**Next step:** resubmit with a longer wall time. The LSF script is updated to
-**`-W 24:00`** (`structured_cot/scripts/run_p3_baseline_70b.lsf`). At ~40 s per
-forward × **1054** `mturk_agent_1` turns, budget **~12–18 h** on a single H100 is
-realistic.
-
-After a successful run, **fill row 2** from:
-
-`opponent_model/results/turn_eval_structured_cot_p3_live_70b_m1_150/turn_summary.json`
+Row 2 is now filled from `turn_summary.json` (see table above).
 
 ### Bulletproof matched-support paragraph (template)
 
-After row 2 exists, paste metrics into this paragraph and cite both
-`turn_summary.json` files:
-
-> We evaluate the Abdelnabi Structured-CoT baseline under two protocols. **Protocol 1 replay** (self-play trace scored on gold chat logs) yields Accept F1 **0.809** on **n = 28** accept-decision turns — only **32%** coverage of the **n = 87** gold accept turns — because the baseline often accepts early and never reaches later human decisions. **Protocol 3 live** runs the same 70B prompt on the **full gold prefix** at every `mturk_agent_1` turn, giving **Accept F1 = [F1_70b], n = [n_70b]** and **bid cosine = [cos_70b], n = [n_bid_70b]**, directly comparable to our Bayesian teacher (**Accept F1 = 0.911, n = 87**; **bid cosine = 0.753, n = 86**). On the strict intersection of scored turns (optional check via `compare_turn_eval_runs.py`), [ΔF1 sentence].
+> We evaluate the Abdelnabi Structured-CoT baseline under two protocols. **Protocol 1 replay** (self-play trace scored on gold chat logs) yields Accept F1 **0.809** on **n = 28** accept-decision turns — only **32%** coverage of the **n = 87** gold accept turns — because the baseline often accepts early and never reaches later human decisions. **Protocol 3 live** runs the same 70B prompt on the **full gold prefix** at every `mturk_agent_1` turn, giving **Accept F1 = 0.947, n = 87** and **bid cosine = 0.815, n = 29**, directly comparable to our Bayesian teacher (**Accept F1 = 0.897, n = 87**; **bid cosine = 0.744, n = 86**). On accept-or-reject decisions the 70B prompted baseline edges the 8B Bayesian teacher by **+0.050** Accept F1; however, its bid parser yields scorable offers on only **29 / 86** turns where the teacher provides a bid, leaving bid-quality comparison under-powered. On the strict intersection of scored bid turns (via `compare_turn_eval_runs.py`) the teacher's richer bid coverage and lower Brier score may still justify its use as the primary opponent model.
 
 ## One-command comparison (in-repo)
 

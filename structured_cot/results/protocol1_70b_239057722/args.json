@@ -1,0 +1,16 @@
+{
+  "data": "data/casino_test.json",
+  "num_dialogues": 10,
+  "agent_role": "mturk_agent_1",
+  "backend": "llama_70b",
+  "model_id": null,
+  "max_tokens": 800,
+  "temperature": 0.3,
+  "seed": 2024,
+  "max_turns": 25,
+  "shuffle": false,
+  "output_root": "structured_cot/results",
+  "run_name": "protocol1_70b_239057722",
+  "log_level": "INFO",
+  "timestamp": "20260421_105944"
+}

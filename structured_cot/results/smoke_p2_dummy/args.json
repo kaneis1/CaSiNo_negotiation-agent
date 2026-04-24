@@ -1,0 +1,19 @@
+{
+  "test_data": "data/casino_test.json",
+  "train_data": "data/casino_train.json",
+  "num_dialogues": 10,
+  "backend": "dummy",
+  "model_id": null,
+  "max_tokens": 800,
+  "temperature": 0.3,
+  "retrieval_temperature": 0.7,
+  "retrieval_top_k": 5,
+  "retrieval_context_turns": 8,
+  "seed": 2024,
+  "max_turns": 25,
+  "shuffle": false,
+  "output_root": "structured_cot/results",
+  "run_name": "smoke_p2_dummy",
+  "log_level": "WARNING",
+  "timestamp": "20260421_174606"
+}

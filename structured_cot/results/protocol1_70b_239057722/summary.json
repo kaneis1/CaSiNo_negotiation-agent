@@ -1,0 +1,26 @@
+{
+  "n_dialogues": 10,
+  "n_agent_turns": 59,
+  "n_parse_retries": 0,
+  "n_parse_fallbacks": 0,
+  "n_illegal_counter_offers": 0,
+  "outcomes": {
+    "agent_accepted": 10
+  },
+  "per_dialogue_elapsed": [
+    294.85371136665344,
+    58.11788988113403,
+    150.27916049957275,
+    185.58526277542114,
+    197.25451135635376,
+    78.90671014785767,
+    157.36924386024475,
+    119.23307967185974,
+    155.80795097351074,
+    122.7000150680542
+  ],
+  "wallclock_seconds": 1520.1257240772247,
+  "parse_retry_rate": 0.0,
+  "parse_fallback_rate": 0.0,
+  "illegal_counter_offer_rate": 0.0
+}

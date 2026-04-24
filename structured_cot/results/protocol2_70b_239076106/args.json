@@ -1,0 +1,19 @@
+{
+  "test_data": "data/casino_test.json",
+  "train_data": "data/casino_train.json",
+  "num_dialogues": 150,
+  "backend": "llama_70b",
+  "model_id": null,
+  "max_tokens": 800,
+  "temperature": 0.3,
+  "retrieval_temperature": 0.7,
+  "retrieval_top_k": 5,
+  "retrieval_context_turns": 8,
+  "seed": 2024,
+  "max_turns": 25,
+  "shuffle": false,
+  "output_root": "structured_cot/results",
+  "run_name": "protocol2_70b_239076106",
+  "log_level": "INFO",
+  "timestamp": "20260421_174810"
+}

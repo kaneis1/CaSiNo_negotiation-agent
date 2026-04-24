@@ -1,0 +1,25 @@
+{
+  "n_dialogues": 150,
+  "agreement_rate": 0.56,
+  "walkaway_rate": 0.013333333333333334,
+  "phantom_accept_rate": 0.4,
+  "max_turns_rate": 0.013333333333333334,
+  "mean_agent_points": 10.813333333333333,
+  "mean_opp_points": 14.566666666666666,
+  "mean_joint_points": 25.38,
+  "mean_agent_pareto_share": 0.46162564220535257,
+  "mean_opp_pareto_share": 0.6205484625412168,
+  "mean_agent_turns": 3.8466666666666667,
+  "parse_retries": 2,
+  "parse_fallbacks": 0,
+  "parse_fallback_rate": 0.0,
+  "outcomes": {
+    "opp_accepted": 72,
+    "agent_phantom_accept": 60,
+    "opp_accept_without_offer": 2,
+    "agent_accepted": 12,
+    "opp_walkaway": 2,
+    "max_turns_exceeded": 2
+  },
+  "wallclock_seconds": 12792.53097820282
+}
