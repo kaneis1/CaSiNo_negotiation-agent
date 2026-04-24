@@ -1,0 +1,79 @@
+#!/bin/bash
+#BSUB -J day8_sft
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+#BSUB -R "h10080g rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 8:00
+#BSUB -o sft_8b/results/lsf/day8_sft.%J.out
+#BSUB -e sft_8b/results/lsf/day8_sft.%J.err
+#BSUB -L /bin/bash
+
+# Day 8 distilled-student LoRA run on Llama-3.1-8B-Instruct.
+#
+# Default: all three styles. If queue pressure is bad, submit the balanced-only
+# abstract-safe variant:
+#   bsub -env "all,STYLES=balanced,DATA_OUT=sft_8b/results/day8_sft_data_balanced,TRAIN_OUT=sft_8b/results/day8_lora_run_balanced" \
+#        < sft_8b/scripts/run_day8_sft_train.lsf
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+mkdir -p sft_8b/results/lsf
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+export TRANSFORMERS_NO_ADVISORY_WARNINGS=1
+
+STYLES="${STYLES:-0.2,0.5,0.8}"
+DATA_OUT="${DATA_OUT:-sft_8b/results/day8_sft_data}"
+TRAIN_OUT="${TRAIN_OUT:-sft_8b/results/day8_lora_run}"
+EVAL_FRAC="${EVAL_FRAC:-0.10}"
+INTENT_BALANCE_MODE="${INTENT_BALANCE_MODE:-oversample_to_anchor}"
+MAX_INTENT_REPEAT="${MAX_INTENT_REPEAT:-32}"
+
+mkdir -p "$DATA_OUT" "$TRAIN_OUT"
+
+echo "=== job $LSB_JOBID on $(hostname) at $(date) ==="
+echo "Interpreter: $CASINO_PY"
+echo "Styles: $STYLES"
+echo "Data out: $DATA_OUT"
+echo "Train out: $TRAIN_OUT"
+"$CASINO_PY" -c "import sys, torch; print('python', sys.executable); print('torch', torch.__version__, 'cuda?', torch.cuda.is_available())"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+echo "[$(date +%T)] Building Day 8 SFT data ..."
+"$CASINO_PY" -m sft_8b.build_day8_sft_data \
+    --input-jsonl sft_8b/results/distill/day7/day7_distill.jsonl \
+    --output-dir "$DATA_OUT" \
+    --styles "$STYLES" \
+    --eval-fraction "$EVAL_FRAC" \
+    --intent-balance-mode "$INTENT_BALANCE_MODE" \
+    --max-intent-repeat "$MAX_INTENT_REPEAT"
+
+echo "[$(date +%T)] Starting Day 8 LoRA SFT ..."
+"$CASINO_PY" -m sft_8b.train \
+    --train-file "$DATA_OUT/day8_train_rows.jsonl" \
+    --eval-file "$DATA_OUT/day8_eval_rows.jsonl" \
+    --output-dir "$TRAIN_OUT" \
+    --num-train-epochs 3 \
+    --max-seq-length 1536 \
+    --per-device-train-batch-size 4 \
+    --per-device-eval-batch-size 4 \
+    --gradient-accumulation-steps 4
+
+echo "=== done at $(date) ==="

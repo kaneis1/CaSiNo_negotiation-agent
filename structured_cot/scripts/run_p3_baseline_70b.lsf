@@ -2,10 +2,10 @@
 #BSUB -J cot_p3_70b
 #BSUB -P acc_lin_lab
 #BSUB -q gpu
-#BSUB -gpu "num=1"
+#BSUB -gpu "num=2"
 #BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
 #BSUB -n 4
-#BSUB -W 12:00
+#BSUB -W 24:00
 #BSUB -o structured_cot/results/lsf/p3_baseline_70b.%J.out
 #BSUB -e structured_cot/results/lsf/p3_baseline_70b.%J.err
 #BSUB -L /bin/bash
@@ -22,7 +22,8 @@
 # Override model path:
 #   bsub -env "all, MODEL_ID=/path/to/Llama-3.3-70B-Instruct" < ... >
 #
-# Wallclock: ~1054 forwards × (20–40 s) ⇒ budget 8–12 h on H100; -W 12:00.
+# Wallclock: ~1054 forwards × (~40 s) can exceed 12 h on H100; job 239149741
+# hit TERM_RUNLIMIT at 12:00 with no turn_summary.json — use -W 24:00.
 
 set -eo pipefail
 

@@ -1,43 +1,43 @@
 import unittest
 
-from sft_8b.build_distill_data import is_counter
+from sft_8b.build_distill_data import (
+    max_prior_opp_submit_age_turns,
+    submit_is_response_to_opp_offer,
+)
 
 
 def turn(role, text):
     return {"id": role, "text": text}
 
 
-class CounterOfferPredicateTest(unittest.TestCase):
-    def test_no_prior_action_is_offer(self):
+class SubmitResponsePredicateTest(unittest.TestCase):
+    def test_no_prior_opponent_submit(self):
         history = [
             turn("mturk_agent_2", "hello"),
             turn("mturk_agent_1", "hi"),
         ]
-        self.assertFalse(is_counter(history, "mturk_agent_1"))
+        self.assertFalse(submit_is_response_to_opp_offer(history, "mturk_agent_1"))
+        self.assertIsNone(max_prior_opp_submit_age_turns(history, "mturk_agent_1"))
 
-    def test_opponent_submit_stays_pending_through_natural_text(self):
+    def test_any_prior_opponent_submit_with_later_text(self):
         history = [
             turn("mturk_agent_2", "Submit-Deal"),
             turn("mturk_agent_2", "this is fair"),
             turn("mturk_agent_1", "let me think"),
         ]
-        self.assertTrue(is_counter(history, "mturk_agent_1"))
+        self.assertTrue(submit_is_response_to_opp_offer(history, "mturk_agent_1"))
+        self.assertEqual(max_prior_opp_submit_age_turns(history, "mturk_agent_1"), 2)
 
-    def test_own_submit_or_resolving_action_is_not_counter(self):
-        own_submit = [
-            turn("mturk_agent_1", "Submit-Deal"),
-            turn("mturk_agent_2", "please reconsider"),
-        ]
-        self.assertFalse(is_counter(own_submit, "mturk_agent_1"))
-
-        resolved = [
+    def test_most_recent_prior_opponent_submit_age(self):
+        history = [
             turn("mturk_agent_2", "Submit-Deal"),
             turn("mturk_agent_1", "Reject-Deal"),
-            turn("mturk_agent_2", "what about this"),
+            turn("mturk_agent_2", "Submit-Deal"),
+            turn("mturk_agent_1", "still not quite right"),
         ]
-        self.assertFalse(is_counter(resolved, "mturk_agent_1"))
+        self.assertTrue(submit_is_response_to_opp_offer(history, "mturk_agent_1"))
+        self.assertEqual(max_prior_opp_submit_age_turns(history, "mturk_agent_1"), 1)
 
 
 if __name__ == "__main__":
     unittest.main()
-

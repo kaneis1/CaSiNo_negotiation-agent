@@ -94,7 +94,10 @@ class Burst:
 
 
 def git_sha(short: bool = True) -> str:
-    cmd = ["git", "rev-parse", "--short" if short else "HEAD"]
+    cmd = ["git", "rev-parse"]
+    if short:
+        cmd.append("--short")
+    cmd.append("HEAD")
     try:
         return subprocess.check_output(cmd, text=True).strip()
     except Exception:
@@ -129,12 +132,34 @@ def quality_path_for_style(style: str) -> Path:
     return Path(f"data/casino_train_w{STYLE_W[style]}.json")
 
 
-def is_counter(history: Sequence[Mapping[str, Any]], speaker_role: str) -> bool:
-    """True iff the most recent prior action is opponent Submit-Deal."""
-    for turn in reversed(history):
-        if turn.get("text") in DEAL_ACTIONS:
-            return turn.get("text") == "Submit-Deal" and turn.get("id") != speaker_role
-    return False
+def _most_recent_prior_opp_submit_index(
+    history: Sequence[Mapping[str, Any]],
+    speaker_role: str,
+) -> Optional[int]:
+    for idx in range(len(history) - 1, -1, -1):
+        turn = history[idx]
+        if turn.get("text") == "Submit-Deal" and turn.get("id") != speaker_role:
+            return idx
+    return None
+
+
+def submit_is_response_to_opp_offer(
+    history: Sequence[Mapping[str, Any]],
+    speaker_role: str,
+) -> bool:
+    """True iff any prior opponent Submit-Deal appears earlier in history."""
+    return _most_recent_prior_opp_submit_index(history, speaker_role) is not None
+
+
+def max_prior_opp_submit_age_turns(
+    history: Sequence[Mapping[str, Any]],
+    speaker_role: str,
+) -> Optional[int]:
+    """Number of chat_log entries since the most recent prior opponent submit."""
+    idx = _most_recent_prior_opp_submit_index(history, speaker_role)
+    if idx is None:
+        return None
+    return len(history) - idx - 1
 
 
 def iter_speaker_bursts(
@@ -210,8 +235,7 @@ def intent_and_content(
     text = action.get("text")
     if text == "Submit-Deal":
         content = submit_content(action, speaker_role=speaker_role)
-        intent = "counter" if is_counter(history, speaker_role) else "offer"
-        return intent, content
+        return "submit", content
     if text == "Accept-Deal":
         return "accept", None
     if text == "Reject-Deal":
@@ -484,7 +508,7 @@ def validate_row(row: Mapping[str, Any]) -> None:
     content = row["target"]["selected_content"]
     if intent in {"accept", "reject", "walkaway", "utter"} and content is not None:
         raise ValueError(f"{intent} row has non-null selected_content")
-    if intent in {"offer", "counter"} and content is None:
+    if intent in {"submit"} and content is None:
         raise ValueError(f"{intent} row has null selected_content")
 
 
@@ -524,6 +548,26 @@ def read_cache(path: Path, metadata: Mapping[str, Any]) -> Dict[str, Dict[str, A
                 continue
             cache[str(obj["cache_key"])] = obj
     return cache
+
+
+def migrate_legacy_unknown_cache(path: Path, metadata: Mapping[str, Any]) -> None:
+    if path.exists():
+        return
+    legacy = path.with_name(path.name.replace(metadata["model_commit"], "unknown"))
+    if legacy == path or not legacy.exists():
+        return
+
+    with legacy.open("r", encoding="utf-8") as src, path.open("w", encoding="utf-8") as dst:
+        for i, line in enumerate(src):
+            if not line.strip():
+                continue
+            obj = json.loads(line)
+            if i == 0 and obj.get("type") == "metadata":
+                obj["metadata"] = dict(metadata)
+            elif obj.get("type") == "posterior":
+                obj["posterior_model"] = metadata["posterior_model"]
+                obj["model_commit"] = metadata["model_commit"]
+            dst.write(json.dumps(obj, ensure_ascii=False) + "\n")
 
 
 def write_cache_header(path: Path, metadata: Mapping[str, Any]) -> None:
@@ -640,9 +684,17 @@ def build_config(args: argparse.Namespace, *, model_commit: str) -> Dict[str, An
             "action in the burst determines intent and non-action texts are "
             "concatenated as utterance."
         ),
-        "counter_offer_predicate": (
-            "counter iff the most recent prior action tag from either speaker "
-            "is the opponent's Submit-Deal"
+        "submit_intent_definition": (
+            "Any burst whose terminal action is Submit-Deal is labeled submit."
+        ),
+        "submit_response_predicate": (
+            "submit_is_response_to_opp_offer is true iff any prior opponent "
+            "Submit-Deal appears anywhere earlier in history."
+        ),
+        "prior_opp_submit_age_definition": (
+            "max_prior_opp_submit_age_turns counts the number of chat_log "
+            "entries between the current burst start and the most recent prior "
+            "opponent Submit-Deal; null if none exists."
         ),
     }
 
@@ -664,6 +716,9 @@ def get_or_compute_posterior(
     if key in cache:
         posterior = validate_posterior(cache[key]["posterior"])
         return posterior, True, None
+
+    if model_fn is None:
+        raise RuntimeError("cache miss with no loaded posterior model")
 
     t0 = time.time()
     posterior = get_posterior(
@@ -714,20 +769,14 @@ def process(
         "seed": args.seed,
     }
     cache_path = output_dir / f"day7_posterior_cache.{model_commit}.jsonl"
+    migrate_legacy_unknown_cache(cache_path, cache_metadata)
     write_cache_header(cache_path, cache_metadata)
     cache = read_cache(cache_path, cache_metadata)
     cache_hits = 0
     cache_misses = 0
     latencies: List[float] = []
 
-    from sft_8b.predict import SftModelFn
-
-    model_fn = SftModelFn(
-        base_model=args.base_model,
-        adapter_path=args.adapter,
-        max_new_tokens=args.max_new_tokens,
-        temperature=0.0,
-    )
+    model_fn: Optional[Any] = None
 
     distill_path = output_dir / "day7_distill.jsonl"
     failures_path = output_dir / "day7_failures.jsonl"
@@ -738,6 +787,8 @@ def process(
     counts_by_perspective: Counter = Counter()
     counts_by_turn_depth: Counter = Counter()
     counts_by_burst_size: Counter = Counter()
+    counts_by_submit_response: Counter = Counter()
+    counts_by_prior_opp_submit_age: Counter = Counter()
     failures: Counter = Counter()
     entropy_points: Dict[str, Dict[int, List[float]]] = defaultdict(lambda: defaultdict(list))
     attempts = 0
@@ -799,10 +850,19 @@ def process(
                             history=history,
                             speaker_role=speaker_role,
                         )
-                        if intent in {"offer", "counter"} and selected_content is None:
+                        if intent == "submit" and selected_content is None:
                             raise ValueError("Submit-Deal burst has malformed task_data")
 
                         key = cache_key(dialogue_id, speaker_role, burst.start)
+                        if key not in cache and model_fn is None:
+                            from sft_8b.predict import SftModelFn
+
+                            model_fn = SftModelFn(
+                                base_model=args.base_model,
+                                adapter_path=args.adapter,
+                                max_new_tokens=args.max_new_tokens,
+                                temperature=0.0,
+                            )
                         posterior, hit, latency = get_or_compute_posterior(
                             key=key,
                             cache=cache,
@@ -845,6 +905,14 @@ def process(
                             history,
                             opp_role=opp_role,
                         )
+                        response_to_opp_offer = submit_is_response_to_opp_offer(
+                            history,
+                            speaker_role,
+                        )
+                        prior_opp_submit_age = max_prior_opp_submit_age_turns(
+                            history,
+                            speaker_role,
+                        )
                         target = {
                             "selected_intent": intent,
                             "selected_content": selected_content,
@@ -875,6 +943,8 @@ def process(
                             "turn_index_end": burst.end - 1,
                             "burst_size": burst.end - burst.start,
                             "n_opp_utterances_seen": opp_seen,
+                            "submit_is_response_to_opp_offer": response_to_opp_offer,
+                            "max_prior_opp_submit_age_turns": prior_opp_submit_age,
                             "w": STYLE_W[style],
                             "style": style,
                             "lambda": STYLE_LAMBDA[style],
@@ -900,6 +970,11 @@ def process(
                         counts_by_perspective[speaker_role] += 1
                         counts_by_turn_depth[opp_seen] += 1
                         counts_by_burst_size[burst.end - burst.start] += 1
+                        if intent == "submit":
+                            counts_by_submit_response[str(response_to_opp_offer)] += 1
+                            counts_by_prior_opp_submit_age[
+                                "null" if prior_opp_submit_age is None else prior_opp_submit_age
+                            ] += 1
                         entropy_points[style][opp_seen].append(entropy(posterior))
                     except Exception as exc:
                         failures["row_failure"] += 1
@@ -936,6 +1011,8 @@ def process(
         "rows_by_perspective": dict(counts_by_perspective),
         "rows_by_n_opp_utterances_seen": dict(counts_by_turn_depth),
         "rows_by_burst_size": dict(counts_by_burst_size),
+        "rows_by_submit_is_response_to_opp_offer": dict(counts_by_submit_response),
+        "rows_by_max_prior_opp_submit_age_turns": dict(counts_by_prior_opp_submit_age),
         "posterior_cache": {
             "path": str(cache_path),
             "hits": cache_hits,
@@ -1018,4 +1095,3 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
