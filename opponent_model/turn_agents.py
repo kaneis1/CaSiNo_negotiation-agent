@@ -24,11 +24,14 @@ is a deterministic, dependency-free fallback useful for smoke tests.
 
 from __future__ import annotations
 
+import json
 import logging
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence
 
 import numpy as np
 
+from opponent_model.cache import DiskCache
 from opponent_model.hybrid_agent import HybridAgent
 from opponent_model.hypotheses import HYPOTHESES, ITEMS
 from opponent_model.turn_level_metrics import (
@@ -228,6 +231,8 @@ class HybridTurnAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        dialogue_id: Any = None,
+        turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
         agent = HybridAgent(
             my_priorities=my_priorities,
@@ -278,6 +283,12 @@ class HybridTurnAgent:
         return {
             "accept": accept,
             "bid": bid,
+            "action": (
+                "accept" if accept is True
+                else "reject" if accept is False
+                else "submit" if bid is not None
+                else None
+            ),
             "strategy": strategy,
             "posterior": posterior,
         }
@@ -318,6 +329,8 @@ class SftTurnAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        dialogue_id: Any = None,
+        turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
         try:
             ordering = list(self.sft_model(
@@ -361,8 +374,251 @@ class SftTurnAgent:
         return {
             "accept": None,
             "bid": None,
+            "action": None,
             "strategy": strategy,
             "posterior": posterior,
+        }
+
+
+# ── Distilled student adapter ──────────────────────────────────────────────
+
+
+def _bid_from_student_content(
+    content: Any,
+) -> Optional[Dict[str, int]]:
+    if not isinstance(content, Mapping):
+        return None
+    self_counts = content.get("self_counts")
+    if isinstance(self_counts, Mapping):
+        try:
+            return {it: int(self_counts[it]) for it in ITEMS}
+        except (KeyError, TypeError, ValueError):
+            return None
+    if all(it in content for it in ITEMS):
+        try:
+            return {it: int(content[it]) for it in ITEMS}
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
+class DistilledStudentTurnAgent:
+    """Wrap a Day 8 student model for :func:`turn_level_eval`.
+
+    The student predicts a posterior, an explicit action intent, optional
+    submit content, and an utterance. We map those tagged outputs onto the
+    standard turn-level harness fields and keep lightweight parse counters
+    so smoke tests can fail fast when formatting drifts.
+    """
+
+    def __init__(
+        self,
+        student_model: Any,
+        *,
+        style: str,
+        strategy_classifier: Optional[StrategyClassifier] = None,
+        cache_path: Optional[Path] = None,
+        parse_log_path: Optional[Path] = None,
+    ) -> None:
+        self.student_model = student_model
+        self.style = str(style)
+        self.strategy_classifier = (
+            strategy_classifier if strategy_classifier is not None
+            else KeywordStrategyClassifier()
+        )
+        self.cache = DiskCache(cache_path) if cache_path is not None else None
+        self.parse_log_path = Path(parse_log_path) if parse_log_path else None
+        if self.parse_log_path is not None:
+            self.parse_log_path.parent.mkdir(parents=True, exist_ok=True)
+            self.parse_log_path.touch(exist_ok=True)
+        self._summary: Dict[str, int] = {
+            "calls": 0,
+            "parse_errors": 0,
+            "posterior_ok": 0,
+            "intent_ok": 0,
+            "content_ok": 0,
+            "cache_hits": 0,
+            "cache_misses": 0,
+        }
+        self.last_parse: Dict[str, Any] = {}
+        self.last_raw_response: str = ""
+
+    @property
+    def summary(self) -> Dict[str, int]:
+        return dict(self._summary)
+
+    def _cache_namespace(self) -> str:
+        return "|".join([
+            "distilled_student_turn_agent_v1",
+            f"base_model={getattr(self.student_model, 'base_model', None)}",
+            f"adapter={getattr(self.student_model, 'adapter_path', None)}",
+            f"max_new_tokens={getattr(self.student_model, 'max_new_tokens', None)}",
+            f"temperature={getattr(self.student_model, 'temperature', None)}",
+        ])
+
+    def _cache_prompt(
+        self,
+        *,
+        dialogue_id: Any,
+        turn_index: Optional[int],
+        my_role: str,
+    ) -> str:
+        return json.dumps(
+            {
+                "dialogue_id": dialogue_id,
+                "turn_index": turn_index,
+                "perspective": my_role,
+                "style": self.style,
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+
+    def _append_parse_failure(
+        self,
+        *,
+        dialogue_id: Any,
+        turn_index: Optional[int],
+        my_role: str,
+        opp_role: str,
+        raw_response: str,
+        parsed: Mapping[str, Any],
+        cache_hit: bool,
+    ) -> None:
+        if self.parse_log_path is None:
+            return
+        payload = {
+            "dialogue_id": dialogue_id,
+            "turn_index": turn_index,
+            "perspective": my_role,
+            "opp_role": opp_role,
+            "style": self.style,
+            "cache_hit": cache_hit,
+            "parse_error": parsed.get("parse_error"),
+            "missing_tags": parsed.get("missing_tags"),
+            "posterior_errors": parsed.get("posterior_errors"),
+            "intent_errors": parsed.get("intent_errors"),
+            "selected_content_errors": parsed.get("selected_content_errors"),
+            "raw_response": raw_response,
+        }
+        with self.parse_log_path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+    def predict_turn(
+        self,
+        *,
+        history: List[Mapping[str, Any]],
+        my_role: str,
+        opp_role: str,
+        my_priorities: Mapping[str, str],
+        my_reasons: Mapping[str, str],
+        pending_offer: Optional[Mapping[str, Any]],
+        dialogue_id: Any = None,
+        turn_index: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        self._summary["calls"] += 1
+        cache_hit = False
+        raw_response = ""
+        try:
+            if self.cache is not None:
+                cache_key = self._cache_prompt(
+                    dialogue_id=dialogue_id,
+                    turn_index=turn_index,
+                    my_role=my_role,
+                )
+                raw_response = (
+                    self.cache.get(cache_key, namespace=self._cache_namespace()) or ""
+                )
+                if raw_response:
+                    from sft_8b.student_parser import parse_student_response
+
+                    parsed = parse_student_response(raw_response)
+                    cache_hit = True
+                    self._summary["cache_hits"] += 1
+                else:
+                    parsed = self.student_model.predict(
+                        history=list(history),
+                        my_role=my_role,
+                        my_priorities=dict(my_priorities),
+                        my_reasons=dict(my_reasons),
+                        style=self.style,
+                    )
+                    raw_response = str(getattr(self.student_model, "last_raw_response", ""))
+                    self.cache.set(
+                        cache_key,
+                        raw_response,
+                        namespace=self._cache_namespace(),
+                    )
+                    self._summary["cache_misses"] += 1
+            else:
+                parsed = self.student_model.predict(
+                    history=list(history),
+                    my_role=my_role,
+                    my_priorities=dict(my_priorities),
+                    my_reasons=dict(my_reasons),
+                    style=self.style,
+                )
+                raw_response = str(getattr(self.student_model, "last_raw_response", ""))
+        except Exception:
+            logger.exception("StudentModelFn.predict failed; abstaining this turn.")
+            parsed = {
+                "posterior": None,
+                "selected_intent": None,
+                "selected_content": None,
+                "utterance": None,
+                "parse_error": "student model call raised",
+            }
+
+        self.last_raw_response = raw_response
+        self.last_parse = dict(parsed)
+        if parsed.get("parse_error"):
+            self._summary["parse_errors"] += 1
+            self._append_parse_failure(
+                dialogue_id=dialogue_id,
+                turn_index=turn_index,
+                my_role=my_role,
+                opp_role=opp_role,
+                raw_response=raw_response,
+                parsed=parsed,
+                cache_hit=cache_hit,
+            )
+        if parsed.get("posterior") is not None:
+            self._summary["posterior_ok"] += 1
+        if parsed.get("selected_intent") is not None:
+            self._summary["intent_ok"] += 1
+        if parsed.get("selected_content") is not None:
+            self._summary["content_ok"] += 1
+
+        intent = parsed.get("selected_intent")
+        content = parsed.get("selected_content")
+        utterance = str(parsed.get("utterance") or "").strip()
+
+        accept: Optional[bool]
+        if intent == "accept":
+            accept = True
+        elif intent in {"reject", "walkaway"}:
+            accept = False
+        else:
+            accept = None
+
+        bid = _bid_from_student_content(content) if intent in {"submit", "reject"} else None
+
+        strategy: Optional[List[str]] = None
+        if utterance:
+            try:
+                tags = list(self.strategy_classifier(utterance, list(history)))
+                strategy = tags or None
+            except Exception:
+                logger.exception("strategy classifier failed on student utterance.")
+                strategy = None
+
+        return {
+            "accept": accept,
+            "bid": bid,
+            "action": intent,
+            "strategy": strategy,
+            "posterior": parsed.get("posterior"),
         }
 
 
@@ -393,6 +649,8 @@ class UniformTurnAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        dialogue_id: Any = None,
+        turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
         posterior = [1.0 / len(HYPOTHESES)] * len(HYPOTHESES)
 
@@ -422,6 +680,11 @@ class UniformTurnAgent:
         return {
             "accept": accept,
             "bid": bid,
+            "action": (
+                "reject" if accept is False
+                else "submit" if bid is not None
+                else None
+            ),
             "strategy": strategy,
             "posterior": posterior,
         }
@@ -431,6 +694,7 @@ __all__ = [
     "StrategyClassifier",
     "KeywordStrategyClassifier",
     "HybridTurnAgent",
+    "DistilledStudentTurnAgent",
     "SftTurnAgent",
     "UniformTurnAgent",
 ]

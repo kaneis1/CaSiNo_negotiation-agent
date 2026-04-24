@@ -13,3 +13,33 @@ turn_level_eval: 1054 per-turn predictions
   Brier (posterior)      0.086   (n=1054)
 2026-04-22 01:20:37 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150/turn_summary.json
 2026-04-22 01:20:37 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150/turn_records.jsonl (1054 records)
+2026-04-23 22:57:30 | INFO    | Args: {'data': 'data/casino_test.json', 'output_dir': 'opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150', 'annotations': 'CaSiNo/data/casino_ann.json', 'max_dialogues': 150, 'agent': 'bayesian', 'perspectives': 'mturk_agent_1', 'dummy_llm': False, 'model_id': None, 'base_model': '/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct', 'adapter': 'sft_8b/results/lora_run/lora_best', 'max_new_tokens': 96, 'temperature': 0.7, 'style_token': 'balanced', 'student_max_new_tokens': 256, 'student_cache_path': None, 'student_parse_log': None, 'lambda_': 1.0, 'posterior_k': 16, 'posterior_temperature': 0.7, 'accept_margin': 5, 'accept_floor': 0.5, 'replay_turns_path': None, 'structured_cot_seed': 2024, 'structured_cot_parse_log': None, 'likelihood_temperature': 25.0, 'likelihood_clip': '-3,3'}
+2026-04-23 22:57:30 | INFO    | Loaded 150 dialogues from data/casino_test.json
+2026-04-23 22:57:30 | INFO    | Annotations: 396 dialogues with strategy tags (from CaSiNo/data/casino_ann.json).
+2026-04-23 22:58:57 | INFO    | Built agent: BayesianTurnAgent
+2026-04-23 22:58:57 | INFO    | Perspectives scored: ('mturk_agent_1',)
+2026-04-23 23:17:38 | INFO    | Eval finished in 1120.5s
+2026-04-23 23:17:38 | INFO    | 
+turn_level_eval: 1054 per-turn predictions
+
+  accept F1              0.892   (n=87, P=0.854 R=0.933, acc=0.805)
+  bid cosine             0.744   (n=86)
+  strategy macro-F1      0.048   (n=350, |labels|=10)
+  Brier (posterior)      0.086   (n=1054)
+2026-04-23 23:17:38 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150/turn_summary.json
+2026-04-23 23:17:38 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150/turn_records.jsonl (1054 records)
+2026-04-24 00:09:33 | INFO    | Args: {'data': 'data/casino_test.json', 'output_dir': 'opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150', 'annotations': 'CaSiNo/data/casino_ann.json', 'max_dialogues': 150, 'agent': 'bayesian', 'perspectives': 'mturk_agent_1', 'dummy_llm': False, 'model_id': None, 'base_model': '/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct', 'adapter': 'sft_8b/results/lora_run/lora_best', 'max_new_tokens': 96, 'temperature': 0.7, 'style_token': 'balanced', 'student_max_new_tokens': 256, 'student_cache_path': None, 'student_parse_log': None, 'lambda_': 1.0, 'posterior_k': 16, 'posterior_temperature': 0.7, 'accept_margin': 5, 'accept_floor': 0.5, 'replay_turns_path': None, 'structured_cot_seed': 2024, 'structured_cot_parse_log': None, 'likelihood_temperature': 25.0, 'likelihood_clip': '-3,3'}
+2026-04-24 00:09:33 | INFO    | Loaded 150 dialogues from data/casino_test.json
+2026-04-24 00:09:33 | INFO    | Annotations: 396 dialogues with strategy tags (from CaSiNo/data/casino_ann.json).
+2026-04-24 00:11:02 | INFO    | Built agent: BayesianTurnAgent
+2026-04-24 00:11:02 | INFO    | Perspectives scored: ('mturk_agent_1',)
+2026-04-24 00:39:59 | INFO    | Eval finished in 1737.4s
+2026-04-24 00:39:59 | INFO    | 
+turn_level_eval: 1054 per-turn predictions
+
+  accept F1              0.897   (n=87, P=0.864 R=0.933, acc=0.816)
+  bid cosine             0.744   (n=86)
+  strategy macro-F1      0.048   (n=350, |labels|=10)
+  Brier (posterior)      0.085   (n=1054)
+2026-04-24 00:39:59 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150/turn_summary.json
+2026-04-24 00:39:59 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150/turn_records.jsonl (1054 records)

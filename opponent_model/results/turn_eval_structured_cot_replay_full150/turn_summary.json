@@ -12,18 +12,24 @@
     "adapter": null,
     "max_new_tokens": 128,
     "temperature": 0.0,
+    "style_token": "balanced",
+    "student_max_new_tokens": 256,
+    "student_cache_path": null,
+    "student_parse_log": null,
     "lambda_": 1.0,
     "posterior_k": 16,
     "posterior_temperature": 0.7,
     "accept_margin": 5,
     "accept_floor": 0.5,
     "replay_turns_path": "structured_cot/results/protocol1_70b_full/turns.jsonl",
+    "structured_cot_seed": 2024,
+    "structured_cot_parse_log": null,
     "likelihood_temperature": 25.0,
     "likelihood_clip": "-3,3"
   },
   "n_dialogues": 150,
   "n_records": 1054,
-  "elapsed_seconds": 0.07016706466674805,
+  "elapsed_seconds": 0.09981441497802734,
   "accept": {
     "f1": 0.8085106382978724,
     "accuracy": 0.6785714285714286,
@@ -42,29 +48,29 @@
     "support": 14
   },
   "strategy_macro_f1": {
-    "macro_f1": 0.13309210222322015,
-    "support": 269,
+    "macro_f1": 0.12856481900449834,
+    "support": 297,
     "per_label": {
       "small-talk": {
-        "f1": 0.19672131147540983,
-        "support": 49,
+        "f1": 0.15,
+        "support": 68,
         "tp": 6,
         "fp": 6,
-        "fn": 43
+        "fn": 62
       },
       "self-need": {
-        "f1": 0.27906976744186046,
-        "support": 53,
-        "tp": 30,
-        "fp": 132,
-        "fn": 23
+        "f1": 0.2746781115879828,
+        "support": 60,
+        "tp": 32,
+        "fp": 141,
+        "fn": 28
       },
       "other-need": {
-        "f1": 0.026666666666666665,
-        "support": 23,
-        "tp": 1,
-        "fp": 51,
-        "fn": 22
+        "f1": 0.047058823529411764,
+        "support": 26,
+        "tp": 2,
+        "fp": 57,
+        "fn": 24
       },
       "no-need": {
         "f1": 0.0,
@@ -74,25 +80,25 @@
         "fn": 9
       },
       "elicit-pref": {
-        "f1": 0.16666666666666666,
-        "support": 20,
-        "tp": 5,
-        "fp": 35,
-        "fn": 15
+        "f1": 0.18181818181818182,
+        "support": 23,
+        "tp": 7,
+        "fp": 47,
+        "fn": 16
       },
       "promote-coordination": {
-        "f1": 0.1826086956521739,
-        "support": 31,
-        "tp": 21,
-        "fp": 178,
+        "f1": 0.1839080459770115,
+        "support": 34,
+        "tp": 24,
+        "fp": 203,
         "fn": 10
       },
       "vouch-fair": {
-        "f1": 0.1875,
-        "support": 35,
+        "f1": 0.15789473684210525,
+        "support": 36,
         "tp": 6,
-        "fp": 23,
-        "fn": 29
+        "fp": 34,
+        "fn": 30
       },
       "showing-empathy": {
         "f1": 0.21621621621621623,
@@ -109,16 +115,22 @@
         "fn": 6
       },
       "non-strategic": {
-        "f1": 0.07547169811320754,
-        "support": 94,
+        "f1": 0.07407407407407407,
+        "support": 96,
         "tp": 4,
         "fp": 8,
-        "fn": 90
+        "fn": 92
       }
     }
   },
   "brier": {
     "mean": NaN,
     "support": 0
+  },
+  "brier_by_turn_index": [],
+  "agent_summary": {
+    "hits": 784,
+    "misses": 270,
+    "records_loaded": 784
   }
 }

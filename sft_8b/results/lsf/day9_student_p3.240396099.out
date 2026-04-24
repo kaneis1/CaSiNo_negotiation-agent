@@ -1,0 +1,120 @@
+Sender: LSF System <lsfadmin@lg02e04>
+Subject: Job 240396099: <day9_student_p3> in cluster <chimera> Done
+
+Job <day9_student_p3> was submitted from host <lg03a01> by user <cuiz02> in cluster <chimera> at Thu Apr 23 21:50:10 2026
+Job was executed on host(s) <4*lg02e04>, in queue <gpu>, as user <cuiz02> in cluster <chimera> at Fri Apr 24 07:23:43 2026
+</hpc/users/cuiz02> was used as the home directory.
+</sc/arion/projects/lin_lab/complexbehavior/CaSino> was used as the working directory.
+Started at Fri Apr 24 07:23:43 2026
+Terminated at Fri Apr 24 07:25:20 2026
+Results reported at Fri Apr 24 07:25:20 2026
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/bash
+#BSUB -J day9_student_p3
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 08:00
+#BSUB -o sft_8b/results/lsf/day9_student_p3.%J.out
+#BSUB -e sft_8b/results/lsf/day9_student_p3.%J.err
+#BSUB -L /bin/bash
+
+# Day 9 distilled-student evaluation (Protocol 3 / gold history).
+#
+# One style token per run. Baseline and Bayesian teacher already have their
+# own full-run scripts; this is the student companion job so the three models
+# can be launched in parallel.
+#
+# Submit:
+#   bsub < sft_8b/scripts/run_day9_student_eval.lsf
+#
+# Override knobs:
+#   bsub -env "all,STYLE_TOKEN=balanced,MAX_DIALOGUES=150" \
+#        < sft_8b/scripts/run_day9_student_eval.lsf
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+BASE_MODEL="${BASE_MODEL:-/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct}"
+ADAPTER="${ADAPTER:-sft_8b/results/day8_lora_run/lora_best}"
+DATA="${DATA:-data/casino_test.json}"
+ANNOTATIONS="${ANNOTATIONS:-CaSiNo/data/casino_ann.json}"
+MAX_DIALOGUES="${MAX_DIALOGUES:-150}"
+
+(... more ...)
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   42.00 sec.
+    Max Memory :                                 958 MB
+    Average Memory :                             376.61 MB
+    Total Requested Memory :                     160000.00 MB
+    Delta Memory :                               159042.00 MB
+    Max Swap :                                   -
+    Max Processes :                              7
+    Max Threads :                                14
+    Run time :                                   97 sec.
+    Turnaround time :                            34510 sec.
+
+The output (if any) follows:
+
+=== job 240396099 on lg02e04 at Fri Apr 24 07:23:46 EDT 2026 ===
+index, name, memory.total [MiB]
+0, NVIDIA H100 80GB HBM3, 81559 MiB
+BASE_MODEL=/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct
+ADAPTER=sft_8b/results/day8_lora_run/lora_best
+DATA=data/casino_test.json  MAX_DIALOGUES=150  PERSPECTIVES=mturk_agent_1
+STYLE_TOKEN=balanced  STUDENT_MAX_NEW_TOKENS=256
+OUT=opponent_model/results/turn_eval_student_balanced_full150
+CACHE_PATH=opponent_model/results/turn_eval_student_balanced_full150/student_cache.sqlite
+PARSE_LOG=opponent_model/results/turn_eval_student_balanced_full150/student_parse_failures.jsonl
+========================================================================
+2026-04-24 07:23:51 | INFO    | Args: {'data': 'data/casino_test.json', 'output_dir': 'opponent_model/results/turn_eval_student_balanced_full150', 'annotations': 'CaSiNo/data/casino_ann.json', 'max_dialogues': 150, 'agent': 'distilled_student', 'perspectives': 'mturk_agent_1', 'dummy_llm': False, 'model_id': None, 'base_model': '/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct', 'adapter': 'sft_8b/results/day8_lora_run/lora_best', 'max_new_tokens': 128, 'temperature': 0.0, 'style_token': 'balanced', 'student_max_new_tokens': 256, 'student_cache_path': 'opponent_model/results/turn_eval_student_balanced_full150/student_cache.sqlite', 'student_parse_log': 'opponent_model/results/turn_eval_student_balanced_full150/student_parse_failures.jsonl', 'lambda_': 1.0, 'posterior_k': 16, 'posterior_temperature': 0.7, 'accept_margin': 5, 'accept_floor': 0.5, 'replay_turns_path': None, 'structured_cot_seed': 2024, 'structured_cot_parse_log': None, 'likelihood_temperature': 25.0, 'likelihood_clip': '-3,3'}
+2026-04-24 07:23:51 | INFO    | Loaded 150 dialogues from data/casino_test.json
+2026-04-24 07:23:51 | INFO    | Annotations: 396 dialogues with strategy tags (from CaSiNo/data/casino_ann.json).
+2026-04-24 07:25:16 | INFO    | Built agent: DistilledStudentTurnAgent
+2026-04-24 07:25:16 | INFO    | Perspectives scored: ('mturk_agent_1',)
+2026-04-24 07:25:17 | INFO    | Eval finished in 0.1s
+2026-04-24 07:25:17 | INFO    | 
+turn_level_eval: 1054 per-turn predictions
+
+  accept F1              0.908   (n=84, P=0.873 R=0.945, acc=0.833)
+  bid cosine             0.915   (n=14)
+  strategy macro-F1      0.190   (n=348, |labels|=10)
+  Brier (posterior)      0.114   (n=1054)
+2026-04-24 07:25:17 | INFO    | Agent summary: {'calls': 1054, 'parse_errors': 0, 'posterior_ok': 1054, 'intent_ok': 1054, 'content_ok': 22, 'cache_hits': 1054, 'cache_misses': 0}
+2026-04-24 07:25:17 | INFO    | Wrote opponent_model/results/turn_eval_student_balanced_full150/turn_summary.json
+2026-04-24 07:25:17 | INFO    | Wrote opponent_model/results/turn_eval_student_balanced_full150/turn_records.jsonl (1054 records)
+=== done at Fri Apr 24 07:25:17 EDT 2026 ===
+
+
+PS:
+
+Read file <sft_8b/results/lsf/day9_student_p3.240396099.err> for stderr output of this job.
+

@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
 from opponent_model.turn_agents import (
+    DistilledStudentTurnAgent,
     HybridTurnAgent,
     KeywordStrategyClassifier,
     SftTurnAgent,
@@ -96,7 +97,8 @@ def _build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--max-dialogues", type=int, default=None)
     p.add_argument("--agent",
                    choices=("uniform", "hybrid", "sft",
-                            "bayesian", "structured_cot_replay",
+                            "bayesian", "distilled_student",
+                            "structured_cot_replay",
                             "structured_cot_live"),
                    default="uniform",
                    help="which TurnLevelAgent to evaluate.")
@@ -120,6 +122,16 @@ def _build_argparser() -> argparse.ArgumentParser:
                    help="LoRA adapter directory (sft / bayesian agents).")
     p.add_argument("--max-new-tokens", type=int, default=128)
     p.add_argument("--temperature", type=float, default=0.0)
+    p.add_argument("--style-token", default="balanced",
+                   help="style token for the distilled_student agent.")
+    p.add_argument("--student-max-new-tokens", type=int, default=256,
+                   help="generation budget for distilled_student tagged outputs.")
+    p.add_argument("--student-cache-path", default=None,
+                   help="SQLite cache for distilled student raw generations. "
+                        "Defaults to <output_dir>/student_cache.sqlite.")
+    p.add_argument("--student-parse-log", default=None,
+                   help="JSONL for distilled student parse failures with raw generations. "
+                        "Defaults to <output_dir>/student_parse_failures.jsonl.")
 
     # bayesian agent knobs
     p.add_argument("--lambda", dest="lambda_", type=float, default=1.0,
@@ -162,7 +174,7 @@ def _parse_clip(s: str) -> tuple:
     return (float(parts[0]), float(parts[1]))
 
 
-def _build_agent(args: argparse.Namespace) -> Any:
+def _build_agent(args: argparse.Namespace, *, output_dir: Path) -> Any:
     if args.agent == "uniform":
         return UniformTurnAgent()
 
@@ -221,6 +233,30 @@ def _build_agent(args: argparse.Namespace) -> Any:
             accept_margin=args.accept_margin,
             accept_floor=args.accept_floor,
             strategy_classifier=KeywordStrategyClassifier(),
+        )
+
+    if args.agent == "distilled_student":
+        from sft_8b.student_model import StudentModelFn
+        if args.base_model is None:
+            raise ValueError("--base-model is required for distilled_student agent.")
+        student = StudentModelFn(
+            base_model=args.base_model,
+            adapter_path=args.adapter,
+            max_new_tokens=args.student_max_new_tokens,
+            temperature=args.temperature,
+        )
+        return DistilledStudentTurnAgent(
+            student,
+            style=args.style_token,
+            strategy_classifier=KeywordStrategyClassifier(),
+            cache_path=(
+                Path(args.student_cache_path)
+                if args.student_cache_path else output_dir / "student_cache.sqlite"
+            ),
+            parse_log_path=(
+                Path(args.student_parse_log)
+                if args.student_parse_log else output_dir / "student_parse_failures.jsonl"
+            ),
         )
 
     if args.agent == "structured_cot_replay":
@@ -292,7 +328,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         len(ann_lookup), args.annotations or "(dialogue-embedded)",
     )
 
-    agent = _build_agent(args)
+    agent = _build_agent(args, output_dir=output_dir)
     log.info("Built agent: %s", type(agent).__name__)
 
     # Stamp dialogue_id onto every chat_logs turn so the replay adapter
@@ -328,6 +364,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     log.info("Eval finished in %.1fs", elapsed)
     log.info("\n%s", format_turn_level_summary(result))
+    if hasattr(agent, "summary"):
+        log.info("Agent summary: %s", agent.summary)
 
     summary_path = output_dir / "turn_summary.json"
     with summary_path.open("w") as f:
@@ -341,6 +379,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 "bid_cosine":        result["bid_cosine"],
                 "strategy_macro_f1": result["strategy_macro_f1"],
                 "brier":             result["brier"],
+                "brier_by_turn_index": result["brier_by_turn_index"],
+                "agent_summary": (
+                    agent.summary if hasattr(agent, "summary") else None
+                ),
             },
             f,
             indent=2,

@@ -252,6 +252,8 @@ class BayesianTurnAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        dialogue_id: Any = None,
+        turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
         # 1. Posterior from the SFT model (K MC samples at T).
         try:
@@ -316,6 +318,12 @@ class BayesianTurnAgent:
         return {
             "accept":    decision["accept"],
             "bid":       decision["bid"],
+            "action": (
+                "accept" if decision["action"] == "accept"
+                else "reject" if decision["action"] == "reject"
+                else "submit" if decision["action"] == "propose"
+                else decision["action"]
+            ),
             "strategy":  strategy,
             "posterior": posterior.tolist(),
         }

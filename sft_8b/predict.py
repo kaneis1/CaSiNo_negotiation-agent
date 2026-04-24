@@ -22,6 +22,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 import torch
 
+from sft_8b.model_utils import choose_inference_dtype
 from sft_8b.prompts import (
     ITEMS,
     SATISFACTION_LABELS,
@@ -138,7 +139,8 @@ class SftModelFn:
         self.last_flags: Dict[str, bool] = {}
         self.last_raw_response: str = ""
 
-        logger.info("Loading base model: %s", base_model)
+        dtype = choose_inference_dtype()
+        logger.info("Loading base model: %s (dtype=%s)", base_model, dtype)
         tok_src = adapter_path if adapter_path else base_model
         self.tokenizer = AutoTokenizer.from_pretrained(tok_src)
         if self.tokenizer.pad_token_id is None:
@@ -146,7 +148,7 @@ class SftModelFn:
 
         model = AutoModelForCausalLM.from_pretrained(
             base_model,
-            torch_dtype=torch.bfloat16,
+            torch_dtype=dtype,
             device_map=device_map,
             attn_implementation="sdpa",
         )

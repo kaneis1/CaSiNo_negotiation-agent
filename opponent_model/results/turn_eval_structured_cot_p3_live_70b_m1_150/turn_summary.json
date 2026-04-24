@@ -1,0 +1,132 @@
+{
+  "config": {
+    "data": "data/casino_test.json",
+    "output_dir": "opponent_model/results/turn_eval_structured_cot_p3_live_70b_m1_150",
+    "annotations": "CaSiNo/data/casino_ann.json",
+    "max_dialogues": 150,
+    "agent": "structured_cot_live",
+    "perspectives": "mturk_agent_1",
+    "dummy_llm": false,
+    "model_id": null,
+    "base_model": null,
+    "adapter": null,
+    "max_new_tokens": 800,
+    "temperature": 0.3,
+    "style_token": "balanced",
+    "student_max_new_tokens": 256,
+    "student_cache_path": null,
+    "student_parse_log": null,
+    "lambda_": 1.0,
+    "posterior_k": 16,
+    "posterior_temperature": 0.7,
+    "accept_margin": 5,
+    "accept_floor": 0.5,
+    "replay_turns_path": null,
+    "structured_cot_seed": 2024,
+    "structured_cot_parse_log": "opponent_model/results/turn_eval_structured_cot_p3_live_70b_m1_150/parse_failures.jsonl",
+    "likelihood_temperature": 25.0,
+    "likelihood_clip": "-3,3"
+  },
+  "n_dialogues": 150,
+  "n_records": 1054,
+  "elapsed_seconds": 23292.683525800705,
+  "accept": {
+    "f1": 0.9466666666666667,
+    "accuracy": 0.9080459770114943,
+    "precision": 0.9466666666666667,
+    "recall": 0.9466666666666667,
+    "support": 87,
+    "confusion": {
+      "tp": 71,
+      "fp": 4,
+      "fn": 4,
+      "tn": 8
+    }
+  },
+  "bid_cosine": {
+    "mean": 0.8152363494558592,
+    "support": 29
+  },
+  "strategy_macro_f1": {
+    "macro_f1": 0.15991307394121995,
+    "support": 350,
+    "per_label": {
+      "small-talk": {
+        "f1": 0.22641509433962265,
+        "support": 86,
+        "tp": 12,
+        "fp": 8,
+        "fn": 74
+      },
+      "self-need": {
+        "f1": 0.2676056338028169,
+        "support": 70,
+        "tp": 38,
+        "fp": 176,
+        "fn": 32
+      },
+      "other-need": {
+        "f1": 0.14285714285714288,
+        "support": 26,
+        "tp": 7,
+        "fp": 65,
+        "fn": 19
+      },
+      "no-need": {
+        "f1": 0.0,
+        "support": 10,
+        "tp": 0,
+        "fp": 1,
+        "fn": 10
+      },
+      "elicit-pref": {
+        "f1": 0.2391304347826087,
+        "support": 25,
+        "tp": 11,
+        "fp": 56,
+        "fn": 14
+      },
+      "promote-coordination": {
+        "f1": 0.24489795918367346,
+        "support": 40,
+        "tp": 36,
+        "fp": 218,
+        "fn": 4
+      },
+      "vouch-fair": {
+        "f1": 0.19607843137254904,
+        "support": 43,
+        "tp": 10,
+        "fp": 49,
+        "fn": 33
+      },
+      "showing-empathy": {
+        "f1": 0.10169491525423728,
+        "support": 16,
+        "tp": 3,
+        "fp": 40,
+        "fn": 13
+      },
+      "uv-part": {
+        "f1": 0.0,
+        "support": 8,
+        "tp": 0,
+        "fp": 0,
+        "fn": 8
+      },
+      "non-strategic": {
+        "f1": 0.18045112781954886,
+        "support": 112,
+        "tp": 12,
+        "fp": 9,
+        "fn": 100
+      }
+    }
+  },
+  "brier": {
+    "mean": NaN,
+    "support": 0
+  },
+  "brier_by_turn_index": [],
+  "agent_summary": null
+}

@@ -3,7 +3,7 @@
 #BSUB -P acc_lin_lab
 #BSUB -q gpu
 #BSUB -gpu "num=1"
-#BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
+#BSUB -R "h10080g rusage[mem=40000] span[hosts=1]"
 #BSUB -n 4
 #BSUB -W 04:00
 #BSUB -o sft_8b/results/lsf/bayes_p3.%J.out

@@ -1,0 +1,232 @@
+{
+  "accept": {
+    "f1": 0.4,
+    "accuracy": 0.4,
+    "precision": 0.3333333333333333,
+    "recall": 0.5,
+    "support": 5,
+    "confusion": {
+      "tp": 1,
+      "fp": 2,
+      "fn": 1,
+      "tn": 1
+    }
+  },
+  "bid_cosine": {
+    "mean": NaN,
+    "support": 0
+  },
+  "strategy_macro_f1": {
+    "macro_f1": 0.0,
+    "support": 3,
+    "per_label": {
+      "small-talk": {
+        "f1": 0.0,
+        "support": 0,
+        "tp": 0,
+        "fp": 1,
+        "fn": 0
+      },
+      "self-need": {
+        "f1": 0.0,
+        "support": 1,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1
+      },
+      "other-need": {
+        "f1": 0.0,
+        "support": 0,
+        "tp": 0,
+        "fp": 2,
+        "fn": 0
+      },
+      "no-need": {
+        "f1": NaN,
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "elicit-pref": {
+        "f1": 0.0,
+        "support": 0,
+        "tp": 0,
+        "fp": 1,
+        "fn": 0
+      },
+      "promote-coordination": {
+        "f1": NaN,
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "vouch-fair": {
+        "f1": 0.0,
+        "support": 1,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1
+      },
+      "showing-empathy": {
+        "f1": NaN,
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "uv-part": {
+        "f1": NaN,
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "non-strategic": {
+        "f1": 0.0,
+        "support": 1,
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      }
+    }
+  },
+  "brier": {
+    "mean": 0.051412563131313135,
+    "support": 33
+  },
+  "brier_by_turn_index": [
+    {
+      "turn_index": 0,
+      "mean": 0.09765625,
+      "support": 2
+    },
+    {
+      "turn_index": 1,
+      "mean": 0.26171875,
+      "support": 1
+    },
+    {
+      "turn_index": 2,
+      "mean": 0.10091145833333333,
+      "support": 2
+    },
+    {
+      "turn_index": 3,
+      "mean": 0.15755208333333334,
+      "support": 1
+    },
+    {
+      "turn_index": 4,
+      "mean": 0.09505208333333333,
+      "support": 2
+    },
+    {
+      "turn_index": 5,
+      "mean": 0.08333333333333333,
+      "support": 1
+    },
+    {
+      "turn_index": 6,
+      "mean": 0.08463541666666667,
+      "support": 2
+    },
+    {
+      "turn_index": 7,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 8,
+      "mean": 0.049479166666666664,
+      "support": 2
+    },
+    {
+      "turn_index": 9,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 10,
+      "mean": 0.08463541666666667,
+      "support": 2
+    },
+    {
+      "turn_index": 11,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 12,
+      "mean": 0.0,
+      "support": 2
+    },
+    {
+      "turn_index": 13,
+      "mean": 0.16927083333333334,
+      "support": 1
+    },
+    {
+      "turn_index": 14,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 15,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 16,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 18,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 20,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 22,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 24,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 27,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 28,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 31,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 32,
+      "mean": 0.0,
+      "support": 1
+    },
+    {
+      "turn_index": 35,
+      "mean": 0.0,
+      "support": 1
+    }
+  ],
+  "n_records": 33
+}

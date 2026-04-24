@@ -136,8 +136,10 @@ class StructuredCoTLiveTurnAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        dialogue_id: Any = None,
+        turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
-        did = _dialogue_id_from_history(history)
+        did = dialogue_id if dialogue_id is not None else _dialogue_id_from_history(history)
         if did is not None and did != self._last_dialogue_id:
             self._last_dialogue_id = did
             self._cot = self._ensure_cot(my_priorities, my_reasons)
@@ -190,6 +192,7 @@ class StructuredCoTLiveTurnAgent:
         return {
             "accept": accept,
             "bid": bid,
+            "action": action,
             "strategy": strategy,
             "posterior": None,
         }

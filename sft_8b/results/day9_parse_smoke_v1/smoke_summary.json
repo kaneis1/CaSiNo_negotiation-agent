@@ -1,0 +1,96 @@
+{
+  "config": {
+    "data": "data/casino_test.json",
+    "annotations": "CaSiNo/data/casino_ann.json",
+    "base_model": "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct",
+    "teacher_adapter": "sft_8b/results/lora_run/lora_best",
+    "student_adapter": "sft_8b/results/day8_lora_run/lora_best",
+    "baseline_turns_path": "structured_cot/results/protocol1_70b_full/turns.jsonl",
+    "dialogue_ids": [
+      33,
+      467,
+      548
+    ],
+    "perspectives": [
+      "mturk_agent_1"
+    ],
+    "style_token": "balanced",
+    "teacher_posterior_k": 4,
+    "teacher_posterior_temperature": 0.7,
+    "teacher_accept_margin": 5,
+    "teacher_accept_floor": 0.5,
+    "max_new_tokens": 128,
+    "temperature": 0.0,
+    "output_dir": "sft_8b/results/day9_parse_smoke_v1",
+    "strict": true
+  },
+  "baseline_replay": {
+    "supports": {
+      "accept": 2,
+      "bid": 1,
+      "strategy": 19,
+      "brier": 0
+    },
+    "replay_summary": {
+      "hits": 22,
+      "misses": 11,
+      "records_loaded": 784
+    }
+  },
+  "bayesian_teacher": {
+    "supports": {
+      "accept": 6,
+      "bid": 5,
+      "strategy": 22,
+      "brier": 33
+    }
+  },
+  "distilled_student": {
+    "supports": {
+      "accept": 5,
+      "bid": 0,
+      "strategy": 3,
+      "brier": 33
+    },
+    "parse_summary": {
+      "calls": 33,
+      "parse_errors": 24,
+      "posterior_ok": 33,
+      "intent_ok": 33,
+      "content_ok": 0
+    },
+    "last_parse": {
+      "posterior": [
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "selected_intent": "reject",
+      "selected_content": null,
+      "utterance": "I will accept your deal",
+      "posterior_raw": "p(Food > Water > Firewood)=0.0000\np(Food > Firewood > Water)=1.0000\np(Water > Food > Firewood)=0.0000\np(Water > Firewood > Food)=0.0000\np(Firewood > Food > Water)=0.0000\np(Firewood > Water > Food)=0.0000",
+      "selected_content_raw": "null",
+      "parse_error": null,
+      "missing_tags": [],
+      "posterior_errors": [],
+      "intent_errors": [],
+      "selected_content_errors": []
+    }
+  },
+  "checks": {
+    "baseline_replay_hits_positive": true,
+    "teacher_has_accept_support": true,
+    "teacher_has_bid_support": true,
+    "teacher_has_brier_support": true,
+    "student_has_accept_support": true,
+    "student_has_bid_support": false,
+    "student_has_strategy_support": true,
+    "student_has_brier_support": true,
+    "student_parse_errors_zero": false,
+    "student_all_calls_have_posterior": true,
+    "student_all_calls_have_intent": true
+  }
+}
