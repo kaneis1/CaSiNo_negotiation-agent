@@ -3,7 +3,7 @@
   "distill_jsonl": "sft_8b/results/distill/day7/day7_distill.jsonl",
   "config_json": "sft_8b/results/distill/day7/day7_config.json",
   "failures_jsonl": "sft_8b/results/distill/day7/day7_failures.jsonl",
-  "posterior_cache_jsonl": "sft_8b/results/distill/day7/day7_posterior_cache.unknown.jsonl",
+  "posterior_cache_jsonl": "sft_8b/results/distill/day7/day7_posterior_cache.10cf028.jsonl",
   "n_attempted_bursts": 10293,
   "n_rows": 10293,
   "failure_rate": 0.0,
@@ -17,8 +17,7 @@
     "utter": 8668,
     "reject": 33,
     "accept": 732,
-    "offer": 836,
-    "counter": 24
+    "submit": 860
   },
   "rows_by_perspective": {
     "mturk_agent_2": 5170,
@@ -44,18 +43,29 @@
     "1": 10236,
     "2": 57
   },
+  "rows_by_submit_is_response_to_opp_offer": {
+    "True": 38,
+    "False": 822
+  },
+  "rows_by_max_prior_opp_submit_age_turns": {
+    "3": 6,
+    "null": 822,
+    "0": 24,
+    "5": 7,
+    "4": 1
+  },
   "posterior_cache": {
-    "path": "sft_8b/results/distill/day7/day7_posterior_cache.unknown.jsonl",
-    "hits": 5504,
-    "misses": 4789,
-    "hit_rate": 0.5347323423686,
+    "path": "sft_8b/results/distill/day7/day7_posterior_cache.10cf028.jsonl",
+    "hits": 10293,
+    "misses": 0,
+    "hit_rate": 1.0,
     "n_entries_loaded_or_written": 4789
   },
   "posterior_latency_seconds": {
-    "n": 4789,
-    "mean": 0.9633901651927688,
-    "p50": 0.9564933776855469,
-    "p95": 1.1052708625793457
+    "n": 0,
+    "mean": null,
+    "p50": null,
+    "p95": null
   },
   "config": {
     "styles": [
@@ -80,7 +90,7 @@
       "items_per_issue": 3
     },
     "posterior_model": "sft_8b_lora_posterior",
-    "model_commit": "unknown",
+    "model_commit": "10cf028",
     "git_dirty": true,
     "base_model": "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct",
     "adapter": "sft_8b/results/lora_run/lora_best",
@@ -93,6 +103,8 @@
     "epistemic_menu_method": "opp_utility_variance_proxy",
     "epistemic_menu_justification": "High variance in opponent utility across priority hypotheses identifies offers whose reception would best discriminate among the six possible opponent orderings, without requiring an extra response-model call.",
     "burst_policy": "Collapse consecutive same-speaker chat_logs entries; the last action in the burst determines intent and non-action texts are concatenated as utterance.",
-    "counter_offer_predicate": "counter iff the most recent prior action tag from either speaker is the opponent's Submit-Deal"
+    "submit_intent_definition": "Any burst whose terminal action is Submit-Deal is labeled submit.",
+    "submit_response_predicate": "submit_is_response_to_opp_offer is true iff any prior opponent Submit-Deal appears anywhere earlier in history.",
+    "prior_opp_submit_age_definition": "max_prior_opp_submit_age_turns counts the number of chat_log entries between the current burst start and the most recent prior opponent Submit-Deal; null if none exists."
   }
 }

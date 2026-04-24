@@ -1,0 +1,18 @@
+{
+  "source_jsonl": "sft_8b/results/distill/day7/day7_distill.jsonl",
+  "source_rows_after_style_filter": 10293,
+  "styles": [
+    "cooperative",
+    "balanced",
+    "competitive"
+  ],
+  "eval_fraction": 0.1,
+  "split_seed": 42,
+  "prompt_schema": "style_token + self_priorities + self_reasons + history",
+  "target_schema": "posterior + selected_intent + selected_content + utterance",
+  "submit_response_feature_usage": "analysis_only",
+  "intent_balance_mode": "oversample_to_anchor",
+  "max_intent_repeat": 32,
+  "assistant_format": "tagged_text",
+  "system_prompt_version": "day8_student_v1"
+}

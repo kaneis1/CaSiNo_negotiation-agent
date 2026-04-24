@@ -21,7 +21,7 @@
     "items_per_issue": 3
   },
   "posterior_model": "sft_8b_lora_posterior",
-  "model_commit": "unknown",
+  "model_commit": "10cf028",
   "git_dirty": true,
   "base_model": "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct",
   "adapter": "sft_8b/results/lora_run/lora_best",
@@ -34,5 +34,7 @@
   "epistemic_menu_method": "opp_utility_variance_proxy",
   "epistemic_menu_justification": "High variance in opponent utility across priority hypotheses identifies offers whose reception would best discriminate among the six possible opponent orderings, without requiring an extra response-model call.",
   "burst_policy": "Collapse consecutive same-speaker chat_logs entries; the last action in the burst determines intent and non-action texts are concatenated as utterance.",
-  "counter_offer_predicate": "counter iff the most recent prior action tag from either speaker is the opponent's Submit-Deal"
+  "submit_intent_definition": "Any burst whose terminal action is Submit-Deal is labeled submit.",
+  "submit_response_predicate": "submit_is_response_to_opp_offer is true iff any prior opponent Submit-Deal appears anywhere earlier in history.",
+  "prior_opp_submit_age_definition": "max_prior_opp_submit_age_turns counts the number of chat_log entries between the current burst start and the most recent prior opponent Submit-Deal; null if none exists."
 }

@@ -1,0 +1,68 @@
+{
+  "output_dir": "sft_8b/results/day8_sft_data",
+  "train_jsonl": "sft_8b/results/day8_sft_data/day8_train_rows.jsonl",
+  "eval_jsonl": "sft_8b/results/day8_sft_data/day8_eval_rows.jsonl",
+  "config_json": "sft_8b/results/day8_sft_data/day8_data_config.json",
+  "n_source_rows": 10293,
+  "n_train_rows_pre_oversample": 9302,
+  "n_train_rows_post_oversample": 10713,
+  "n_eval_rows": 991,
+  "n_dialogues_train": 538,
+  "n_dialogues_eval": 61,
+  "rows_by_intent_pre_oversample": {
+    "train": {
+      "utter": 7835,
+      "reject": 32,
+      "accept": 643,
+      "submit": 792
+    },
+    "eval": {
+      "utter": 833,
+      "accept": 89,
+      "submit": 68,
+      "reject": 1
+    }
+  },
+  "rows_by_intent_post_oversample_train": {
+    "utter": 7835,
+    "reject": 800,
+    "accept": 1286,
+    "submit": 792
+  },
+  "rows_by_style": {
+    "train": {
+      "cooperative": 3088,
+      "balanced": 3079,
+      "competitive": 3135
+    },
+    "eval": {
+      "cooperative": 329,
+      "balanced": 343,
+      "competitive": 319
+    }
+  },
+  "intent_repeat_factors": {
+    "utter": 1,
+    "reject": 25,
+    "accept": 2,
+    "submit": 1
+  },
+  "config": {
+    "source_jsonl": "sft_8b/results/distill/day7/day7_distill.jsonl",
+    "source_rows_after_style_filter": 10293,
+    "styles": [
+      "cooperative",
+      "balanced",
+      "competitive"
+    ],
+    "eval_fraction": 0.1,
+    "split_seed": 42,
+    "prompt_schema": "style_token + self_priorities + self_reasons + history",
+    "target_schema": "posterior + selected_intent + selected_content + utterance",
+    "submit_response_feature_usage": "analysis_only",
+    "intent_balance_mode": "oversample_to_anchor",
+    "max_intent_repeat": 32,
+    "assistant_format": "tagged_text",
+    "system_prompt_version": "day8_student_v1"
+  }
+}
