@@ -231,6 +231,7 @@ class HybridTurnAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        my_personality: Optional[Mapping[str, Any]] = None,
         dialogue_id: Any = None,
         turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
@@ -283,6 +284,7 @@ class HybridTurnAgent:
         return {
             "accept": accept,
             "bid": bid,
+            "utterance": utterance or None,
             "action": (
                 "accept" if accept is True
                 else "reject" if accept is False
@@ -329,6 +331,7 @@ class SftTurnAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        my_personality: Optional[Mapping[str, Any]] = None,
         dialogue_id: Any = None,
         turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
@@ -374,6 +377,7 @@ class SftTurnAgent:
         return {
             "accept": None,
             "bid": None,
+            "utterance": None,
             "action": None,
             "strategy": strategy,
             "posterior": posterior,
@@ -437,6 +441,13 @@ class DistilledStudentTurnAgent:
             "posterior_ok": 0,
             "intent_ok": 0,
             "content_ok": 0,
+            "bid_emitted": 0,
+            "intent_submit": 0,
+            "intent_accept": 0,
+            "intent_reject": 0,
+            "intent_walkaway": 0,
+            "intent_utter": 0,
+            "intent_none": 0,
             "cache_hits": 0,
             "cache_misses": 0,
         }
@@ -514,6 +525,7 @@ class DistilledStudentTurnAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        my_personality: Optional[Mapping[str, Any]] = None,
         dialogue_id: Any = None,
         turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
@@ -585,12 +597,17 @@ class DistilledStudentTurnAgent:
             )
         if parsed.get("posterior") is not None:
             self._summary["posterior_ok"] += 1
-        if parsed.get("selected_intent") is not None:
+        intent = parsed.get("selected_intent")
+        if intent is not None:
             self._summary["intent_ok"] += 1
+            key = f"intent_{intent}"
+            if key in self._summary:
+                self._summary[key] += 1
+        else:
+            self._summary["intent_none"] += 1
         if parsed.get("selected_content") is not None:
             self._summary["content_ok"] += 1
 
-        intent = parsed.get("selected_intent")
         content = parsed.get("selected_content")
         utterance = str(parsed.get("utterance") or "").strip()
 
@@ -603,6 +620,8 @@ class DistilledStudentTurnAgent:
             accept = None
 
         bid = _bid_from_student_content(content) if intent in {"submit", "reject"} else None
+        if bid is not None:
+            self._summary["bid_emitted"] += 1
 
         strategy: Optional[List[str]] = None
         if utterance:
@@ -616,6 +635,7 @@ class DistilledStudentTurnAgent:
         return {
             "accept": accept,
             "bid": bid,
+            "utterance": utterance or None,
             "action": intent,
             "strategy": strategy,
             "posterior": parsed.get("posterior"),
@@ -649,6 +669,7 @@ class UniformTurnAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        my_personality: Optional[Mapping[str, Any]] = None,
         dialogue_id: Any = None,
         turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
@@ -680,6 +701,7 @@ class UniformTurnAgent:
         return {
             "accept": accept,
             "bid": bid,
+            "utterance": None,
             "action": (
                 "reject" if accept is False
                 else "submit" if bid is not None

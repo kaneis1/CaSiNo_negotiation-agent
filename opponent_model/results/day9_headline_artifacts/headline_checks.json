@@ -1,0 +1,33 @@
+{
+  "reference_brier": 0.16666666666666666,
+  "student_max_brier": 0.14579861111111111,
+  "student_never_worse_than_reference": true,
+  "student_between_teacher_and_reference_all_turns": false,
+  "student_worse_than_reference_turns": [],
+  "student_not_between_teacher_and_reference_turns": [
+    {
+      "turn_index": 19,
+      "teacher": 0.031901041666666664,
+      "student": 0.0,
+      "reference": 0.16666666666666666
+    },
+    {
+      "turn_index": 20,
+      "teacher": 0.0944940476190476,
+      "student": 0.08482142857142858,
+      "reference": 0.16666666666666666
+    },
+    {
+      "turn_index": 21,
+      "teacher": 0.14127604166666666,
+      "student": 0.041666666666666664,
+      "reference": 0.16666666666666666
+    },
+    {
+      "turn_index": 23,
+      "teacher": 0.05164930555555555,
+      "student": 0.0,
+      "reference": 0.16666666666666666
+    }
+  ]
+}

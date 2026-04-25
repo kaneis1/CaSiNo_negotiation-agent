@@ -1,0 +1,365 @@
+{
+  "metadata": {
+    "student_summary": "opponent_model/results/turn_eval_student_balanced_full150/turn_summary.json",
+    "student_records": "opponent_model/results/turn_eval_student_balanced_full150/turn_records.jsonl",
+    "teacher_records": "opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150/turn_records.jsonl",
+    "baseline_records": "opponent_model/results/turn_eval_structured_cot_p3_live_70b_m1_150/turn_records.jsonl",
+    "student_cache_path": "opponent_model/results/turn_eval_student_balanced_full150/student_cache.sqlite",
+    "note": "student content_ok reflects the current distillation target design: the balanced Day 9 student produced parseable intents on all turns, but only emitted non-null selected_content on a small subset of turns. This is not a student parse-failure story.",
+    "student_agent_summary": {
+      "calls": 1054,
+      "parse_errors": 0,
+      "posterior_ok": 1054,
+      "intent_ok": 1054,
+      "content_ok": 22,
+      "cache_hits": 1054,
+      "cache_misses": 0
+    }
+  },
+  "agents": {
+    "student": {
+      "native": {
+        "gold_submit_turns": 86,
+        "predicted_bid_turns": 22,
+        "scored_overlap": 14,
+        "coverage_vs_gold": 0.16279069767441862,
+        "bid_cosine_mean": 0.9152240390092048
+      },
+      "extracted": {
+        "gold_submit_turns": 86,
+        "predicted_bid_turns": 105,
+        "scored_overlap": 8,
+        "coverage_vs_gold": 0.09302325581395349,
+        "bid_cosine_mean": 0.8455408122390347
+      },
+      "action_counts": {
+        "utter": 948,
+        "accept": 79,
+        "submit": 22,
+        "reject": 5
+      },
+      "utterance_sources": {
+        "student_cache": 953
+      }
+    },
+    "teacher": {
+      "native": {
+        "gold_submit_turns": 86,
+        "predicted_bid_turns": 973,
+        "scored_overlap": 86,
+        "coverage_vs_gold": 1.0,
+        "bid_cosine_mean": 0.7439587788805349
+      },
+      "extracted": {
+        "gold_submit_turns": 86,
+        "predicted_bid_turns": 973,
+        "scored_overlap": 86,
+        "coverage_vs_gold": 1.0,
+        "bid_cosine_mean": 0.7439587788805349
+      },
+      "action_counts": {
+        "submit": 967,
+        "accept": 81,
+        "reject": 6
+      },
+      "utterance_sources": {
+        "teacher_template": 973
+      }
+    },
+    "baseline_live": {
+      "native": {
+        "gold_submit_turns": 86,
+        "predicted_bid_turns": 604,
+        "scored_overlap": 29,
+        "coverage_vs_gold": 0.3372093023255814,
+        "bid_cosine_mean": 0.8152363494558589
+      },
+      "extracted": {
+        "gold_submit_turns": 86,
+        "predicted_bid_turns": 333,
+        "scored_overlap": 26,
+        "coverage_vs_gold": 0.3023255813953488,
+        "bid_cosine_mean": 0.9171701874887478
+      },
+      "action_counts": {
+        "reject": 752,
+        "accept": 300,
+        "walkaway": 2
+      },
+      "utterance_sources": {
+        "logged": 1054
+      }
+    }
+  },
+  "extracted_intersections": {
+    "pairwise": {
+      "student__teacher": {
+        "count": 8,
+        "bid_cosine_mean": {
+          "student": 0.8455408122390347,
+          "teacher": 0.7071661471120725
+        },
+        "keys": [
+          {
+            "dialogue_id": 1,
+            "perspective": "mturk_agent_1",
+            "turn_index": 11
+          },
+          {
+            "dialogue_id": 34,
+            "perspective": "mturk_agent_1",
+            "turn_index": 13
+          },
+          {
+            "dialogue_id": 192,
+            "perspective": "mturk_agent_1",
+            "turn_index": 11
+          },
+          {
+            "dialogue_id": 260,
+            "perspective": "mturk_agent_1",
+            "turn_index": 12
+          },
+          {
+            "dialogue_id": 281,
+            "perspective": "mturk_agent_1",
+            "turn_index": 10
+          },
+          {
+            "dialogue_id": 328,
+            "perspective": "mturk_agent_1",
+            "turn_index": 12
+          },
+          {
+            "dialogue_id": 673,
+            "perspective": "mturk_agent_1",
+            "turn_index": 10
+          },
+          {
+            "dialogue_id": 873,
+            "perspective": "mturk_agent_1",
+            "turn_index": 12
+          }
+        ]
+      },
+      "student__baseline_live": {
+        "count": 6,
+        "bid_cosine_mean": {
+          "student": 0.8437638161290403,
+          "baseline_live": 0.9358576176957495
+        },
+        "keys": [
+          {
+            "dialogue_id": 1,
+            "perspective": "mturk_agent_1",
+            "turn_index": 11
+          },
+          {
+            "dialogue_id": 34,
+            "perspective": "mturk_agent_1",
+            "turn_index": 13
+          },
+          {
+            "dialogue_id": 260,
+            "perspective": "mturk_agent_1",
+            "turn_index": 12
+          },
+          {
+            "dialogue_id": 281,
+            "perspective": "mturk_agent_1",
+            "turn_index": 10
+          },
+          {
+            "dialogue_id": 328,
+            "perspective": "mturk_agent_1",
+            "turn_index": 12
+          },
+          {
+            "dialogue_id": 873,
+            "perspective": "mturk_agent_1",
+            "turn_index": 12
+          }
+        ]
+      },
+      "teacher__baseline_live": {
+        "count": 26,
+        "bid_cosine_mean": {
+          "teacher": 0.7469737955593346,
+          "baseline_live": 0.9171701874887478
+        },
+        "keys": [
+          {
+            "dialogue_id": 1,
+            "perspective": "mturk_agent_1",
+            "turn_index": 11
+          },
+          {
+            "dialogue_id": 34,
+            "perspective": "mturk_agent_1",
+            "turn_index": 13
+          },
+          {
+            "dialogue_id": 53,
+            "perspective": "mturk_agent_1",
+            "turn_index": 11
+          },
+          {
+            "dialogue_id": 61,
+            "perspective": "mturk_agent_1",
+            "turn_index": 23
+          },
+          {
+            "dialogue_id": 76,
+            "perspective": "mturk_agent_1",
+            "turn_index": 15
+          },
+          {
+            "dialogue_id": 177,
+            "perspective": "mturk_agent_1",
+            "turn_index": 11
+          },
+          {
+            "dialogue_id": 185,
+            "perspective": "mturk_agent_1",
+            "turn_index": 10
+          },
+          {
+            "dialogue_id": 260,
+            "perspective": "mturk_agent_1",
+            "turn_index": 12
+          },
+          {
+            "dialogue_id": 260,
+            "perspective": "mturk_agent_1",
+            "turn_index": 15
+          },
+          {
+            "dialogue_id": 281,
+            "perspective": "mturk_agent_1",
+            "turn_index": 10
+          },
+          {
+            "dialogue_id": 328,
+            "perspective": "mturk_agent_1",
+            "turn_index": 12
+          },
+          {
+            "dialogue_id": 392,
+            "perspective": "mturk_agent_1",
+            "turn_index": 10
+          },
+          {
+            "dialogue_id": 401,
+            "perspective": "mturk_agent_1",
+            "turn_index": 11
+          },
+          {
+            "dialogue_id": 451,
+            "perspective": "mturk_agent_1",
+            "turn_index": 14
+          },
+          {
+            "dialogue_id": 451,
+            "perspective": "mturk_agent_1",
+            "turn_index": 17
+          },
+          {
+            "dialogue_id": 467,
+            "perspective": "mturk_agent_1",
+            "turn_index": 32
+          },
+          {
+            "dialogue_id": 596,
+            "perspective": "mturk_agent_1",
+            "turn_index": 11
+          },
+          {
+            "dialogue_id": 779,
+            "perspective": "mturk_agent_1",
+            "turn_index": 13
+          },
+          {
+            "dialogue_id": 855,
+            "perspective": "mturk_agent_1",
+            "turn_index": 17
+          },
+          {
+            "dialogue_id": 864,
+            "perspective": "mturk_agent_1",
+            "turn_index": 14
+          },
+          {
+            "dialogue_id": 873,
+            "perspective": "mturk_agent_1",
+            "turn_index": 12
+          },
+          {
+            "dialogue_id": 873,
+            "perspective": "mturk_agent_1",
+            "turn_index": 17
+          },
+          {
+            "dialogue_id": 874,
+            "perspective": "mturk_agent_1",
+            "turn_index": 11
+          },
+          {
+            "dialogue_id": 931,
+            "perspective": "mturk_agent_1",
+            "turn_index": 10
+          },
+          {
+            "dialogue_id": 998,
+            "perspective": "mturk_agent_1",
+            "turn_index": 13
+          },
+          {
+            "dialogue_id": 1009,
+            "perspective": "mturk_agent_1",
+            "turn_index": 11
+          }
+        ]
+      }
+    },
+    "three_way": {
+      "count": 6,
+      "bid_cosine_mean": {
+        "student": 0.8437638161290403,
+        "teacher": 0.7362114163627803,
+        "baseline_live": 0.9358576176957495
+      },
+      "keys": [
+        {
+          "dialogue_id": 1,
+          "perspective": "mturk_agent_1",
+          "turn_index": 11
+        },
+        {
+          "dialogue_id": 34,
+          "perspective": "mturk_agent_1",
+          "turn_index": 13
+        },
+        {
+          "dialogue_id": 260,
+          "perspective": "mturk_agent_1",
+          "turn_index": 12
+        },
+        {
+          "dialogue_id": 281,
+          "perspective": "mturk_agent_1",
+          "turn_index": 10
+        },
+        {
+          "dialogue_id": 328,
+          "perspective": "mturk_agent_1",
+          "turn_index": 12
+        },
+        {
+          "dialogue_id": 873,
+          "perspective": "mturk_agent_1",
+          "turn_index": 12
+        }
+      ]
+    }
+  }
+}

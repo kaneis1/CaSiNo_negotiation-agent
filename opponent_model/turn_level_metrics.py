@@ -98,6 +98,7 @@ class TurnLevelAgent(Protocol):
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        my_personality: Optional[Mapping[str, Any]] = None,
         dialogue_id: Any = None,
         turn_index: Optional[int] = None,
     ) -> Mapping[str, Any]:
@@ -107,8 +108,10 @@ class TurnLevelAgent(Protocol):
             ``bid``       -> Optional[Mapping[str, int]]     (counter offer; my-receive)
                               -- accepted shapes: ``{"Food": .., "Water": .., "Firewood": ..}``
                               -- or ``{"self": {...}, "opp": {...}}`` for the full split
+            ``utterance`` -> Optional[str]                   (free-form generated text)
             ``strategy``  -> Optional[Sequence[str]]         (multi-label CaSiNo tags)
             ``posterior`` -> Optional[Sequence[float]]       (length-6 over HYPOTHESES)
+            ``lambda``    -> Optional[float]                 (policy knob used this turn)
 
         Missing/None keys are interpreted as "agent abstains" and the
         corresponding metric is *not* updated for that turn.
@@ -553,6 +556,7 @@ def turn_level_eval(
                 )
                 continue
             my_reasons = pinfo[perspective].get("value2reason", {})
+            my_personality = pinfo[perspective].get("personality", {})
 
             true_ordering = [
                 opp_priorities["High"],
@@ -583,6 +587,7 @@ def turn_level_eval(
                         opp_role=opp_role,
                         my_priorities=dict(my_priorities),
                         my_reasons=dict(my_reasons),
+                        my_personality=dict(my_personality),
                         pending_offer=pending,
                         dialogue_id=did,
                         turn_index=t,
@@ -609,6 +614,9 @@ def turn_level_eval(
                     if pred_strat_raw is not None else None
                 )
                 pred_action = pred.get("action")
+                pred_utterance = str(pred.get("utterance") or "").strip() or None
+                pred_lambda = pred.get("lambda")
+                pred_style = pred.get("style")
                 pred_posterior_raw = pred.get("posterior")
                 pred_posterior: Optional[np.ndarray] = None
                 if pred_posterior_raw is not None:
@@ -660,6 +668,9 @@ def turn_level_eval(
                         "action":    pred_action,
                         "accept":    pred_accept,
                         "bid":       (pred_bid.tolist() if pred_bid is not None else None),
+                        "utterance": pred_utterance,
+                        "lambda":    pred_lambda,
+                        "style":     pred_style,
                         "strategy":  pred_strat,
                         "posterior": (
                             pred_posterior.tolist()

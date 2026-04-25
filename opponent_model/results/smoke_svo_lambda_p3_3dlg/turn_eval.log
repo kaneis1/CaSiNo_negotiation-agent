@@ -1,0 +1,16 @@
+2026-04-25 16:23:10 | INFO    | Args: {'data': 'data/casino_test.json', 'output_dir': 'opponent_model/results/smoke_svo_lambda_p3_3dlg', 'annotations': 'CaSiNo/data/casino_ann.json', 'max_dialogues': 3, 'agent': 'bayesian', 'perspectives': 'mturk_agent_1', 'dummy_llm': True, 'model_id': None, 'base_model': None, 'adapter': None, 'max_new_tokens': 128, 'temperature': 0.0, 'style_token': 'balanced', 'student_max_new_tokens': 256, 'student_cache_path': None, 'student_parse_log': None, 'lambda_': 1.0, 'lambda_from_svo': True, 'posterior_k': 2, 'posterior_temperature': 0.0, 'accept_margin': 5, 'accept_floor': 0.5, 'replay_turns_path': None, 'structured_cot_seed': 2024, 'structured_cot_parse_log': None, 'likelihood_temperature': 25.0, 'likelihood_clip': '-3,3'}
+2026-04-25 16:23:10 | INFO    | Loaded 3 dialogues from data/casino_test.json
+2026-04-25 16:23:10 | INFO    | Annotations: 396 dialogues with strategy tags (from CaSiNo/data/casino_ann.json).
+2026-04-25 16:23:21 | INFO    | Built agent: BayesianTurnAgent
+2026-04-25 16:23:21 | INFO    | Perspectives scored: ('mturk_agent_1',)
+2026-04-25 16:23:21 | INFO    | Eval finished in 0.0s
+2026-04-25 16:23:21 | INFO    | 
+turn_level_eval: 19 per-turn predictions
+
+  accept F1              1.000   (n=2, P=1.000 R=1.000, acc=1.000)
+  bid cosine             0.120   (n=1)
+  strategy macro-F1      0.032   (n=16, |labels|=10)
+  Brier (posterior)      0.333   (n=19)
+2026-04-25 16:23:21 | INFO    | Agent summary: {'calls': 19, 'lambda_counts': {'1': 6, '2': 13}, 'svo_counts': {'proself': 6, 'prosocial': 13}}
+2026-04-25 16:23:21 | INFO    | Wrote opponent_model/results/smoke_svo_lambda_p3_3dlg/turn_summary.json
+2026-04-25 16:23:21 | INFO    | Wrote opponent_model/results/smoke_svo_lambda_p3_3dlg/turn_records.jsonl (19 records)

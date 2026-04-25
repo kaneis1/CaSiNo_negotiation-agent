@@ -230,10 +230,12 @@ class BayesianTurnAgent:
         temperature: float = DEFAULT_TEMPERATURE,
         accept_margin: int = DEFAULT_ACCEPT_MARGIN,
         accept_floor: float = DEFAULT_ACCEPT_FLOOR,
+        lambda_fn: Optional[Callable[[Optional[Mapping[str, Any]]], float]] = None,
         strategy_classifier: Optional[Callable] = None,
     ) -> None:
         self.model_fn = model_fn
         self.lambda_ = float(lambda_)
+        self.lambda_fn = lambda_fn
         self.K = int(K)
         self.temperature = float(temperature)
         self.accept_margin = int(accept_margin)
@@ -242,6 +244,34 @@ class BayesianTurnAgent:
             strategy_classifier if strategy_classifier is not None
             else KeywordStrategyClassifier()
         )
+        self._summary: Dict[str, Any] = {
+            "calls": 0,
+            "lambda_counts": {},
+            "svo_counts": {},
+        }
+
+    @property
+    def summary(self) -> Dict[str, Any]:
+        return {
+            "calls": self._summary["calls"],
+            "lambda_counts": dict(self._summary["lambda_counts"]),
+            "svo_counts": dict(self._summary["svo_counts"]),
+        }
+
+    def _lambda_for_turn(
+        self,
+        my_personality: Optional[Mapping[str, Any]],
+    ) -> float:
+        if self.lambda_fn is None:
+            return self.lambda_
+        try:
+            value = float(self.lambda_fn(my_personality))
+        except Exception:
+            logger.exception("lambda_fn failed; falling back to constant lambda.")
+            return self.lambda_
+        if not np.isfinite(value):
+            return self.lambda_
+        return value
 
     def predict_turn(
         self,
@@ -252,9 +282,19 @@ class BayesianTurnAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        my_personality: Optional[Mapping[str, Any]] = None,
         dialogue_id: Any = None,
         turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
+        self._summary["calls"] += 1
+        lambda_for_turn = self._lambda_for_turn(my_personality)
+        lambda_key = f"{lambda_for_turn:g}"
+        self._summary["lambda_counts"][lambda_key] = (
+            self._summary["lambda_counts"].get(lambda_key, 0) + 1
+        )
+        svo = str((my_personality or {}).get("svo", "missing")).strip().lower()
+        self._summary["svo_counts"][svo] = self._summary["svo_counts"].get(svo, 0) + 1
+
         # 1. Posterior from the SFT model (K MC samples at T).
         try:
             posterior = get_posterior(
@@ -276,12 +316,13 @@ class BayesianTurnAgent:
         try:
             menu = build_menu(
                 posterior, my_priorities,
-                lambda_=self.lambda_, top_k=5,
+                lambda_=lambda_for_turn, top_k=5,
             )
         except Exception:
             logger.exception("build_menu failed; abstaining this turn.")
             return {
                 "accept": None, "bid": None,
+                "lambda": lambda_for_turn,
                 "strategy": None, "posterior": posterior.tolist(),
             }
 
@@ -318,6 +359,8 @@ class BayesianTurnAgent:
         return {
             "accept":    decision["accept"],
             "bid":       decision["bid"],
+            "utterance": utterance or None,
+            "lambda":    lambda_for_turn,
             "action": (
                 "accept" if decision["action"] == "accept"
                 else "reject" if decision["action"] == "reject"
