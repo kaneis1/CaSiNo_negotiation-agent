@@ -136,6 +136,8 @@ def _build_argparser() -> argparse.ArgumentParser:
     # bayesian agent knobs
     p.add_argument("--lambda", dest="lambda_", type=float, default=1.0,
                    help="λ style knob for the menu builder (bayesian agent).")
+    p.add_argument("--lambda-from-svo", action="store_true",
+                   help="condition Bayesian λ on participant_info[role].personality.svo.")
     p.add_argument("--posterior-k", type=int, default=16,
                    help="# MC samples for the SFT posterior (bayesian agent).")
     p.add_argument("--posterior-temperature", type=float, default=0.7,
@@ -212,22 +214,44 @@ def _build_agent(args: argparse.Namespace, *, output_dir: Path) -> Any:
         return SftTurnAgent(sft, strategy_classifier=KeywordStrategyClassifier())
 
     if args.agent == "bayesian":
-        from sft_8b.predict import SftModelFn
         from sft_8b.bayesian_agent import BayesianTurnAgent
-        if args.base_model is None:
-            raise ValueError("--base-model is required for bayesian agent.")
-        # K samples need do_sample=True; temperature at load-time is ignored
-        # by generate_raw() which passes `posterior_temperature` directly,
-        # but we still need max_new_tokens tuned for ~96 tokens of JSON.
-        sft = SftModelFn(
-            base_model=args.base_model,
-            adapter_path=args.adapter,
-            max_new_tokens=args.max_new_tokens,
-            temperature=args.temperature,
-        )
+        if args.dummy_llm:
+            class _DummyPosteriorModel:
+                base_model = "dummy"
+                adapter_path = None
+                max_new_tokens = 0
+                temperature = 0.0
+
+                def generate_raw(self, prompt: str, *, K: int, temperature: float):
+                    return [
+                        '{"prefs":["Food","Water","Firewood"],'
+                        '"satisfaction":"Slightly satisfied"}'
+                    ] * int(K)
+
+            sft = _DummyPosteriorModel()
+        else:
+            from sft_8b.predict import SftModelFn
+            if args.base_model is None:
+                raise ValueError("--base-model is required for bayesian agent.")
+            # K samples need do_sample=True; temperature at load-time is ignored
+            # by generate_raw() which passes `posterior_temperature` directly,
+            # but we still need max_new_tokens tuned for ~96 tokens of JSON.
+            sft = SftModelFn(
+                base_model=args.base_model,
+                adapter_path=args.adapter,
+                max_new_tokens=args.max_new_tokens,
+                temperature=args.temperature,
+            )
+        lambda_fn = None
+        if args.lambda_from_svo:
+            from sft_8b.svo_to_lambda import svo_to_lambda
+            lambda_fn = lambda personality: svo_to_lambda(
+                (personality or {}).get("svo")
+            )
         return BayesianTurnAgent(
             sft,
             lambda_=args.lambda_,
+            lambda_fn=lambda_fn,
             K=args.posterior_k,
             temperature=args.posterior_temperature,
             accept_margin=args.accept_margin,

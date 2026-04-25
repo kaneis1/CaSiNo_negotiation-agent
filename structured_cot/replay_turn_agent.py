@@ -127,6 +127,7 @@ class StructuredCoTReplayAgent:
         my_priorities: Mapping[str, str],
         my_reasons: Mapping[str, str],
         pending_offer: Optional[Mapping[str, Any]],
+        my_personality: Optional[Mapping[str, Any]] = None,
         dialogue_id: Any = None,
         turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
@@ -193,6 +194,7 @@ class StructuredCoTReplayAgent:
         return {
             "accept":    accept,
             "bid":       bid,
+            "utterance": utterance or None,
             "action":    action,
             "strategy":  strategy,
             "posterior": None,   # Structured CoT does not expose a posterior.
