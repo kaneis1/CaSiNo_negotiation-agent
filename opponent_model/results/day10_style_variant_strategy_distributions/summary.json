@@ -1,0 +1,219 @@
+{
+  "metadata": {
+    "records": {
+      "balanced": "opponent_model/results/turn_eval_student_balanced_full150/turn_records.jsonl",
+      "cooperative": "opponent_model/results/turn_eval_student_cooperative_full150/turn_records.jsonl",
+      "competitive": "opponent_model/results/turn_eval_student_competitive_full150/turn_records.jsonl"
+    },
+    "strategies": [
+      "small-talk",
+      "self-need",
+      "other-need",
+      "no-need",
+      "elicit-pref",
+      "promote-coordination",
+      "vouch-fair",
+      "showing-empathy",
+      "uv-part",
+      "non-strategic"
+    ],
+    "frequency_definition": "multi-label strategy incidence per evaluated turn",
+    "gate": "global chi-square p<0.05 and max pairwise incidence difference >=0.02"
+  },
+  "summaries": {
+    "balanced": {
+      "turns": 1054,
+      "tagged_turns": 953,
+      "total_strategy_tags": 1307,
+      "counts": {
+        "small-talk": 126,
+        "self-need": 468,
+        "non-strategic": 292,
+        "promote-coordination": 110,
+        "vouch-fair": 89,
+        "other-need": 104,
+        "showing-empathy": 45,
+        "elicit-pref": 56,
+        "no-need": 17
+      },
+      "incidence_per_turn": {
+        "small-talk": 0.11954459203036052,
+        "self-need": 0.444022770398482,
+        "other-need": 0.09867172675521822,
+        "no-need": 0.016129032258064516,
+        "elicit-pref": 0.05313092979127135,
+        "promote-coordination": 0.10436432637571158,
+        "vouch-fair": 0.08444022770398482,
+        "showing-empathy": 0.04269449715370019,
+        "uv-part": 0.0,
+        "non-strategic": 0.27703984819734345
+      },
+      "distribution_over_tags": {
+        "small-talk": 0.09640397857689365,
+        "self-need": 0.35807192042846214,
+        "other-need": 0.07957153787299158,
+        "no-need": 0.013006885998469778,
+        "elicit-pref": 0.04284621270084162,
+        "promote-coordination": 0.08416220351951033,
+        "vouch-fair": 0.06809487375669472,
+        "showing-empathy": 0.03442999234889059,
+        "uv-part": 0.0,
+        "non-strategic": 0.2234123947972456
+      }
+    },
+    "cooperative": {
+      "turns": 1054,
+      "tagged_turns": 953,
+      "total_strategy_tags": 1323,
+      "counts": {
+        "small-talk": 129,
+        "self-need": 491,
+        "non-strategic": 271,
+        "promote-coordination": 106,
+        "vouch-fair": 85,
+        "other-need": 112,
+        "showing-empathy": 45,
+        "elicit-pref": 59,
+        "no-need": 25
+      },
+      "incidence_per_turn": {
+        "small-talk": 0.12239089184060721,
+        "self-need": 0.4658444022770398,
+        "other-need": 0.1062618595825427,
+        "no-need": 0.023719165085388995,
+        "elicit-pref": 0.055977229601518026,
+        "promote-coordination": 0.10056925996204934,
+        "vouch-fair": 0.08064516129032258,
+        "showing-empathy": 0.04269449715370019,
+        "uv-part": 0.0,
+        "non-strategic": 0.2571157495256167
+      },
+      "distribution_over_tags": {
+        "small-talk": 0.09750566893424037,
+        "self-need": 0.3711262282690854,
+        "other-need": 0.08465608465608465,
+        "no-need": 0.01889644746787604,
+        "elicit-pref": 0.044595616024187455,
+        "promote-coordination": 0.0801209372637944,
+        "vouch-fair": 0.06424792139077853,
+        "showing-empathy": 0.034013605442176874,
+        "uv-part": 0.0,
+        "non-strategic": 0.20483749055177627
+      }
+    },
+    "competitive": {
+      "turns": 1054,
+      "tagged_turns": 955,
+      "total_strategy_tags": 1294,
+      "counts": {
+        "small-talk": 123,
+        "self-need": 486,
+        "non-strategic": 282,
+        "promote-coordination": 100,
+        "vouch-fair": 80,
+        "other-need": 103,
+        "showing-empathy": 46,
+        "no-need": 19,
+        "elicit-pref": 55
+      },
+      "incidence_per_turn": {
+        "small-talk": 0.11669829222011385,
+        "self-need": 0.46110056925996207,
+        "other-need": 0.09772296015180265,
+        "no-need": 0.018026565464895637,
+        "elicit-pref": 0.05218216318785579,
+        "promote-coordination": 0.09487666034155598,
+        "vouch-fair": 0.07590132827324478,
+        "showing-empathy": 0.04364326375711575,
+        "uv-part": 0.0,
+        "non-strategic": 0.2675521821631879
+      },
+      "distribution_over_tags": {
+        "small-talk": 0.09505409582689335,
+        "self-need": 0.3755795981452859,
+        "other-need": 0.07959814528593509,
+        "no-need": 0.014683153013910355,
+        "elicit-pref": 0.04250386398763524,
+        "promote-coordination": 0.07727975270479134,
+        "vouch-fair": 0.061823802163833076,
+        "showing-empathy": 0.03554868624420402,
+        "uv-part": 0.0,
+        "non-strategic": 0.21792890262751158
+      }
+    }
+  },
+  "global_chi_square": {
+    "scipy_available": true,
+    "table": [
+      [
+        126,
+        468,
+        104,
+        17,
+        56,
+        110,
+        89,
+        45,
+        0,
+        292
+      ],
+      [
+        129,
+        491,
+        112,
+        25,
+        59,
+        106,
+        85,
+        45,
+        0,
+        271
+      ],
+      [
+        123,
+        486,
+        103,
+        19,
+        55,
+        100,
+        80,
+        46,
+        0,
+        282
+      ]
+    ],
+    "tested_strategies": [
+      "small-talk",
+      "self-need",
+      "other-need",
+      "no-need",
+      "elicit-pref",
+      "promote-coordination",
+      "vouch-fair",
+      "showing-empathy",
+      "non-strategic"
+    ],
+    "chi2": 4.489981866265644,
+    "p": 0.997763331079329,
+    "dof": 16
+  },
+  "pairwise": {
+    "balanced_vs_cooperative": {
+      "js_divergence_bits": 0.0009181483998854621,
+      "max_abs_incidence_diff": 0.021821631878557846
+    },
+    "balanced_vs_competitive": {
+      "js_divergence_bits": 0.00043735331196348816,
+      "max_abs_incidence_diff": 0.017077798861480087
+    },
+    "cooperative_vs_competitive": {
+      "js_divergence_bits": 0.0004800816750426002,
+      "max_abs_incidence_diff": 0.010436432637571158
+    }
+  },
+  "gate": {
+    "global_chi_square_p_lt_0.05": false,
+    "max_abs_incidence_diff_ge_0.02": true,
+    "claim3_style_token_load_bearing": false
+  }
+}

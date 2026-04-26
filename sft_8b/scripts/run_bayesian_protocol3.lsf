@@ -60,6 +60,7 @@ PERSPECTIVES="${PERSPECTIVES:-mturk_agent_1}"
 
 LAMBDA="${LAMBDA:-1.0}"
 LAMBDA_FROM_SVO="${LAMBDA_FROM_SVO:-0}"
+SVO_LAMBDA_MODE="${SVO_LAMBDA_MODE:-rescaled}"
 POSTERIOR_K="${POSTERIOR_K:-16}"
 POSTERIOR_T="${POSTERIOR_T:-0.7}"
 MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-96}"
@@ -82,7 +83,7 @@ nvidia-smi --query-gpu=index,name,memory.total --format=csv || true
 echo "BASE_MODEL=$BASE_MODEL"
 echo "ADAPTER=$ADAPTER"
 echo "DATA=$DATA  MAX_DIALOGUES=$MAX_DIALOGUES  PERSPECTIVES=$PERSPECTIVES"
-echo "LAMBDA=$LAMBDA  LAMBDA_FROM_SVO=$LAMBDA_FROM_SVO  K=$POSTERIOR_K  T=$POSTERIOR_T  MAX_NEW_TOKENS=$MAX_NEW_TOKENS"
+echo "LAMBDA=$LAMBDA  LAMBDA_FROM_SVO=$LAMBDA_FROM_SVO  SVO_LAMBDA_MODE=$SVO_LAMBDA_MODE  K=$POSTERIOR_K  T=$POSTERIOR_T  MAX_NEW_TOKENS=$MAX_NEW_TOKENS"
 echo "ACCEPT_MARGIN=$ACCEPT_MARGIN  ACCEPT_FLOOR=$ACCEPT_FLOOR"
 echo "RUN_REPLAY=$RUN_REPLAY"
 echo "BAYES_OUT=$BAYES_OUT"
@@ -95,6 +96,7 @@ mkdir -p "$BAYES_OUT" "$REPLAY_OUT"
 BAYES_EXTRA=()
 if [[ "$LAMBDA_FROM_SVO" == "1" || "$LAMBDA_FROM_SVO" == "true" || "$LAMBDA_FROM_SVO" == "TRUE" ]]; then
     BAYES_EXTRA+=(--lambda-from-svo)
+    BAYES_EXTRA+=(--svo-lambda-mode "$SVO_LAMBDA_MODE")
 fi
 
 # ── 1. Structured-CoT replay (CPU only; ~1 min) ────────────────────────────
@@ -136,7 +138,13 @@ echo "=== [2/2] Bayesian teacher (λ=$LAMBDA) through turn_level_eval ==="
 
 # ── 3. Head-to-head summary ────────────────────────────────────────────────
 echo ""
-if [[ "$RUN_REPLAY" == "1" || "$RUN_REPLAY" == "true" || "$RUN_REPLAY" == "TRUE" ]]; then
+if [[ "$RUN_REPLAY" != "1" && "$RUN_REPLAY" != "true" && "$RUN_REPLAY" != "TRUE" ]]; then
+    echo "=== Head-to-head skipped (RUN_REPLAY=$RUN_REPLAY) ==="
+    echo ""
+    echo "=== done at $(date) ==="
+    exit 0
+fi
+
 echo "=== Head-to-head: Bayesian vs Structured-CoT replay ==="
 "$CASINO_PY" <<PY
 import json
@@ -189,9 +197,6 @@ if b_f1 < r_f1:
 else:
     print("✅  Bayesian teacher ≥ baseline on accept F1.")
 PY
-else
-echo "=== Head-to-head skipped (RUN_REPLAY=$RUN_REPLAY) ==="
-fi
 
 echo ""
 echo "=== done at $(date) ==="

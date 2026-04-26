@@ -1,0 +1,616 @@
+[
+  {
+    "dialogue_id": 1,
+    "chat_logs": [
+      {
+        "text": "Hello. How are you?",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "I am good. I am pretty excited for the trip this weekend. what about you?",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "Very excited. It will be fun.",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "Yes, Hopefully the weather holds up. So I was thinking, i am bringning my two kids along with me, and they will need food, so I was thinking i could take the three foods, and either one of the firewood or water, up to you.",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "I would also like a little extra food for my kids. Maybe we can split it somehow?",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "Ok, I am willing to give you one food, in exchange for two firewoods, that would mean you get 3 waters, 1 food and 1 firewood. you get 5 items, while i get 4.",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "If I only get 1 food, than I would like 2 firewood. So you get 2 food, 1 firewood, and 1 water.",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "No i do not need water, as i am camping near a potable stream. I would like 2 firewood. It is only fair that i get two firewood, since you are getting more supplies (5), i think i should be able to choose what 4 i should get.",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "No, if you get 2 food, it's only fair that I get 2 firewood. ",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "Then i will take 3 waters, and 2 food.",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "Okay I will take all the firewood and 1 food.",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "Submit-Deal",
+        "task_data": {
+          "issue2youget": {
+            "Food": "2",
+            "Firewood": "0",
+            "Water": "3"
+          },
+          "issue2theyget": {
+            "Food": "1",
+            "Firewood": "3",
+            "Water": "0"
+          }
+        },
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "Accept-Deal",
+        "task_data": {
+          "data": "accept_deal"
+        },
+        "id": "mturk_agent_2"
+      }
+    ],
+    "participant_info": {
+      "mturk_agent_2": {
+        "value2issue": {
+          "High": "Food",
+          "Low": "Water",
+          "Medium": "Firewood"
+        },
+        "value2reason": {
+          "High": "when I get nervous or scared I eat, so I'd like more food",
+          "Medium": "I don't like the dark, so this would help keep it light.",
+          "Low": "I can do without water, but will take it."
+        },
+        "outcomes": {
+          "points_scored": 17,
+          "satisfaction": "Slightly satisfied",
+          "opponent_likeness": "Slightly like"
+        },
+        "demographics": {
+          "age": 43,
+          "gender": "female",
+          "ethnicity": "white american",
+          "education": "high school graduate / ged"
+        },
+        "personality": {
+          "svo": "proself",
+          "big-five": {
+            "extraversion": 1.0,
+            "agreeableness": 7.0,
+            "conscientiousness": 5.0,
+            "emotional-stability": 7.0,
+            "openness-to-experiences": 6.0
+          }
+        }
+      },
+      "mturk_agent_1": {
+        "value2issue": {
+          "High": "Food",
+          "Low": "Water",
+          "Medium": "Firewood"
+        },
+        "value2reason": {
+          "High": "I am camping with two children, and need food to keep them comfortable",
+          "Medium": "It eliminates the heavy misquito coverage at night",
+          "Low": "The stream nearby is very clean"
+        },
+        "outcomes": {
+          "points_scored": 19,
+          "satisfaction": "Extremely satisfied",
+          "opponent_likeness": "Slightly dislike"
+        },
+        "demographics": {
+          "age": 24,
+          "gender": "female",
+          "ethnicity": "black or african american",
+          "education": "some 4 year college, bachelor's degree"
+        },
+        "personality": {
+          "svo": "proself",
+          "big-five": {
+            "extraversion": 3.5,
+            "agreeableness": 4.5,
+            "conscientiousness": 6.0,
+            "emotional-stability": 6.5,
+            "openness-to-experiences": 6.5
+          }
+        }
+      }
+    },
+    "annotations": [
+      [
+        "Hello. How are you?",
+        "small-talk"
+      ],
+      [
+        "I am good. I am pretty excited for the trip this weekend. what about you?",
+        "small-talk"
+      ],
+      [
+        "Very excited. It will be fun.",
+        "small-talk"
+      ],
+      [
+        "Yes, Hopefully the weather holds up. So I was thinking, i am bringning my two kids along with me, and they will need food, so I was thinking i could take the three foods, and either one of the firewood or water, up to you.",
+        "other-need,small-talk"
+      ],
+      [
+        "I would also like a little extra food for my kids. Maybe we can split it somehow?",
+        "other-need,promote-coordination"
+      ],
+      [
+        "Ok, I am willing to give you one food, in exchange for two firewoods, that would mean you get 3 waters, 1 food and 1 firewood. you get 5 items, while i get 4.",
+        "non-strategic"
+      ],
+      [
+        "If I only get 1 food, than I would like 2 firewood. So you get 2 food, 1 firewood, and 1 water.",
+        "non-strategic"
+      ],
+      [
+        "No i do not need water, as i am camping near a potable stream. I would like 2 firewood. It is only fair that i get two firewood, since you are getting more supplies (5), i think i should be able to choose what 4 i should get.",
+        "no-need,vouch-fair"
+      ],
+      [
+        "No, if you get 2 food, it's only fair that I get 2 firewood. ",
+        "vouch-fair"
+      ],
+      [
+        "Then i will take 3 waters, and 2 food.",
+        "non-strategic"
+      ],
+      [
+        "Okay I will take all the firewood and 1 food.",
+        "non-strategic"
+      ]
+    ]
+  },
+  {
+    "dialogue_id": 33,
+    "chat_logs": [
+      {
+        "text": "hello",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "hi",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "In this extra package I need two food",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "wow that is a much",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "because of my big size I want two extra food package ",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "i will give you that in exchange for 1 food and 3 water with 2 firewood",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "please consider my request i'm big in size so please accept to give two pack of food and 2 water and 1 firewood",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "cool",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "do you accept my deal?",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "u said i will have 2 food 2 firewood and 1 water?",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "Submit-Deal",
+        "task_data": {
+          "issue2youget": {
+            "Food": "2",
+            "Water": "2",
+            "Firewood": "1"
+          },
+          "issue2theyget": {
+            "Food": "1",
+            "Water": "1",
+            "Firewood": "2"
+          }
+        },
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "Reject-Deal",
+        "task_data": {
+          "data": "reject_deal"
+        },
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "Submit-Deal",
+        "task_data": {
+          "issue2youget": {
+            "Food": "2",
+            "Water": "2",
+            "Firewood": "1"
+          },
+          "issue2theyget": {
+            "Food": "1",
+            "Water": "1",
+            "Firewood": "2"
+          }
+        },
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "Accept-Deal",
+        "task_data": {
+          "data": "accept_deal"
+        },
+        "id": "mturk_agent_1"
+      }
+    ],
+    "participant_info": {
+      "mturk_agent_1": {
+        "value2issue": {
+          "High": "Food",
+          "Medium": "Water",
+          "Low": "Firewood"
+        },
+        "value2reason": {
+          "High": "because I'm normally eat more because of my big size",
+          "Medium": "I need water because of my medical purpose, I have a stone in my kidney so I need more water to drink",
+          "Low": "firewood is not very important to me so I need less it."
+        },
+        "outcomes": {
+          "points_scored": 15,
+          "satisfaction": "Slightly satisfied",
+          "opponent_likeness": "Slightly like"
+        },
+        "demographics": {
+          "age": 35,
+          "gender": "male",
+          "ethnicity": "white american",
+          "education": "some 4 year college, bachelor's degree"
+        },
+        "personality": {
+          "svo": "proself",
+          "big-five": {
+            "extraversion": 4.0,
+            "agreeableness": 3.5,
+            "conscientiousness": 6.0,
+            "emotional-stability": 6.0,
+            "openness-to-experiences": 6.5
+          }
+        }
+      },
+      "mturk_agent_2": {
+        "value2issue": {
+          "High": "Food",
+          "Medium": "Water",
+          "Low": "Firewood"
+        },
+        "value2reason": {
+          "High": "i need for for nourishment",
+          "Medium": "i need water for survival",
+          "Low": "i need firewood to make fire"
+        },
+        "outcomes": {
+          "points_scored": 21,
+          "satisfaction": "Slightly satisfied",
+          "opponent_likeness": "Extremely like"
+        },
+        "demographics": {
+          "age": 30,
+          "gender": "male",
+          "ethnicity": "white american",
+          "education": "master's degree"
+        },
+        "personality": {
+          "svo": "proself",
+          "big-five": {
+            "extraversion": 3.5,
+            "agreeableness": 4.5,
+            "conscientiousness": 3.5,
+            "emotional-stability": 6.0,
+            "openness-to-experiences": 3.5
+          }
+        }
+      }
+    },
+    "annotations": [
+      [
+        "hello",
+        "non-strategic"
+      ],
+      [
+        "hi",
+        "non-strategic"
+      ],
+      [
+        "In this extra package I need two food",
+        "non-strategic"
+      ],
+      [
+        "wow that is a much",
+        "uv-part"
+      ],
+      [
+        "because of my big size I want two extra food package ",
+        "self-need"
+      ],
+      [
+        "i will give you that in exchange for 1 food and 3 water with 2 firewood",
+        "promote-coordination"
+      ],
+      [
+        "please consider my request i'm big in size so please accept to give two pack of food and 2 water and 1 firewood",
+        "self-need,promote-coordination"
+      ],
+      [
+        "cool",
+        "non-strategic"
+      ],
+      [
+        "do you accept my deal?",
+        "non-strategic"
+      ],
+      [
+        "u said i will have 2 food 2 firewood and 1 water?",
+        "non-strategic"
+      ]
+    ]
+  },
+  {
+    "dialogue_id": 38,
+    "chat_logs": [
+      {
+        "text": "Hello, how are you doing?",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "I\u2019m doing fine. How about you?",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "I'm doing well. I was hoping I could have the extra firewood because my group decided to camp for a few extra days and want to make sure we have enough",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "How many of you are on the camping grounds?",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "It's just my family. There are 6 of us total",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "Wow. I\u2019m alone here. I could use an extra food and water. ",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "How many would you like? I just want to make sure we have enough good and water because there are so many of us",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "I understand. I would like one food and one water. How much wood do you want for that?",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "I think we could get by with two pieces of wood and I would be glad to give you the other one",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "So you will give me one piece of each?",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "Yes that sounds good with me if that is good with you",
+        "task_data": {},
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "So I\u2019ll give you one wood and you give me one food and one water. ",
+        "task_data": {},
+        "id": "mturk_agent_1"
+      },
+      {
+        "text": "Submit-Deal",
+        "task_data": {
+          "issue2youget": {
+            "Firewood": "2",
+            "Water": "2",
+            "Food": "2"
+          },
+          "issue2theyget": {
+            "Firewood": "1",
+            "Water": "1",
+            "Food": "1"
+          }
+        },
+        "id": "mturk_agent_2"
+      },
+      {
+        "text": "Accept-Deal",
+        "task_data": {
+          "data": "accept_deal"
+        },
+        "id": "mturk_agent_1"
+      }
+    ],
+    "participant_info": {
+      "mturk_agent_2": {
+        "value2issue": {
+          "Low": "Food",
+          "Medium": "Water",
+          "High": "Firewood"
+        },
+        "value2reason": {
+          "High": "We're going to be camping for an extended period of time",
+          "Medium": "We'll be hiking as well so we need the water",
+          "Low": "My father is diabetic and needs the extra food"
+        },
+        "outcomes": {
+          "points_scored": 24,
+          "satisfaction": "Extremely satisfied",
+          "opponent_likeness": "Extremely like"
+        },
+        "demographics": {
+          "age": 25,
+          "gender": "male",
+          "ethnicity": "white american",
+          "education": "some 4 year college, bachelor's degree"
+        },
+        "personality": {
+          "svo": "proself",
+          "big-five": {
+            "extraversion": 2.0,
+            "agreeableness": 6.5,
+            "conscientiousness": 5.0,
+            "emotional-stability": 5.0,
+            "openness-to-experiences": 4.5
+          }
+        }
+      },
+      "mturk_agent_1": {
+        "value2issue": {
+          "Medium": "Food",
+          "Low": "Water",
+          "High": "Firewood"
+        },
+        "value2reason": {
+          "High": "To keep warm and cook food. ",
+          "Medium": "Needed to maintain energy and for calories. ",
+          "Low": "Water needed to stay hydrated. "
+        },
+        "outcomes": {
+          "points_scored": 12,
+          "satisfaction": "Extremely satisfied",
+          "opponent_likeness": "Extremely like"
+        },
+        "demographics": {
+          "age": 45,
+          "gender": "male",
+          "ethnicity": "white american",
+          "education": "master's degree"
+        },
+        "personality": {
+          "svo": "proself",
+          "big-five": {
+            "extraversion": 5.5,
+            "agreeableness": 6.0,
+            "conscientiousness": 7.0,
+            "emotional-stability": 5.5,
+            "openness-to-experiences": 5.0
+          }
+        }
+      }
+    },
+    "annotations": [
+      [
+        "Hello, how are you doing?",
+        "small-talk"
+      ],
+      [
+        "I\u2019m doing fine. How about you?",
+        "small-talk"
+      ],
+      [
+        "I'm doing well. I was hoping I could have the extra firewood because my group decided to camp for a few extra days and want to make sure we have enough",
+        "small-talk,self-need,other-need"
+      ],
+      [
+        "How many of you are on the camping grounds?",
+        "small-talk"
+      ],
+      [
+        "It's just my family. There are 6 of us total",
+        "small-talk,self-need,other-need"
+      ],
+      [
+        "Wow. I\u2019m alone here. I could use an extra food and water. ",
+        "small-talk"
+      ],
+      [
+        "How many would you like? I just want to make sure we have enough good and water because there are so many of us",
+        "self-need,other-need"
+      ],
+      [
+        "I understand. I would like one food and one water. How much wood do you want for that?",
+        "showing-empathy"
+      ],
+      [
+        "I think we could get by with two pieces of wood and I would be glad to give you the other one",
+        "promote-coordination"
+      ],
+      [
+        "So you will give me one piece of each?",
+        "non-strategic"
+      ],
+      [
+        "Yes that sounds good with me if that is good with you",
+        "non-strategic"
+      ],
+      [
+        "So I\u2019ll give you one wood and you give me one food and one water. ",
+        "non-strategic"
+      ]
+    ]
+  }
+]

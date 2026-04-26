@@ -1,0 +1,299 @@
+{
+  "metadata": {
+    "records": "opponent_model/results/turn_eval_bayesian_svo_lambda_m5_f0.50_full150/turn_records.jsonl",
+    "data": "data/casino_test.json",
+    "ip_definition": "max feasible joint points over all 64 CaSiNo splits, given the dialogue participants' priority orderings",
+    "ip_bins": {
+      "low_ip": "max_joint_points <= 36",
+      "mid_ip": "37 <= max_joint_points <= 39",
+      "high_ip": "max_joint_points >= 40"
+    }
+  },
+  "dialogue_ip_bin_counts": {
+    "low_ip": 43,
+    "high_ip": 53,
+    "mid_ip": 54
+  },
+  "summary": {
+    "low_ip": {
+      "self_points": {
+        "lambda_1": {
+          "n": 151,
+          "mean": 13.509933774834437,
+          "std": 8.95906806884799,
+          "min": 0.0,
+          "max": 27.0
+        },
+        "lambda_2": {
+          "n": 130,
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": -13.509933774834437,
+          "scipy_available": true,
+          "welch_t": -18.530146697575365,
+          "welch_p": 1.2875614788289936e-40
+        }
+      },
+      "opp_points": {
+        "lambda_1": {
+          "n": 151,
+          "mean": 22.490066225165563,
+          "std": 8.95906806884799,
+          "min": 9.0,
+          "max": 36.0
+        },
+        "lambda_2": {
+          "n": 130,
+          "mean": 36.0,
+          "std": 0.0,
+          "min": 36.0,
+          "max": 36.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": 13.509933774834437,
+          "scipy_available": true,
+          "welch_t": 18.530146697575365,
+          "welch_p": 1.2875614788289936e-40
+        }
+      },
+      "joint_points": {
+        "lambda_1": {
+          "n": 151,
+          "mean": 36.0,
+          "std": 0.0,
+          "min": 36.0,
+          "max": 36.0
+        },
+        "lambda_2": {
+          "n": 130,
+          "mean": 36.0,
+          "std": 0.0,
+          "min": 36.0,
+          "max": 36.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": 0.0,
+          "scipy_available": true,
+          "welch_t": NaN,
+          "welch_p": NaN
+        }
+      }
+    },
+    "mid_ip": {
+      "self_points": {
+        "lambda_1": {
+          "n": 191,
+          "mean": 16.916230366492147,
+          "std": 6.601698220858293,
+          "min": 0.0,
+          "max": 27.0
+        },
+        "lambda_2": {
+          "n": 160,
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": -16.916230366492147,
+          "scipy_available": true,
+          "welch_t": -35.413153880818655,
+          "welch_p": 1.295322580529299e-85
+        }
+      },
+      "opp_points": {
+        "lambda_1": {
+          "n": 191,
+          "mean": 21.50261780104712,
+          "std": 6.953132081488803,
+          "min": 9.0,
+          "max": 36.0
+        },
+        "lambda_2": {
+          "n": 160,
+          "mean": 36.0,
+          "std": 0.0,
+          "min": 36.0,
+          "max": 36.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": 14.49738219895288,
+          "scipy_available": true,
+          "welch_t": 28.815475652890367,
+          "welch_p": 2.8667128827335254e-71
+        }
+      },
+      "joint_points": {
+        "lambda_1": {
+          "n": 191,
+          "mean": 38.41884816753927,
+          "std": 1.302815062605544,
+          "min": 33.0,
+          "max": 39.0
+        },
+        "lambda_2": {
+          "n": 160,
+          "mean": 36.0,
+          "std": 0.0,
+          "min": 36.0,
+          "max": 36.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": -2.4188481675392666,
+          "scipy_available": true,
+          "welch_t": -25.65916508338013,
+          "welch_p": 1.205811071849379e-63
+        }
+      }
+    },
+    "high_ip": {
+      "self_points": {
+        "lambda_1": {
+          "n": 143,
+          "mean": 21.20979020979021,
+          "std": 6.017408017697718,
+          "min": 15.0,
+          "max": 27.0
+        },
+        "lambda_2": {
+          "n": 194,
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": -21.20979020979021,
+          "scipy_available": true,
+          "welch_t": -42.149743027096775,
+          "welch_p": 3.647973651426579e-82
+        }
+      },
+      "opp_points": {
+        "lambda_1": {
+          "n": 143,
+          "mean": 20.53846153846154,
+          "std": 6.3120377178593685,
+          "min": 12.0,
+          "max": 27.0
+        },
+        "lambda_2": {
+          "n": 194,
+          "mean": 36.0,
+          "std": 0.0,
+          "min": 36.0,
+          "max": 36.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": 15.46153846153846,
+          "scipy_available": true,
+          "welch_t": 29.292142518323132,
+          "welch_p": 4.670336844684592e-62
+        }
+      },
+      "joint_points": {
+        "lambda_1": {
+          "n": 143,
+          "mean": 41.74825174825175,
+          "std": 0.8347094583377329,
+          "min": 39.0,
+          "max": 42.0
+        },
+        "lambda_2": {
+          "n": 194,
+          "mean": 36.0,
+          "std": 0.0,
+          "min": 36.0,
+          "max": 36.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": -5.748251748251747,
+          "scipy_available": true,
+          "welch_t": -82.35092167216132,
+          "welch_p": 9.506918015733204e-122
+        }
+      }
+    },
+    "all": {
+      "self_points": {
+        "lambda_1": {
+          "n": 485,
+          "mean": 17.121649484536082,
+          "std": 7.850596476840108,
+          "min": 0.0,
+          "max": 27.0
+        },
+        "lambda_2": {
+          "n": 484,
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": -17.121649484536082,
+          "scipy_available": true,
+          "welch_t": -48.030135975125226,
+          "welch_p": 2.9050513519555436e-186
+        }
+      },
+      "opp_points": {
+        "lambda_1": {
+          "n": 485,
+          "mean": 21.52577319587629,
+          "std": 7.491445236088502,
+          "min": 9.0,
+          "max": 36.0
+        },
+        "lambda_2": {
+          "n": 484,
+          "mean": 36.0,
+          "std": 0.0,
+          "min": 36.0,
+          "max": 36.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": 14.47422680412371,
+          "scipy_available": true,
+          "welch_t": 42.550104766614766,
+          "welch_p": 1.137738848615156e-165
+        }
+      },
+      "joint_points": {
+        "lambda_1": {
+          "n": 485,
+          "mean": 38.64742268041237,
+          "std": 2.432862680678516,
+          "min": 33.0,
+          "max": 42.0
+        },
+        "lambda_2": {
+          "n": 484,
+          "mean": 36.0,
+          "std": 0.0,
+          "min": 36.0,
+          "max": 36.0
+        },
+        "test": {
+          "mean_diff_lambda2_minus_lambda1": -2.647422680412369,
+          "scipy_available": true,
+          "welch_t": -23.964951693568636,
+          "welch_p": 2.9285043901468226e-84
+        }
+      }
+    }
+  },
+  "interpretation": {
+    "joint_lambda2_minus_lambda1_by_bin": {
+      "low_ip": 0.0,
+      "mid_ip": -2.4188481675392666,
+      "high_ip": -5.748251748251747,
+      "all": -2.647422680412369
+    }
+  }
+}

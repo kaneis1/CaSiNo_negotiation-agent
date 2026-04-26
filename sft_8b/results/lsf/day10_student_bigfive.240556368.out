@@ -1,0 +1,70 @@
+Sender: LSF System <lsfadmin@lg02e01>
+Subject: Job 240556368: <day10_student_bigfive> in cluster <chimera> Done
+
+Job <day10_student_bigfive> was submitted from host <lg03a01> by user <cuiz02> in cluster <chimera> at Sat Apr 25 22:25:29 2026
+Job was executed on host(s) <4*lg02e01>, in queue <gpu>, as user <cuiz02> in cluster <chimera> at Sat Apr 25 22:25:33 2026
+</hpc/users/cuiz02> was used as the home directory.
+</sc/arion/projects/lin_lab/complexbehavior/CaSino> was used as the working directory.
+Started at Sat Apr 25 22:25:33 2026
+Terminated at Sat Apr 25 23:35:19 2026
+Results reported at Sat Apr 25 23:35:19 2026
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+cd /sc/arion/projects/lin_lab/complexbehavior/CaSino && STYLE_FROM_BIGFIVE=1 RUN_TAG=student_bigfive_full150 MAX_DIALOGUES=150 PERSPECTIVES=mturk_agent_1 bash sft_8b/scripts/run_day9_student_eval.lsf
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   4130.00 sec.
+    Max Memory :                                 1468 MB
+    Average Memory :                             1444.69 MB
+    Total Requested Memory :                     160000.00 MB
+    Delta Memory :                               158532.00 MB
+    Max Swap :                                   -
+    Max Processes :                              9
+    Max Threads :                                25
+    Run time :                                   4186 sec.
+    Turnaround time :                            4190 sec.
+
+The output (if any) follows:
+
+=== job 240556368 on lg02e01 at Sat Apr 25 22:25:35 EDT 2026 ===
+index, name, memory.total [MiB]
+0, NVIDIA H100 80GB HBM3, 81559 MiB
+BASE_MODEL=/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct
+ADAPTER=sft_8b/results/day8_lora_run/lora_best
+DATA=data/casino_test.json  MAX_DIALOGUES=150  PERSPECTIVES=mturk_agent_1
+STYLE_TOKEN=balanced  STUDENT_MAX_NEW_TOKENS=256
+STYLE_FROM_BIGFIVE=1
+OUT=opponent_model/results/turn_eval_student_bigfive_full150
+CACHE_PATH=opponent_model/results/turn_eval_student_bigfive_full150/student_cache.sqlite
+PARSE_LOG=opponent_model/results/turn_eval_student_bigfive_full150/student_parse_failures.jsonl
+========================================================================
+2026-04-25 22:25:37 | INFO    | Args: {'data': 'data/casino_test.json', 'output_dir': 'opponent_model/results/turn_eval_student_bigfive_full150', 'annotations': 'CaSiNo/data/casino_ann.json', 'max_dialogues': 150, 'agent': 'distilled_student', 'perspectives': 'mturk_agent_1', 'dummy_llm': False, 'model_id': None, 'base_model': '/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct', 'adapter': 'sft_8b/results/day8_lora_run/lora_best', 'max_new_tokens': 128, 'temperature': 0.0, 'style_token': 'balanced', 'style_from_bigfive': True, 'student_max_new_tokens': 256, 'student_cache_path': 'opponent_model/results/turn_eval_student_bigfive_full150/student_cache.sqlite', 'student_parse_log': 'opponent_model/results/turn_eval_student_bigfive_full150/student_parse_failures.jsonl', 'lambda_': 1.0, 'lambda_from_svo': False, 'posterior_k': 16, 'posterior_temperature': 0.7, 'accept_margin': 5, 'accept_floor': 0.5, 'replay_turns_path': None, 'structured_cot_seed': 2024, 'structured_cot_parse_log': None, 'likelihood_temperature': 25.0, 'likelihood_clip': '-3,3'}
+2026-04-25 22:25:37 | INFO    | Loaded 150 dialogues from data/casino_test.json
+2026-04-25 22:25:38 | INFO    | Annotations: 396 dialogues with strategy tags (from CaSiNo/data/casino_ann.json).
+2026-04-25 22:26:50 | INFO    | Built agent: DistilledStudentTurnAgent
+2026-04-25 22:26:50 | INFO    | Perspectives scored: ('mturk_agent_1',)
+2026-04-25 23:35:17 | INFO    | Eval finished in 4106.8s
+2026-04-25 23:35:17 | INFO    | 
+turn_level_eval: 1054 per-turn predictions
+
+  accept F1              0.908   (n=84, P=0.873 R=0.945, acc=0.833)
+  bid cosine             0.941   (n=13)
+  strategy macro-F1      0.169   (n=348, |labels|=10)
+  Brier (posterior)      0.113   (n=1054)
+2026-04-25 23:35:17 | INFO    | Agent summary: {'calls': 1054, 'parse_errors': 0, 'posterior_ok': 1054, 'intent_ok': 1054, 'content_ok': 21, 'bid_emitted': 21, 'intent_submit': 21, 'intent_accept': 79, 'intent_reject': 5, 'intent_walkaway': 0, 'intent_utter': 949, 'intent_none': 0, 'style_counts': {'competitive': 250, 'balanced': 393, 'cooperative': 411}, 'cache_hits': 0, 'cache_misses': 1054}
+2026-04-25 23:35:17 | INFO    | Wrote opponent_model/results/turn_eval_student_bigfive_full150/turn_summary.json
+2026-04-25 23:35:17 | INFO    | Wrote opponent_model/results/turn_eval_student_bigfive_full150/turn_records.jsonl (1054 records)
+=== done at Sat Apr 25 23:35:18 EDT 2026 ===
+
+
+PS:
+
+Read file <sft_8b/results/lsf/day10_student_bigfive.240556368.err> for stderr output of this job.
+

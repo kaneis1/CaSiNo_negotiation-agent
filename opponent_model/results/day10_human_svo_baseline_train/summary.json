@@ -1,0 +1,142 @@
+{
+  "metadata": {
+    "data": "data/casino_train.json",
+    "n_dialogues": 880,
+    "interpretation": "If prosocial humans do not exceed proself humans on joint-points, then an SVO-conditioned agent that also lowers joint-points is consistent with behavioral fidelity rather than necessarily indicating planner failure."
+  },
+  "all_participants": {
+    "proself": {
+      "self_points": {
+        "n": 858,
+        "mean": 18.87878787878788,
+        "std": 3.773857433618968,
+        "min": 5.0,
+        "max": 32.0
+      },
+      "joint_points": {
+        "n": 858,
+        "mean": 37.264568764568764,
+        "std": 5.082394956638643,
+        "min": 10.0,
+        "max": 42.0
+      }
+    },
+    "prosocial": {
+      "self_points": {
+        "n": 870,
+        "mean": 18.566666666666666,
+        "std": 3.20486420676646,
+        "min": 5.0,
+        "max": 27.0
+      },
+      "joint_points": {
+        "n": 870,
+        "mean": 37.53908045977011,
+        "std": 4.063955238427209,
+        "min": 10.0,
+        "max": 42.0
+      }
+    },
+    "unclassified": {
+      "self_points": {
+        "n": 32,
+        "mean": 17.75,
+        "std": 3.1315254450352508,
+        "min": 12.0,
+        "max": 23.0
+      },
+      "joint_points": {
+        "n": 32,
+        "mean": 37.6875,
+        "std": 2.070335799473275,
+        "min": 34.0,
+        "max": 42.0
+      }
+    },
+    "tests": {
+      "self_points": {
+        "mean_diff_prosocial_minus_proself": -0.31212121212121247,
+        "scipy_available": true,
+        "welch_t": -1.8519358832403563,
+        "welch_p": 0.0642109616020856
+      },
+      "joint_points": {
+        "mean_diff_prosocial_minus_proself": 0.27451169520134755,
+        "scipy_available": true,
+        "welch_t": 1.2389882400483876,
+        "welch_p": 0.21552749661145537
+      }
+    }
+  },
+  "mturk_agent_1": {
+    "proself": {
+      "self_points": {
+        "n": 428,
+        "mean": 18.869158878504674,
+        "std": 3.7524926601385986,
+        "min": 5.0,
+        "max": 31.0
+      },
+      "joint_points": {
+        "n": 428,
+        "mean": 37.320093457943926,
+        "std": 4.926425231850743,
+        "min": 10.0,
+        "max": 42.0
+      }
+    },
+    "prosocial": {
+      "self_points": {
+        "n": 431,
+        "mean": 18.645011600928076,
+        "std": 3.2273132230076444,
+        "min": 5.0,
+        "max": 26.0
+      },
+      "joint_points": {
+        "n": 431,
+        "mean": 37.48259860788863,
+        "std": 4.276387165005212,
+        "min": 10.0,
+        "max": 42.0
+      }
+    },
+    "unclassified": {
+      "self_points": {
+        "n": 21,
+        "mean": 17.666666666666668,
+        "std": 3.3065591380365986,
+        "min": 12.0,
+        "max": 23.0
+      },
+      "joint_points": {
+        "n": 21,
+        "mean": 37.666666666666664,
+        "std": 2.1756225162774294,
+        "min": 35.0,
+        "max": 42.0
+      }
+    },
+    "tests": {
+      "self_points": {
+        "mean_diff_prosocial_minus_proself": -0.22414727757659847,
+        "scipy_available": true,
+        "welch_t": -0.9383064486435799,
+        "welch_p": 0.34835778467432216
+      },
+      "joint_points": {
+        "mean_diff_prosocial_minus_proself": 0.16250514994470677,
+        "scipy_available": true,
+        "welch_t": 0.5161229909757442,
+        "welch_p": 0.6059045423155375
+      }
+    }
+  },
+  "decision": {
+    "primary_comparison": "mturk_agent_1 joint-points, prosocial - proself",
+    "mean_diff": 0.16250514994470677,
+    "welch_p": 0.6059045423155375,
+    "human_prosocials_significantly_beat_proselfs_on_joint_points": false,
+    "claim2_reframe": "human_baseline_inconclusive"
+  }
+}

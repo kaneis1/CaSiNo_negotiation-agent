@@ -1,0 +1,762 @@
+{
+  "metadata": {
+    "data": "data/casino_train.json",
+    "unit": "dialogue participant",
+    "strategy_frequency_denominator": "non-action utterances by that participant",
+    "traits": [
+      "extraversion",
+      "agreeableness",
+      "conscientiousness",
+      "emotional-stability",
+      "openness-to-experiences"
+    ],
+    "strategies": [
+      "small-talk",
+      "self-need",
+      "other-need",
+      "no-need",
+      "elicit-pref",
+      "promote-coordination",
+      "vouch-fair",
+      "showing-empathy",
+      "uv-part",
+      "non-strategic"
+    ]
+  },
+  "support": {
+    "dialogues": 880,
+    "participants": 1760,
+    "utterances": 10159
+  },
+  "trait_summary": {
+    "extraversion": {
+      "n": 1760,
+      "mean": 3.7417613636363636,
+      "std": 1.6864642783752564
+    },
+    "agreeableness": {
+      "n": 1760,
+      "mean": 5.301136363636363,
+      "std": 1.2693970240194297
+    },
+    "conscientiousness": {
+      "n": 1760,
+      "mean": 5.663068181818182,
+      "std": 1.2169915636809476
+    },
+    "emotional-stability": {
+      "n": 1760,
+      "mean": 5.015056818181818,
+      "std": 1.5496063052102447
+    },
+    "openness-to-experiences": {
+      "n": 1760,
+      "mean": 5.0323863636363635,
+      "std": 1.269902159072596
+    }
+  },
+  "strategy_frequency_summary": {
+    "small-talk": {
+      "n": 1760,
+      "mean": 0.08893515102321921,
+      "std": 0.17776373133339946
+    },
+    "self-need": {
+      "n": 1760,
+      "mean": 0.08078040961563689,
+      "std": 0.14858998788419822
+    },
+    "other-need": {
+      "n": 1760,
+      "mean": 0.03468372851895579,
+      "std": 0.10094943070908187
+    },
+    "no-need": {
+      "n": 1760,
+      "mean": 0.01746505230880231,
+      "std": 0.06003734156154919
+    },
+    "elicit-pref": {
+      "n": 1760,
+      "mean": 0.03247837547553457,
+      "std": 0.08773242213681023
+    },
+    "promote-coordination": {
+      "n": 1760,
+      "mean": 0.046482806965761514,
+      "std": 0.11044378174115144
+    },
+    "vouch-fair": {
+      "n": 1760,
+      "mean": 0.034423721795880886,
+      "std": 0.09496855943717959
+    },
+    "showing-empathy": {
+      "n": 1760,
+      "mean": 0.022073658664567754,
+      "std": 0.07525474804588463
+    },
+    "uv-part": {
+      "n": 1760,
+      "mean": 0.010324921290830381,
+      "std": 0.04867600436804607
+    },
+    "non-strategic": {
+      "n": 1760,
+      "mean": 0.11913325626393809,
+      "std": 0.20714745247401067
+    }
+  },
+  "correlations": [
+    {
+      "trait": [
+        "extraversion",
+        "small-talk"
+      ],
+      "trait_name": "extraversion",
+      "strategy": "small-talk",
+      "n": 1760,
+      "pearson_r": 0.027273411417721244,
+      "pearson_p": 0.25279635411927004,
+      "spearman_r": 0.007982084305779149,
+      "spearman_p": 0.7379007058502874
+    },
+    {
+      "trait": [
+        "extraversion",
+        "self-need"
+      ],
+      "trait_name": "extraversion",
+      "strategy": "self-need",
+      "n": 1760,
+      "pearson_r": -0.011455955054650439,
+      "pearson_p": 0.6310293104291977,
+      "spearman_r": -0.002773739018845704,
+      "spearman_p": 0.9074287082599158
+    },
+    {
+      "trait": [
+        "extraversion",
+        "other-need"
+      ],
+      "trait_name": "extraversion",
+      "strategy": "other-need",
+      "n": 1760,
+      "pearson_r": 0.027653013544805996,
+      "pearson_p": 0.24624977779689936,
+      "spearman_r": 0.02594247711457576,
+      "spearman_p": 0.27670203589414594
+    },
+    {
+      "trait": [
+        "extraversion",
+        "no-need"
+      ],
+      "trait_name": "extraversion",
+      "strategy": "no-need",
+      "n": 1760,
+      "pearson_r": 0.02422040852397387,
+      "pearson_p": 0.3098531497782733,
+      "spearman_r": 0.02136521468820017,
+      "spearman_p": 0.3703668054059182
+    },
+    {
+      "trait": [
+        "extraversion",
+        "elicit-pref"
+      ],
+      "trait_name": "extraversion",
+      "strategy": "elicit-pref",
+      "n": 1760,
+      "pearson_r": 0.013567723461029926,
+      "pearson_p": 0.5694784873164817,
+      "spearman_r": -0.005560027843840405,
+      "spearman_p": 0.8156897041474338
+    },
+    {
+      "trait": [
+        "extraversion",
+        "promote-coordination"
+      ],
+      "trait_name": "extraversion",
+      "strategy": "promote-coordination",
+      "n": 1760,
+      "pearson_r": 0.004374495359486565,
+      "pearson_p": 0.854491338140648,
+      "spearman_r": -0.002042635135753044,
+      "spearman_p": 0.9317585145129119
+    },
+    {
+      "trait": [
+        "extraversion",
+        "vouch-fair"
+      ],
+      "trait_name": "extraversion",
+      "strategy": "vouch-fair",
+      "n": 1760,
+      "pearson_r": -0.0022502425582464694,
+      "pearson_p": 0.9248422359421924,
+      "spearman_r": 0.0013158353114140848,
+      "spearman_p": 0.956008451586032
+    },
+    {
+      "trait": [
+        "extraversion",
+        "showing-empathy"
+      ],
+      "trait_name": "extraversion",
+      "strategy": "showing-empathy",
+      "n": 1760,
+      "pearson_r": -0.014050783280641176,
+      "pearson_p": 0.5558118212171106,
+      "spearman_r": 0.00035672047186630724,
+      "spearman_p": 0.9880683749479569
+    },
+    {
+      "trait": [
+        "extraversion",
+        "uv-part"
+      ],
+      "trait_name": "extraversion",
+      "strategy": "uv-part",
+      "n": 1760,
+      "pearson_r": 0.0015613276828282075,
+      "pearson_p": 0.9478118334851793,
+      "spearman_r": 0.001924017681980564,
+      "spearman_p": 0.9357125081899623
+    },
+    {
+      "trait": [
+        "extraversion",
+        "non-strategic"
+      ],
+      "trait_name": "extraversion",
+      "strategy": "non-strategic",
+      "n": 1760,
+      "pearson_r": 0.0067720818712766,
+      "pearson_p": 0.7764822758739909,
+      "spearman_r": 0.009563968007242315,
+      "spearman_p": 0.688453194935269
+    },
+    {
+      "trait": [
+        "agreeableness",
+        "small-talk"
+      ],
+      "trait_name": "agreeableness",
+      "strategy": "small-talk",
+      "n": 1760,
+      "pearson_r": 0.026449784952753942,
+      "pearson_p": 0.26741447574375665,
+      "spearman_r": 0.01343297447153207,
+      "spearman_p": 0.5733191758258197
+    },
+    {
+      "trait": [
+        "agreeableness",
+        "self-need"
+      ],
+      "trait_name": "agreeableness",
+      "strategy": "self-need",
+      "n": 1760,
+      "pearson_r": 0.013251338652418456,
+      "pearson_p": 0.5785155950477715,
+      "spearman_r": 0.011726730039171424,
+      "spearman_p": 0.6229800039369646
+    },
+    {
+      "trait": [
+        "agreeableness",
+        "other-need"
+      ],
+      "trait_name": "agreeableness",
+      "strategy": "other-need",
+      "n": 1760,
+      "pearson_r": 0.03104975518597845,
+      "pearson_p": 0.19291680252323493,
+      "spearman_r": 0.030963152660123616,
+      "spearman_p": 0.19416174730176247
+    },
+    {
+      "trait": [
+        "agreeableness",
+        "no-need"
+      ],
+      "trait_name": "agreeableness",
+      "strategy": "no-need",
+      "n": 1760,
+      "pearson_r": 0.003357339002066315,
+      "pearson_p": 0.888068547030938,
+      "spearman_r": -0.007261472131544515,
+      "spearman_p": 0.7608053192265998
+    },
+    {
+      "trait": [
+        "agreeableness",
+        "elicit-pref"
+      ],
+      "trait_name": "agreeableness",
+      "strategy": "elicit-pref",
+      "n": 1760,
+      "pearson_r": -0.03922892183668729,
+      "pearson_p": 0.09992658445709728,
+      "spearman_r": -0.047415064894742474,
+      "spearman_p": 0.046714561610750785
+    },
+    {
+      "trait": [
+        "agreeableness",
+        "promote-coordination"
+      ],
+      "trait_name": "agreeableness",
+      "strategy": "promote-coordination",
+      "n": 1760,
+      "pearson_r": 0.024771481552413894,
+      "pearson_p": 0.29897079633270013,
+      "spearman_r": 0.04009097702882748,
+      "spearman_p": 0.0926868184472954
+    },
+    {
+      "trait": [
+        "agreeableness",
+        "vouch-fair"
+      ],
+      "trait_name": "agreeableness",
+      "strategy": "vouch-fair",
+      "n": 1760,
+      "pearson_r": 0.04792583048896351,
+      "pearson_p": 0.04439646894798082,
+      "spearman_r": 0.04973166386251504,
+      "spearman_p": 0.03696331900611578
+    },
+    {
+      "trait": [
+        "agreeableness",
+        "showing-empathy"
+      ],
+      "trait_name": "agreeableness",
+      "strategy": "showing-empathy",
+      "n": 1760,
+      "pearson_r": 0.010635287071283105,
+      "pearson_p": 0.6556904697501121,
+      "spearman_r": 0.01007907055961576,
+      "spearman_p": 0.6726228423087947
+    },
+    {
+      "trait": [
+        "agreeableness",
+        "uv-part"
+      ],
+      "trait_name": "agreeableness",
+      "strategy": "uv-part",
+      "n": 1760,
+      "pearson_r": 0.031142171988907664,
+      "pearson_p": 0.19159474962359752,
+      "spearman_r": 0.03620543164661733,
+      "spearman_p": 0.12893330871997027
+    },
+    {
+      "trait": [
+        "agreeableness",
+        "non-strategic"
+      ],
+      "trait_name": "agreeableness",
+      "strategy": "non-strategic",
+      "n": 1760,
+      "pearson_r": -0.04582110506360609,
+      "pearson_p": 0.05461242926575497,
+      "spearman_r": -0.0440880488763958,
+      "spearman_p": 0.06443146349726085
+    },
+    {
+      "trait": [
+        "conscientiousness",
+        "small-talk"
+      ],
+      "trait_name": "conscientiousness",
+      "strategy": "small-talk",
+      "n": 1760,
+      "pearson_r": -0.012356668714653083,
+      "pearson_p": 0.6044283939744675,
+      "spearman_r": -0.027211895221377666,
+      "spearman_p": 0.25386855933864694
+    },
+    {
+      "trait": [
+        "conscientiousness",
+        "self-need"
+      ],
+      "trait_name": "conscientiousness",
+      "strategy": "self-need",
+      "n": 1760,
+      "pearson_r": 0.01624975404603528,
+      "pearson_p": 0.4956968152647269,
+      "spearman_r": 0.009033294540398725,
+      "spearman_p": 0.7049058597686483
+    },
+    {
+      "trait": [
+        "conscientiousness",
+        "other-need"
+      ],
+      "trait_name": "conscientiousness",
+      "strategy": "other-need",
+      "n": 1760,
+      "pearson_r": 0.018010076542569496,
+      "pearson_p": 0.45019525499849844,
+      "spearman_r": 0.0039547105421662496,
+      "spearman_p": 0.8683204904141996
+    },
+    {
+      "trait": [
+        "conscientiousness",
+        "no-need"
+      ],
+      "trait_name": "conscientiousness",
+      "strategy": "no-need",
+      "n": 1760,
+      "pearson_r": 0.0013881209230958216,
+      "pearson_p": 0.9535944227427325,
+      "spearman_r": 0.005431288340558447,
+      "spearman_p": 0.8198832602149636
+    },
+    {
+      "trait": [
+        "conscientiousness",
+        "elicit-pref"
+      ],
+      "trait_name": "conscientiousness",
+      "strategy": "elicit-pref",
+      "n": 1760,
+      "pearson_r": -0.004614986524472193,
+      "pearson_p": 0.8465885286726011,
+      "spearman_r": -0.011134450315624277,
+      "spearman_p": 0.6406436897052957
+    },
+    {
+      "trait": [
+        "conscientiousness",
+        "promote-coordination"
+      ],
+      "trait_name": "conscientiousness",
+      "strategy": "promote-coordination",
+      "n": 1760,
+      "pearson_r": 0.03708863221871056,
+      "pearson_p": 0.11985437905437671,
+      "spearman_r": 0.024231546770437422,
+      "spearman_p": 0.3096306403260603
+    },
+    {
+      "trait": [
+        "conscientiousness",
+        "vouch-fair"
+      ],
+      "trait_name": "conscientiousness",
+      "strategy": "vouch-fair",
+      "n": 1760,
+      "pearson_r": 0.03592228641464888,
+      "pearson_p": 0.13195426358471518,
+      "spearman_r": 0.03413423748503496,
+      "spearman_p": 0.1523123607694968
+    },
+    {
+      "trait": [
+        "conscientiousness",
+        "showing-empathy"
+      ],
+      "trait_name": "conscientiousness",
+      "strategy": "showing-empathy",
+      "n": 1760,
+      "pearson_r": -0.027874501849699515,
+      "pearson_p": 0.24248532752262233,
+      "spearman_r": -0.02479081821423016,
+      "spearman_p": 0.2985936304138639
+    },
+    {
+      "trait": [
+        "conscientiousness",
+        "uv-part"
+      ],
+      "trait_name": "conscientiousness",
+      "strategy": "uv-part",
+      "n": 1760,
+      "pearson_r": -0.007838989372102773,
+      "pearson_p": 0.7424312415144138,
+      "spearman_r": -0.018753787631220147,
+      "spearman_p": 0.4317059762369722
+    },
+    {
+      "trait": [
+        "conscientiousness",
+        "non-strategic"
+      ],
+      "trait_name": "conscientiousness",
+      "strategy": "non-strategic",
+      "n": 1760,
+      "pearson_r": -0.03755763008151775,
+      "pearson_p": 0.11524092003024058,
+      "spearman_r": -0.03945028093941274,
+      "spearman_p": 0.09802588755844516
+    },
+    {
+      "trait": [
+        "emotional-stability",
+        "small-talk"
+      ],
+      "trait_name": "emotional-stability",
+      "strategy": "small-talk",
+      "n": 1760,
+      "pearson_r": -0.015533367418608153,
+      "pearson_p": 0.5148930983012656,
+      "spearman_r": -0.031542787443095036,
+      "spearman_p": 0.18594077035843165
+    },
+    {
+      "trait": [
+        "emotional-stability",
+        "self-need"
+      ],
+      "trait_name": "emotional-stability",
+      "strategy": "self-need",
+      "n": 1760,
+      "pearson_r": -0.05261028349540132,
+      "pearson_p": 0.02730807376874923,
+      "spearman_r": -0.04184181954562499,
+      "spearman_p": 0.07927911333686052
+    },
+    {
+      "trait": [
+        "emotional-stability",
+        "other-need"
+      ],
+      "trait_name": "emotional-stability",
+      "strategy": "other-need",
+      "n": 1760,
+      "pearson_r": 0.0389545842422273,
+      "pearson_p": 0.10232280013230505,
+      "spearman_r": 0.033715015502385905,
+      "spearman_p": 0.1574143785945395
+    },
+    {
+      "trait": [
+        "emotional-stability",
+        "no-need"
+      ],
+      "trait_name": "emotional-stability",
+      "strategy": "no-need",
+      "n": 1760,
+      "pearson_r": 0.009171353269906552,
+      "pearson_p": 0.7006119063743058,
+      "spearman_r": 0.0073448405443570655,
+      "spearman_p": 0.7581442822284683
+    },
+    {
+      "trait": [
+        "emotional-stability",
+        "elicit-pref"
+      ],
+      "trait_name": "emotional-stability",
+      "strategy": "elicit-pref",
+      "n": 1760,
+      "pearson_r": -0.0312728202764445,
+      "pearson_p": 0.1897371609203425,
+      "spearman_r": -0.05182024702797389,
+      "spearman_p": 0.029712838010531775
+    },
+    {
+      "trait": [
+        "emotional-stability",
+        "promote-coordination"
+      ],
+      "trait_name": "emotional-stability",
+      "strategy": "promote-coordination",
+      "n": 1760,
+      "pearson_r": 0.006643229586645236,
+      "pearson_p": 0.7806253510905192,
+      "spearman_r": 0.011350275751499666,
+      "spearman_p": 0.6341828041586199
+    },
+    {
+      "trait": [
+        "emotional-stability",
+        "vouch-fair"
+      ],
+      "trait_name": "emotional-stability",
+      "strategy": "vouch-fair",
+      "n": 1760,
+      "pearson_r": 0.010831589289541404,
+      "pearson_p": 0.6497560275036475,
+      "spearman_r": 0.01269771804452931,
+      "spearman_p": 0.5944890372290885
+    },
+    {
+      "trait": [
+        "emotional-stability",
+        "showing-empathy"
+      ],
+      "trait_name": "emotional-stability",
+      "strategy": "showing-empathy",
+      "n": 1760,
+      "pearson_r": -0.04459989342479771,
+      "pearson_p": 0.061390552444689925,
+      "spearman_r": -0.024629928218711634,
+      "spearman_p": 0.3017414985279948
+    },
+    {
+      "trait": [
+        "emotional-stability",
+        "uv-part"
+      ],
+      "trait_name": "emotional-stability",
+      "strategy": "uv-part",
+      "n": 1760,
+      "pearson_r": -0.003021995502825601,
+      "pearson_p": 0.8991857274718633,
+      "spearman_r": -0.009314165690821455,
+      "spearman_p": 0.6961801390823955
+    },
+    {
+      "trait": [
+        "emotional-stability",
+        "non-strategic"
+      ],
+      "trait_name": "emotional-stability",
+      "strategy": "non-strategic",
+      "n": 1760,
+      "pearson_r": -0.030786019886871928,
+      "pearson_p": 0.1967264290201665,
+      "spearman_r": -0.044046047106861275,
+      "spearman_p": 0.06468642041605598
+    },
+    {
+      "trait": [
+        "openness-to-experiences",
+        "small-talk"
+      ],
+      "trait_name": "openness-to-experiences",
+      "strategy": "small-talk",
+      "n": 1760,
+      "pearson_r": 0.0069210763005404415,
+      "pearson_p": 0.7716994725391844,
+      "spearman_r": -0.013846808795541446,
+      "spearman_p": 0.5615630985949289
+    },
+    {
+      "trait": [
+        "openness-to-experiences",
+        "self-need"
+      ],
+      "trait_name": "openness-to-experiences",
+      "strategy": "self-need",
+      "n": 1760,
+      "pearson_r": 0.021280459252192917,
+      "pearson_p": 0.37226853114648045,
+      "spearman_r": 0.02652298186085737,
+      "spearman_p": 0.26609230843269555
+    },
+    {
+      "trait": [
+        "openness-to-experiences",
+        "other-need"
+      ],
+      "trait_name": "openness-to-experiences",
+      "strategy": "other-need",
+      "n": 1760,
+      "pearson_r": 0.0014567530494153766,
+      "pearson_p": 0.951302797880125,
+      "spearman_r": 0.01491150970517869,
+      "spearman_p": 0.5318639228212199
+    },
+    {
+      "trait": [
+        "openness-to-experiences",
+        "no-need"
+      ],
+      "trait_name": "openness-to-experiences",
+      "strategy": "no-need",
+      "n": 1760,
+      "pearson_r": 0.040327393851042614,
+      "pearson_p": 0.09077663209469054,
+      "spearman_r": 0.039119543345886,
+      "spearman_p": 0.1008765412455145
+    },
+    {
+      "trait": [
+        "openness-to-experiences",
+        "elicit-pref"
+      ],
+      "trait_name": "openness-to-experiences",
+      "strategy": "elicit-pref",
+      "n": 1760,
+      "pearson_r": 0.00901362680387726,
+      "pearson_p": 0.7055183419449165,
+      "spearman_r": -0.0037765814079562293,
+      "spearman_p": 0.8742011178083549
+    },
+    {
+      "trait": [
+        "openness-to-experiences",
+        "promote-coordination"
+      ],
+      "trait_name": "openness-to-experiences",
+      "strategy": "promote-coordination",
+      "n": 1760,
+      "pearson_r": 0.0694339623304637,
+      "pearson_p": 0.003564113639448239,
+      "spearman_r": 0.050322377116009766,
+      "spearman_p": 0.03477405016201941
+    },
+    {
+      "trait": [
+        "openness-to-experiences",
+        "vouch-fair"
+      ],
+      "trait_name": "openness-to-experiences",
+      "strategy": "vouch-fair",
+      "n": 1760,
+      "pearson_r": 0.024549839346151407,
+      "pearson_p": 0.303316663499057,
+      "spearman_r": 0.03175757155438846,
+      "spearman_p": 0.1829606907774692
+    },
+    {
+      "trait": [
+        "openness-to-experiences",
+        "showing-empathy"
+      ],
+      "trait_name": "openness-to-experiences",
+      "strategy": "showing-empathy",
+      "n": 1760,
+      "pearson_r": -0.047076013193620835,
+      "pearson_p": 0.04830887654347016,
+      "spearman_r": -0.03014218660802208,
+      "spearman_p": 0.206257143586866
+    },
+    {
+      "trait": [
+        "openness-to-experiences",
+        "uv-part"
+      ],
+      "trait_name": "openness-to-experiences",
+      "strategy": "uv-part",
+      "n": 1760,
+      "pearson_r": -0.016952445567155437,
+      "pearson_p": 0.47724487665655707,
+      "spearman_r": -0.010581571717068722,
+      "spearman_p": 0.6573181589062624
+    },
+    {
+      "trait": [
+        "openness-to-experiences",
+        "non-strategic"
+      ],
+      "trait_name": "openness-to-experiences",
+      "strategy": "non-strategic",
+      "n": 1760,
+      "pearson_r": -0.026049134756910702,
+      "pearson_p": 0.2747313840936132,
+      "spearman_r": -0.023214772839360045,
+      "spearman_p": 0.33037758751411384
+    }
+  ]
+}

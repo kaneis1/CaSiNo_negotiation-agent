@@ -140,6 +140,21 @@ def _build_argparser() -> argparse.ArgumentParser:
                    help="λ style knob for the menu builder (bayesian agent).")
     p.add_argument("--lambda-from-svo", action="store_true",
                    help="condition Bayesian λ on participant_info[role].personality.svo.")
+    p.add_argument("--svo-lambda-mode", default="rescaled",
+                   choices=(
+                       "rescaled",
+                       "legacy_boundary",
+                       "boundary",
+                       "original",
+                       "rescaled_swapped",
+                       "legacy_boundary_swapped",
+                       "boundary_swapped",
+                       "original_swapped",
+                   ),
+                   help="SVO->λ mapping used when --lambda-from-svo is set. "
+                        "rescaled is the current human-SVO mapping; "
+                        "legacy_boundary reproduces the original 0/1/2 job; "
+                        "*_swapped modes are mismatch counterfactuals.")
     p.add_argument("--posterior-k", type=int, default=16,
                    help="# MC samples for the SFT posterior (bayesian agent).")
     p.add_argument("--posterior-temperature", type=float, default=0.7,
@@ -248,7 +263,8 @@ def _build_agent(args: argparse.Namespace, *, output_dir: Path) -> Any:
         if args.lambda_from_svo:
             from sft_8b.svo_to_lambda import svo_to_lambda
             lambda_fn = lambda personality: svo_to_lambda(
-                (personality or {}).get("svo")
+                (personality or {}).get("svo"),
+                mode=args.svo_lambda_mode,
             )
         return BayesianTurnAgent(
             sft,

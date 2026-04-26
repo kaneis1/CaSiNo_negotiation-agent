@@ -7,10 +7,11 @@ whatever length-6 probability vector the caller hands in. The module
 is model-agnostic — it knows nothing about SFT 8B, the 70B hybrid,
 or any particular posterior source.
 
-Style axis (final — see ``data/validation_notes.md`` for re-tuning rationale):
+Boundary-condition style axis (see ``data/validation_notes.md`` for the
+original re-tuning rationale):
     λ = 0    pure self-maximization (competitive)
     λ = 1    equal weight on self and opponent utility (balanced / integrative)
-    λ = 2    2× weight on the opponent (cooperative)
+    λ = 2    2× weight on the opponent (altruistic-limit sanity check)
 
 The original plan used λ ∈ {0.2, 0.5, 0.8} to mirror the Day-1 Q-score
 ``w`` weights. On the eyeball run (5 held-out dialogues × k=1..5, K=16),
@@ -18,10 +19,11 @@ that range collapsed: all three λ values returned essentially the same
 "take-everything" menu as top-1 because U_self jumps in 3–5 point steps
 (priority-weight differences) while ``λ · E[U_opp]`` at λ ≤ 0.8 is
 capped below ~12 points, which cannot outrank even a single-item
-increment in U_self. Re-tuned to {0, 1, 2}, where λ=1 reliably surfaces
-Pareto-efficient integrative splits as the top entry and λ=2 produces
-visibly altruistic menus. See eyeball jobs 239120350 (old range) and
-239128428 (new range) for side-by-side evidence.
+increment in U_self. Re-tuned boundary ablations used {0, 1, 2}, where
+λ=1 reliably surfaces Pareto-efficient integrative splits as the top entry
+and λ=2 produces visibly altruistic menus. SVO-conditioned runs use the
+moderate relative weights in ``sft_8b.svo_to_lambda`` instead; λ=2 is too
+large for behavioral-fidelity experiments.
 """
 
 from __future__ import annotations
