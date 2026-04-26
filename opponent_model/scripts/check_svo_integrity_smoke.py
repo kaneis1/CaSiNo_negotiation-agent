@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Verify ``--lambda-from-svo`` does not perturb non-menu plumbing.
 
-The smoke filters to proself examples, where ``svo_to_lambda`` maps to the
-same lambda as the constant ``--lambda 1`` run. With a dummy posterior model,
-the two runs should produce identical posteriors, bids, accept decisions, and
-true labels. Any mismatch means the flag leaked outside the intended menu
-scoring path.
+The smoke filters to proself examples and compares ``--lambda-from-svo`` to a
+constant run using the current ``svo_to_lambda("proself")`` value. With a dummy
+posterior model, the two runs should produce identical posteriors, bids, accept
+decisions, and true labels. Any mismatch means the flag leaked outside the
+intended menu scoring path.
 """
 
 from __future__ import annotations
@@ -16,6 +16,8 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, Mapping
+
+from sft_8b.svo_to_lambda import svo_to_lambda
 
 
 def _load_jsonl(path: Path) -> list[Dict[str, Any]]:
@@ -71,6 +73,7 @@ def _run_eval(
     annotations: Path,
     role: str,
     lambda_from_svo: bool,
+    constant_lambda: float,
     python_exe: str,
 ) -> None:
     cmd = [
@@ -89,7 +92,7 @@ def _run_eval(
         "--perspectives",
         role,
         "--lambda",
-        "1.0",
+        f"{constant_lambda:g}",
         "--posterior-k",
         "2",
         "--posterior-temperature",
@@ -169,14 +172,16 @@ def main() -> int:
         n_dialogues=args.n_dialogues,
     )
 
-    constant_out = args.output_dir / "constant_lambda1"
+    constant_out = args.output_dir / "constant_proself_lambda"
     svo_out = args.output_dir / "lambda_from_svo"
+    constant_lambda = float(svo_to_lambda("proself"))
     _run_eval(
         data_path=subset_path,
         output_dir=constant_out,
         annotations=args.annotations,
         role=args.role,
         lambda_from_svo=False,
+        constant_lambda=constant_lambda,
         python_exe=args.python,
     )
     _run_eval(
@@ -185,6 +190,7 @@ def main() -> int:
         annotations=args.annotations,
         role=args.role,
         lambda_from_svo=True,
+        constant_lambda=constant_lambda,
         python_exe=args.python,
     )
 
@@ -199,8 +205,9 @@ def main() -> int:
             "annotations": str(args.annotations),
             "role": args.role,
             "selected_dialogue_ids": selected_ids,
+            "constant_lambda": constant_lambda,
             "check": (
-                "constant lambda=1 vs --lambda-from-svo on proself-only "
+                "constant proself lambda vs --lambda-from-svo on proself-only "
                 "dialogues with dummy posterior"
             ),
         },

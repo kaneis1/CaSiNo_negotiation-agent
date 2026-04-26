@@ -23,6 +23,9 @@
 #   STYLE_TOKEN=cooperative RUN_TAG=student_cooperative_full150 \
 #   MAX_DIALOGUES=150 PERSPECTIVES=mturk_agent_1 \
 #        bsub < sft_8b/scripts/run_day9_student_eval.lsf
+#   STYLE_FROM_BIGFIVE=1 RUN_TAG=student_bigfive_full150 \
+#   MAX_DIALOGUES=150 PERSPECTIVES=mturk_agent_1 \
+#        bsub < sft_8b/scripts/run_day9_student_eval.lsf
 #
 # On Minerva LSF, avoid relying on `bsub -env "all,VAR=value"` for these
 # knobs; a Day 9.2 check showed that pattern can silently fall back to
@@ -55,6 +58,7 @@ ANNOTATIONS="${ANNOTATIONS:-CaSiNo/data/casino_ann.json}"
 MAX_DIALOGUES="${MAX_DIALOGUES:-150}"
 PERSPECTIVES="${PERSPECTIVES:-mturk_agent_1}"
 STYLE_TOKEN="${STYLE_TOKEN:-balanced}"
+STYLE_FROM_BIGFIVE="${STYLE_FROM_BIGFIVE:-0}"
 TEMPERATURE="${TEMPERATURE:-0.0}"
 
 # Student generations are materially longer than the teacher posterior JSON:
@@ -76,24 +80,32 @@ echo "BASE_MODEL=$BASE_MODEL"
 echo "ADAPTER=$ADAPTER"
 echo "DATA=$DATA  MAX_DIALOGUES=$MAX_DIALOGUES  PERSPECTIVES=$PERSPECTIVES"
 echo "STYLE_TOKEN=$STYLE_TOKEN  STUDENT_MAX_NEW_TOKENS=$STUDENT_MAX_NEW_TOKENS"
+echo "STYLE_FROM_BIGFIVE=$STYLE_FROM_BIGFIVE"
 echo "OUT=$OUT"
 echo "CACHE_PATH=$CACHE_PATH"
 echo "PARSE_LOG=$PARSE_LOG"
 echo "========================================================================"
 
-"$CASINO_PY" -m opponent_model.turn_eval_run \
-    --data                   "$DATA" \
-    --output-dir             "$OUT" \
-    --agent                  distilled_student \
-    --base-model             "$BASE_MODEL" \
-    --adapter                "$ADAPTER" \
-    --annotations            "$ANNOTATIONS" \
-    --perspectives           "$PERSPECTIVES" \
-    --max-dialogues          "$MAX_DIALOGUES" \
-    --style-token            "$STYLE_TOKEN" \
-    --temperature            "$TEMPERATURE" \
-    --student-max-new-tokens "$STUDENT_MAX_NEW_TOKENS" \
-    --student-cache-path     "$CACHE_PATH" \
+STUDENT_CMD=(
+    "$CASINO_PY" -m opponent_model.turn_eval_run
+    --data                   "$DATA"
+    --output-dir             "$OUT"
+    --agent                  distilled_student
+    --base-model             "$BASE_MODEL"
+    --adapter                "$ADAPTER"
+    --annotations            "$ANNOTATIONS"
+    --perspectives           "$PERSPECTIVES"
+    --max-dialogues          "$MAX_DIALOGUES"
+    --style-token            "$STYLE_TOKEN"
+    --temperature            "$TEMPERATURE"
+    --student-max-new-tokens "$STUDENT_MAX_NEW_TOKENS"
+    --student-cache-path     "$CACHE_PATH"
     --student-parse-log      "$PARSE_LOG"
+)
+if [[ "$STYLE_FROM_BIGFIVE" == "1" || "$STYLE_FROM_BIGFIVE" == "true" || "$STYLE_FROM_BIGFIVE" == "TRUE" ]]; then
+    STUDENT_CMD+=(--style-from-bigfive)
+fi
+
+"${STUDENT_CMD[@]}"
 
 echo "=== done at $(date) ==="
