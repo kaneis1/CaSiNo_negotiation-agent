@@ -1,0 +1,229 @@
+{
+  "config": {
+    "data": "opponent_model/results/smoke_bigfive_style_p3_3dlg/bigfive_subset.json",
+    "output_dir": "opponent_model/results/smoke_bigfive_style_p3_3dlg",
+    "annotations": "CaSiNo/data/casino_ann.json",
+    "max_dialogues": null,
+    "agent": "distilled_student",
+    "perspectives": "mturk_agent_1",
+    "dummy_llm": true,
+    "model_id": null,
+    "base_model": null,
+    "adapter": null,
+    "max_new_tokens": 128,
+    "temperature": 0.0,
+    "style_token": "balanced",
+    "style_from_bigfive": true,
+    "student_max_new_tokens": 256,
+    "student_cache_path": null,
+    "student_parse_log": null,
+    "lambda_": 1.0,
+    "lambda_from_svo": false,
+    "posterior_k": 16,
+    "posterior_temperature": 0.7,
+    "accept_margin": 5,
+    "accept_floor": 0.5,
+    "replay_turns_path": null,
+    "structured_cot_seed": 2024,
+    "structured_cot_parse_log": null,
+    "likelihood_temperature": 25.0,
+    "likelihood_clip": "-3,3"
+  },
+  "n_dialogues": 3,
+  "n_records": 22,
+  "elapsed_seconds": 0.007426261901855469,
+  "accept": {
+    "f1": NaN,
+    "accuracy": NaN,
+    "precision": NaN,
+    "recall": NaN,
+    "support": 0
+  },
+  "bid_cosine": {
+    "mean": NaN,
+    "support": 0
+  },
+  "strategy_macro_f1": {
+    "macro_f1": 0.05999999999999999,
+    "support": 19,
+    "per_label": {
+      "small-talk": {
+        "f1": 0.0,
+        "support": 3,
+        "tp": 0,
+        "fp": 0,
+        "fn": 3
+      },
+      "self-need": {
+        "f1": 0.0,
+        "support": 3,
+        "tp": 0,
+        "fp": 0,
+        "fn": 3
+      },
+      "other-need": {
+        "f1": 0.0,
+        "support": 1,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1
+      },
+      "no-need": {
+        "f1": 0.0,
+        "support": 1,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1
+      },
+      "elicit-pref": {
+        "f1": 0.0,
+        "support": 2,
+        "tp": 0,
+        "fp": 0,
+        "fn": 2
+      },
+      "promote-coordination": {
+        "f1": 0.0,
+        "support": 2,
+        "tp": 0,
+        "fp": 0,
+        "fn": 2
+      },
+      "vouch-fair": {
+        "f1": 0.0,
+        "support": 4,
+        "tp": 0,
+        "fp": 0,
+        "fn": 4
+      },
+      "showing-empathy": {
+        "f1": NaN,
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "uv-part": {
+        "f1": NaN,
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "non-strategic": {
+        "f1": 0.4799999999999999,
+        "support": 6,
+        "tp": 6,
+        "fp": 13,
+        "fn": 0
+      }
+    }
+  },
+  "brier": {
+    "mean": 0.13888888888888887,
+    "support": 22
+  },
+  "brier_by_turn_index": [
+    {
+      "turn_index": 0,
+      "mean": 0.13888888888888887,
+      "support": 1
+    },
+    {
+      "turn_index": 1,
+      "mean": 0.13888888888888887,
+      "support": 2
+    },
+    {
+      "turn_index": 2,
+      "mean": 0.13888888888888887,
+      "support": 1
+    },
+    {
+      "turn_index": 3,
+      "mean": 0.13888888888888887,
+      "support": 2
+    },
+    {
+      "turn_index": 4,
+      "mean": 0.13888888888888887,
+      "support": 1
+    },
+    {
+      "turn_index": 5,
+      "mean": 0.13888888888888887,
+      "support": 2
+    },
+    {
+      "turn_index": 6,
+      "mean": 0.13888888888888887,
+      "support": 1
+    },
+    {
+      "turn_index": 7,
+      "mean": 0.13888888888888887,
+      "support": 2
+    },
+    {
+      "turn_index": 8,
+      "mean": 0.13888888888888887,
+      "support": 1
+    },
+    {
+      "turn_index": 9,
+      "mean": 0.13888888888888887,
+      "support": 2
+    },
+    {
+      "turn_index": 10,
+      "mean": 0.13888888888888887,
+      "support": 1
+    },
+    {
+      "turn_index": 11,
+      "mean": 0.13888888888888887,
+      "support": 2
+    },
+    {
+      "turn_index": 12,
+      "mean": 0.13888888888888887,
+      "support": 1
+    },
+    {
+      "turn_index": 14,
+      "mean": 0.13888888888888887,
+      "support": 1
+    },
+    {
+      "turn_index": 16,
+      "mean": 0.13888888888888887,
+      "support": 1
+    },
+    {
+      "turn_index": 18,
+      "mean": 0.13888888888888887,
+      "support": 1
+    }
+  ],
+  "agent_summary": {
+    "calls": 22,
+    "parse_errors": 0,
+    "posterior_ok": 22,
+    "intent_ok": 22,
+    "content_ok": 0,
+    "bid_emitted": 0,
+    "intent_submit": 0,
+    "intent_accept": 0,
+    "intent_reject": 0,
+    "intent_walkaway": 0,
+    "intent_utter": 22,
+    "intent_none": 0,
+    "style_counts": {
+      "competitive": 6,
+      "balanced": 6,
+      "cooperative": 10
+    },
+    "cache_hits": 0,
+    "cache_misses": 22
+  }
+}

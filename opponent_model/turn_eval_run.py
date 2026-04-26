@@ -124,6 +124,8 @@ def _build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--temperature", type=float, default=0.0)
     p.add_argument("--style-token", default="balanced",
                    help="style token for the distilled_student agent.")
+    p.add_argument("--style-from-bigfive", action="store_true",
+                   help="condition distilled-student style on participant_info[role].personality['big-five'].")
     p.add_argument("--student-max-new-tokens", type=int, default=256,
                    help="generation budget for distilled_student tagged outputs.")
     p.add_argument("--student-cache-path", default=None,
@@ -260,18 +262,46 @@ def _build_agent(args: argparse.Namespace, *, output_dir: Path) -> Any:
         )
 
     if args.agent == "distilled_student":
-        from sft_8b.student_model import StudentModelFn
-        if args.base_model is None:
-            raise ValueError("--base-model is required for distilled_student agent.")
-        student = StudentModelFn(
-            base_model=args.base_model,
-            adapter_path=args.adapter,
-            max_new_tokens=args.student_max_new_tokens,
-            temperature=args.temperature,
-        )
+        if args.dummy_llm:
+            class _DummyStudentModel:
+                base_model = "dummy"
+                adapter_path = None
+                max_new_tokens = 0
+                temperature = 0.0
+                last_raw_response = ""
+
+                def predict(self, **kwargs):
+                    style = str(kwargs.get("style") or "balanced")
+                    self.last_raw_response = ""
+                    return {
+                        "posterior": [1.0 / 6.0] * 6,
+                        "selected_intent": "utter",
+                        "selected_content": None,
+                        "utterance": f"Style threading smoke: {style}.",
+                        "parse_error": None,
+                    }
+
+            student = _DummyStudentModel()
+        else:
+            from sft_8b.student_model import StudentModelFn
+            if args.base_model is None:
+                raise ValueError("--base-model is required for distilled_student agent.")
+            student = StudentModelFn(
+                base_model=args.base_model,
+                adapter_path=args.adapter,
+                max_new_tokens=args.student_max_new_tokens,
+                temperature=args.temperature,
+            )
+        style_fn = None
+        if args.style_from_bigfive:
+            from sft_8b.bigfive_to_style import bigfive_to_style
+            style_fn = lambda personality: bigfive_to_style(
+                (personality or {}).get("big-five")
+            )
         return DistilledStudentTurnAgent(
             student,
             style=args.style_token,
+            style_fn=style_fn,
             strategy_classifier=KeywordStrategyClassifier(),
             cache_path=(
                 Path(args.student_cache_path)

@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "role": "mturk_agent_1",
+    "train_path": "data/casino_train_w0.2.json",
+    "test_path": "data/casino_test.json",
+    "minimum_test_bucket_n": 25,
+    "active_rule": {
+      "cooperative": "agreeableness >= 6.5",
+      "competitive": "agreeableness <= 4.5 or extraversion >= 6.5",
+      "balanced": "otherwise",
+      "thresholds_selected_on": "data/casino_train_w0.2.json",
+      "locked_before_test_report": true
+    },
+    "legacy_rule": {
+      "cooperative": "agreeableness >= 5",
+      "competitive": "agreeableness <= 3 or extraversion >= 6",
+      "balanced": "otherwise"
+    }
+  },
+  "active": {
+    "train_counts": {
+      "cooperative": 163,
+      "competitive": 177,
+      "balanced": 176
+    },
+    "test_counts": {
+      "cooperative": 57,
+      "competitive": 38,
+      "balanced": 55
+    },
+    "test_examples_by_style": {
+      "competitive": {
+        "dialogue_id": 1,
+        "role": "mturk_agent_1",
+        "big_five": {
+          "extraversion": 3.5,
+          "agreeableness": 4.5,
+          "conscientiousness": 6.0,
+          "emotional-stability": 6.5,
+          "openness-to-experiences": 6.5
+        }
+      },
+      "balanced": {
+        "dialogue_id": 4,
+        "role": "mturk_agent_1",
+        "big_five": {
+          "extraversion": 4.0,
+          "agreeableness": 6.0,
+          "conscientiousness": 6.0,
+          "emotional-stability": 6.0,
+          "openness-to-experiences": 5.5
+        }
+      },
+      "cooperative": {
+        "dialogue_id": 18,
+        "role": "mturk_agent_1",
+        "big_five": {
+          "extraversion": 7.0,
+          "agreeableness": 7.0,
+          "conscientiousness": 7.0,
+          "emotional-stability": 6.0,
+          "openness-to-experiences": 7.0
+        }
+      }
+    },
+    "test_gate_passed": true
+  },
+  "legacy": {
+    "train_counts": {
+      "cooperative": 357,
+      "competitive": 38,
+      "balanced": 121
+    },
+    "test_counts": {
+      "cooperative": 115,
+      "competitive": 14,
+      "balanced": 21
+    }
+  }
+}

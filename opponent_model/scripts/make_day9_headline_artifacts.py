@@ -126,17 +126,36 @@ def _write_spreadsheet(rows: Iterable[Mapping[str, Any]], out_path: Path) -> Non
         writer.writerows(rows)
 
 
-def _series(summary: Mapping[str, Any]) -> Dict[int, float]:
+def _series(
+    summary: Mapping[str, Any],
+    *,
+    min_support: int = 1,
+) -> Dict[int, float]:
     return {
         int(row["turn_index"]): float(row["mean"])
+        for row in (summary.get("brier_by_turn_index") or [])
+        if int(row.get("support", 0)) >= min_support
+    }
+
+
+def _support_by_turn(summary: Mapping[str, Any]) -> Dict[int, int]:
+    return {
+        int(row["turn_index"]): int(row.get("support", 0))
         for row in (summary.get("brier_by_turn_index") or [])
     }
 
 
-def _plot_brier(summaries: Mapping[str, Mapping[str, Any]], out_path: Path) -> Dict[str, Any]:
-    student = _series(summaries["student"])
-    teacher = _series(summaries["teacher"])
-    turns = sorted(set(student) | set(teacher))
+def _plot_brier(
+    summaries: Mapping[str, Mapping[str, Any]],
+    out_path: Path,
+    *,
+    min_support: int = 1,
+) -> Dict[str, Any]:
+    student = _series(summaries["student"], min_support=min_support)
+    teacher = _series(summaries["teacher"], min_support=min_support)
+    turns = sorted(set(student) & set(teacher))
+    student_support = _support_by_turn(summaries["student"])
+    teacher_support = _support_by_turn(summaries["teacher"])
 
     bad_student = [
         {"turn_index": t, "student": student[t], "reference": BRIER_REFERENCE}
@@ -163,7 +182,11 @@ def _plot_brier(summaries: Mapping[str, Mapping[str, Any]], out_path: Path) -> D
     plt.close()
 
     return {
+        "min_support": min_support,
         "reference_brier": BRIER_REFERENCE,
+        "turn_indices": turns,
+        "student_support_by_turn": {str(t): student_support.get(t) for t in turns},
+        "teacher_support_by_turn": {str(t): teacher_support.get(t) for t in turns},
         "student_max_brier": max(student.values()) if student else None,
         "student_never_worse_than_reference": not bad_student,
         "student_between_teacher_and_reference_all_turns": not not_between,
@@ -203,15 +226,29 @@ def main() -> int:
 
     spreadsheet_path = args.output_dir / "headline_numbers.csv"
     figure_path = args.output_dir / "brier_trajectory.png"
+    all_turn_figure_path = args.output_dir / "brier_trajectory_all_turns.png"
     checks_path = args.output_dir / "headline_checks.json"
     _write_spreadsheet(rows, spreadsheet_path)
-    checks = _plot_brier(summaries, figure_path)
+    trimmed_checks = _plot_brier(summaries, figure_path, min_support=10)
+    all_turn_checks = _plot_brier(summaries, all_turn_figure_path, min_support=1)
+    checks = {
+        "main_plot": trimmed_checks,
+        "diagnostic_all_turns": all_turn_checks,
+        "caption_note": (
+            "Main plot keeps turn indices with support n >= 10 for both "
+            "teacher and student; all-turn plot is diagnostic."
+        ),
+    }
     checks_path.write_text(json.dumps(checks, indent=2), encoding="utf-8")
 
     print(f"Wrote {spreadsheet_path}")
     print(f"Wrote {figure_path}")
+    print(f"Wrote {all_turn_figure_path}")
     print(f"Wrote {checks_path}")
-    if not checks["student_never_worse_than_reference"]:
+    if not trimmed_checks["student_never_worse_than_reference"]:
+        print("ERROR: student Brier exceeds 1/6 reference on the main trimmed plot.")
+        return 2
+    if not all_turn_checks["student_never_worse_than_reference"]:
         print("ERROR: student Brier exceeds 1/6 reference on at least one turn.")
         return 2
     return 0

@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "records": "opponent_model/results/turn_eval_bayesian_svo_lambda_m5_f0.50_full150/turn_records.jsonl",
+    "data": "data/casino_test.json",
+    "check": "directional A/B: lambda=2 should lower self-points and raise joint-points versus lambda=1",
+    "not_monotonicity": true
+  },
+  "support": {
+    "lambda_1_bid_turns": 485,
+    "lambda_2_bid_turns": 484,
+    "scored_bid_turns": 969
+  },
+  "self_points": {
+    "metric": "self_points",
+    "lambda_1": {
+      "n": 485,
+      "mean": 17.121649484536082,
+      "std": 7.850596476840108
+    },
+    "lambda_2": {
+      "n": 484,
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "mean_diff_lambda2_minus_lambda1": -17.121649484536082,
+    "cohens_d_lambda2_minus_lambda1": -3.0843094512195997,
+    "cliffs_delta_lambda2_minus_lambda1": -0.931958762886598,
+    "scipy_available": true,
+    "welch_t": -48.030135975125226,
+    "welch_p": 2.9050513519555436e-186,
+    "mannwhitney_u": 7986.0,
+    "mannwhitney_p": 6.596724393984779e-166
+  },
+  "joint_points": {
+    "metric": "joint_points",
+    "lambda_1": {
+      "n": 485,
+      "mean": 38.64742268041237,
+      "std": 2.4328626806785154
+    },
+    "lambda_2": {
+      "n": 484,
+      "mean": 36.0,
+      "std": 0.0
+    },
+    "mean_diff_lambda2_minus_lambda1": -2.647422680412369,
+    "cohens_d_lambda2_minus_lambda1": -1.5389364511642358,
+    "cliffs_delta_lambda2_minus_lambda1": -0.6123711340206186,
+    "scipy_available": true,
+    "welch_t": -23.964951693568636,
+    "welch_p": 2.9285043901468226e-84,
+    "mannwhitney_u": 45496.0,
+    "mannwhitney_p": 1.0884676503853776e-90
+  },
+  "direction_ok": false,
+  "significance_ok": true,
+  "gate_status": "fail_wrong_direction"
+}

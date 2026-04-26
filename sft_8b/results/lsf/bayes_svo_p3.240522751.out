@@ -1,0 +1,73 @@
+Sender: LSF System <lsfadmin@lg06g28>
+Subject: Job 240522751: <bayes_svo_p3> in cluster <chimera> Exited
+
+Job <bayes_svo_p3> was submitted from host <lg03a01> by user <cuiz02> in cluster <chimera> at Sat Apr 25 17:17:58 2026
+Job was executed on host(s) <4*lg06g28>, in queue <gpu>, as user <cuiz02> in cluster <chimera> at Sat Apr 25 17:18:02 2026
+</hpc/users/cuiz02> was used as the home directory.
+</sc/arion/projects/lin_lab/complexbehavior/CaSino> was used as the working directory.
+Started at Sat Apr 25 17:18:02 2026
+Terminated at Sat Apr 25 17:45:47 2026
+Results reported at Sat Apr 25 17:45:47 2026
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+cd /sc/arion/projects/lin_lab/complexbehavior/CaSino && RUN_TAG=bayesian_svo_lambda_m5_f0.50_full150 LAMBDA_FROM_SVO=1 RUN_REPLAY=0 MAX_DIALOGUES=150 PERSPECTIVES=mturk_agent_1 bash sft_8b/scripts/run_bayesian_protocol3.lsf
+------------------------------------------------------------
+
+Exited with exit code 2.
+
+Resource usage summary:
+
+    CPU time :                                   1837.00 sec.
+    Max Memory :                                 1625 MB
+    Average Memory :                             1542.43 MB
+    Total Requested Memory :                     160000.00 MB
+    Delta Memory :                               158375.00 MB
+    Max Swap :                                   -
+    Max Processes :                              9
+    Max Threads :                                25
+    Run time :                                   1665 sec.
+    Turnaround time :                            1669 sec.
+
+The output (if any) follows:
+
+=== job 240522751 on lg06g28 at Sat Apr 25 17:18:04 EDT 2026 ===
+index, name, memory.total [MiB]
+0, NVIDIA H100 PCIe, 81559 MiB
+BASE_MODEL=/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct
+ADAPTER=sft_8b/results/lora_run/lora_best
+DATA=data/casino_test.json  MAX_DIALOGUES=150  PERSPECTIVES=mturk_agent_1
+LAMBDA=1.0  LAMBDA_FROM_SVO=1  K=16  T=0.7  MAX_NEW_TOKENS=96
+ACCEPT_MARGIN=5  ACCEPT_FLOOR=0.50
+RUN_REPLAY=0
+BAYES_OUT=opponent_model/results/turn_eval_bayesian_svo_lambda_m5_f0.50_full150
+REPLAY_OUT=opponent_model/results/turn_eval_structured_cot_replay_full150
+========================================================================
+
+=== [1/2] Structured-CoT replay skipped (RUN_REPLAY=0) ===
+
+=== [2/2] Bayesian teacher (λ=1.0) through turn_level_eval ===
+2026-04-25 17:18:06 | INFO    | Args: {'data': 'data/casino_test.json', 'output_dir': 'opponent_model/results/turn_eval_bayesian_svo_lambda_m5_f0.50_full150', 'annotations': 'CaSiNo/data/casino_ann.json', 'max_dialogues': 150, 'agent': 'bayesian', 'perspectives': 'mturk_agent_1', 'dummy_llm': False, 'model_id': None, 'base_model': '/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct', 'adapter': 'sft_8b/results/lora_run/lora_best', 'max_new_tokens': 96, 'temperature': 0.7, 'style_token': 'balanced', 'style_from_bigfive': False, 'student_max_new_tokens': 256, 'student_cache_path': None, 'student_parse_log': None, 'lambda_': 1.0, 'lambda_from_svo': True, 'posterior_k': 16, 'posterior_temperature': 0.7, 'accept_margin': 5, 'accept_floor': 0.5, 'replay_turns_path': None, 'structured_cot_seed': 2024, 'structured_cot_parse_log': None, 'likelihood_temperature': 25.0, 'likelihood_clip': '-3,3'}
+2026-04-25 17:18:06 | INFO    | Loaded 150 dialogues from data/casino_test.json
+2026-04-25 17:18:07 | INFO    | Annotations: 396 dialogues with strategy tags (from CaSiNo/data/casino_ann.json).
+2026-04-25 17:19:47 | INFO    | Built agent: BayesianTurnAgent
+2026-04-25 17:19:47 | INFO    | Perspectives scored: ('mturk_agent_1',)
+2026-04-25 17:45:44 | INFO    | Eval finished in 1556.9s
+2026-04-25 17:45:44 | INFO    | 
+turn_level_eval: 1054 per-turn predictions
+
+  accept F1              0.912   (n=87, P=0.859 R=0.973, acc=0.839)
+  bid cosine             0.685   (n=86)
+  strategy macro-F1      0.048   (n=350, |labels|=10)
+  Brier (posterior)      0.088   (n=1054)
+2026-04-25 17:45:44 | INFO    | Agent summary: {'calls': 1054, 'lambda_counts': {'1': 528, '2': 526}, 'svo_counts': {'proself': 504, 'prosocial': 526, 'unclassified': 24}}
+2026-04-25 17:45:44 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_svo_lambda_m5_f0.50_full150/turn_summary.json
+2026-04-25 17:45:44 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_svo_lambda_m5_f0.50_full150/turn_records.jsonl (1054 records)
+
+
+PS:
+
+Read file <sft_8b/results/lsf/bayes_svo_p3.240522751.err> for stderr output of this job.
+

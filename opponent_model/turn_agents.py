@@ -420,12 +420,14 @@ class DistilledStudentTurnAgent:
         student_model: Any,
         *,
         style: str,
+        style_fn: Optional[Callable[[Optional[Mapping[str, Any]]], str]] = None,
         strategy_classifier: Optional[StrategyClassifier] = None,
         cache_path: Optional[Path] = None,
         parse_log_path: Optional[Path] = None,
     ) -> None:
         self.student_model = student_model
         self.style = str(style)
+        self.style_fn = style_fn
         self.strategy_classifier = (
             strategy_classifier if strategy_classifier is not None
             else KeywordStrategyClassifier()
@@ -435,7 +437,7 @@ class DistilledStudentTurnAgent:
         if self.parse_log_path is not None:
             self.parse_log_path.parent.mkdir(parents=True, exist_ok=True)
             self.parse_log_path.touch(exist_ok=True)
-        self._summary: Dict[str, int] = {
+        self._summary: Dict[str, Any] = {
             "calls": 0,
             "parse_errors": 0,
             "posterior_ok": 0,
@@ -448,6 +450,7 @@ class DistilledStudentTurnAgent:
             "intent_walkaway": 0,
             "intent_utter": 0,
             "intent_none": 0,
+            "style_counts": {},
             "cache_hits": 0,
             "cache_misses": 0,
         }
@@ -455,8 +458,23 @@ class DistilledStudentTurnAgent:
         self.last_raw_response: str = ""
 
     @property
-    def summary(self) -> Dict[str, int]:
-        return dict(self._summary)
+    def summary(self) -> Dict[str, Any]:
+        out = dict(self._summary)
+        out["style_counts"] = dict(self._summary.get("style_counts", {}))
+        return out
+
+    def _style_for_turn(
+        self,
+        my_personality: Optional[Mapping[str, Any]],
+    ) -> str:
+        if self.style_fn is None:
+            return self.style
+        try:
+            style = str(self.style_fn(my_personality)).strip().lower()
+        except Exception:
+            logger.exception("style_fn failed; falling back to fixed style.")
+            style = self.style
+        return style or self.style
 
     def _cache_namespace(self) -> str:
         return "|".join([
@@ -473,13 +491,14 @@ class DistilledStudentTurnAgent:
         dialogue_id: Any,
         turn_index: Optional[int],
         my_role: str,
+        style: str,
     ) -> str:
         return json.dumps(
             {
                 "dialogue_id": dialogue_id,
                 "turn_index": turn_index,
                 "perspective": my_role,
-                "style": self.style,
+                "style": style,
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -493,6 +512,7 @@ class DistilledStudentTurnAgent:
         turn_index: Optional[int],
         my_role: str,
         opp_role: str,
+        style: str,
         raw_response: str,
         parsed: Mapping[str, Any],
         cache_hit: bool,
@@ -504,7 +524,7 @@ class DistilledStudentTurnAgent:
             "turn_index": turn_index,
             "perspective": my_role,
             "opp_role": opp_role,
-            "style": self.style,
+            "style": style,
             "cache_hit": cache_hit,
             "parse_error": parsed.get("parse_error"),
             "missing_tags": parsed.get("missing_tags"),
@@ -530,6 +550,9 @@ class DistilledStudentTurnAgent:
         turn_index: Optional[int] = None,
     ) -> Dict[str, Any]:
         self._summary["calls"] += 1
+        style_for_turn = self._style_for_turn(my_personality)
+        style_counts = self._summary["style_counts"]
+        style_counts[style_for_turn] = style_counts.get(style_for_turn, 0) + 1
         cache_hit = False
         raw_response = ""
         try:
@@ -538,6 +561,7 @@ class DistilledStudentTurnAgent:
                     dialogue_id=dialogue_id,
                     turn_index=turn_index,
                     my_role=my_role,
+                    style=style_for_turn,
                 )
                 raw_response = (
                     self.cache.get(cache_key, namespace=self._cache_namespace()) or ""
@@ -554,7 +578,7 @@ class DistilledStudentTurnAgent:
                         my_role=my_role,
                         my_priorities=dict(my_priorities),
                         my_reasons=dict(my_reasons),
-                        style=self.style,
+                        style=style_for_turn,
                     )
                     raw_response = str(getattr(self.student_model, "last_raw_response", ""))
                     self.cache.set(
@@ -569,7 +593,7 @@ class DistilledStudentTurnAgent:
                     my_role=my_role,
                     my_priorities=dict(my_priorities),
                     my_reasons=dict(my_reasons),
-                    style=self.style,
+                    style=style_for_turn,
                 )
                 raw_response = str(getattr(self.student_model, "last_raw_response", ""))
         except Exception:
@@ -591,6 +615,7 @@ class DistilledStudentTurnAgent:
                 turn_index=turn_index,
                 my_role=my_role,
                 opp_role=opp_role,
+                style=style_for_turn,
                 raw_response=raw_response,
                 parsed=parsed,
                 cache_hit=cache_hit,
@@ -637,6 +662,7 @@ class DistilledStudentTurnAgent:
             "bid": bid,
             "utterance": utterance or None,
             "action": intent,
+            "style": style_for_turn,
             "strategy": strategy,
             "posterior": parsed.get("posterior"),
         }

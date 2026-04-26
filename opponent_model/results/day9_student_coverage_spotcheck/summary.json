@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "run_dir": "opponent_model/results/turn_eval_student_balanced_full150",
+    "data": "data/casino_test.json",
+    "seed": 2024,
+    "context_window": 4,
+    "threshold_rule": "5-row sample: >=4/5 conservative-correct -> Section 3.3; <=2/5 -> Section 6; 3/5 -> sample 5 more and decide >=7/10 vs <=6/10"
+  },
+  "support": {
+    "gold_submit_turns": 86,
+    "student_submit_gold_submit_turns": 14,
+    "student_utter_gold_submit_turns": 72
+  },
+  "spotcheck": {
+    "stayed_conservative_correct": 4,
+    "stayed_total": 5,
+    "branch": "conservative_correct",
+    "active_abstract_sentence": "the student emits structured bids only when the dialogue commits to one, with high accuracy when it does."
+  },
+  "note": "This is a deterministic heuristic triage, not a replacement for manual annotation; the debug JSONL contains the sampled text."
+}

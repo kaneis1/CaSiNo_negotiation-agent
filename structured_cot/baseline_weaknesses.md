@@ -185,26 +185,25 @@ splits — not just the one the LLM happens to narrate.
 
 ## Head-to-head evidence that the weaknesses matter
 
-Scored through the same `opponent_model.turn_level_eval` harness, the
-Bayesian teacher (λ=1.0, margin=5, floor=0.5 — see `validation_notes.md`)
-converts the weaknesses above into measurable gains on the identical
-150-dialogue test set:
+Scored through the same `opponent_model.turn_level_eval` harness under
+Protocol 3 live, the Structured-CoT baseline and Bayesian teacher are now
+on the same 150-dialogue gold-prefix test set:
 
 | Metric                 | Baseline (Structured-CoT 70B) | Bayesian (SFT-8B, λ=1)    | Δ      |
 |------------------------|-------------------------------|----------------------------|--------|
-| Accept F1              | 0.809  (n=28)                 | **0.911**  (n=87)          | +0.103 |
-| Brier (posterior)      | nan (no posterior)            | **0.086**  (n=1054)        | n/a    |
-| Bid cosine             | 0.852  (n=14)                 | 0.753  (n=86)              | −0.099 |
-| Strategy macro-F1      | 0.133  (n=269)                | 0.048  (n=350)             | −0.085 |
+| Accept F1              | **0.947**  (n=87)             | 0.897  (n=87)              | -0.049 |
+| Brier (posterior)      | nan (no posterior)            | **0.085**  (n=1054)        | n/a    |
+| Bid cosine             | **0.815**  (n=29)             | 0.744  (n=86)              | -0.071 |
+| Strategy macro-F1      | **0.160**  (n=350)            | 0.048  (n=350)             | -0.111 |
 
-The +0.103 on Accept F1 is the direct consequence of (B): the baseline
-accepts dominated offers because it has no menu to compare against, and
-mis-rejects non-dominated offers because its acceptance heuristic is
-narrative. The free Brier win is (D). The bid-cosine and strategy-F1
-results favour the baseline on different supports and are discussed
-honestly in `validation_notes.md` — the bid-cosine gap largely reflects
-support size (n=14 vs 86) and the strategy-F1 gap reflects the Bayesian
-agent's use of a template utterance by design.
+The matched-support Accept F1 result now favours the 70B prompted
+baseline by 0.049, so this section should not be used to claim an accept
+F1 win for the teacher. The durable weakness is instead (D): the
+baseline exposes no posterior, so it cannot be scored for calibration at
+all, while the teacher provides a calibrated Brier trajectory. The
+dominated-offer scan remains the action-quality evidence for (B), and
+native bid cosine should be reported with its visible support gap
+(n=29 for baseline vs n=86 for teacher).
 
 
 ## Take-aways for the paper's "Limitations of Prompted CoT" section
