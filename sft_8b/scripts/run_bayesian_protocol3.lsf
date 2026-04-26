@@ -23,8 +23,12 @@
 # Submit:
 #   bsub < sft_8b/scripts/run_bayesian_protocol3.lsf
 # Or override knobs:
-#   bsub -env "all, LAMBDA=1.0, POSTERIOR_K=16, PERSPECTIVES=mturk_agent_1" \
-#        < sft_8b/scripts/run_bayesian_protocol3.lsf
+#   LAMBDA=1.0 POSTERIOR_K=16 PERSPECTIVES=mturk_agent_1 \
+#        bsub < sft_8b/scripts/run_bayesian_protocol3.lsf
+#
+# On Minerva LSF, avoid relying on `bsub -env "all,VAR=value"` for these
+# knobs; a Day 9.2 check showed that pattern can silently fall back to
+# the script defaults.
 
 set -eo pipefail
 
@@ -46,7 +50,7 @@ export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
 export TOKENIZERS_PARALLELISM=false
 export PYTHONUNBUFFERED=1
 
-# ── Knobs (all overridable via bsub -env "all, KEY=VAL, ...") ──────────────
+# ── Knobs (all overridable via exported environment variables) ─────────────
 BASE_MODEL="${BASE_MODEL:-/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct}"
 ADAPTER="${ADAPTER:-sft_8b/results/lora_run/lora_best}"
 DATA="${DATA:-data/casino_test.json}"
@@ -55,6 +59,7 @@ MAX_DIALOGUES="${MAX_DIALOGUES:-150}"
 PERSPECTIVES="${PERSPECTIVES:-mturk_agent_1}"
 
 LAMBDA="${LAMBDA:-1.0}"
+LAMBDA_FROM_SVO="${LAMBDA_FROM_SVO:-0}"
 POSTERIOR_K="${POSTERIOR_K:-16}"
 POSTERIOR_T="${POSTERIOR_T:-0.7}"
 MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-96}"
@@ -66,6 +71,7 @@ ACCEPT_MARGIN="${ACCEPT_MARGIN:-5}"
 ACCEPT_FLOOR="${ACCEPT_FLOOR:-0.50}"
 
 REPLAY_TURNS="${REPLAY_TURNS:-structured_cot/results/protocol1_70b_full/turns.jsonl}"
+RUN_REPLAY="${RUN_REPLAY:-1}"
 RUN_TAG="${RUN_TAG:-bayesian_lambda${LAMBDA}_m${ACCEPT_MARGIN}_f${ACCEPT_FLOOR}_full150}"
 
 BAYES_OUT="opponent_model/results/turn_eval_${RUN_TAG}"
@@ -76,8 +82,9 @@ nvidia-smi --query-gpu=index,name,memory.total --format=csv || true
 echo "BASE_MODEL=$BASE_MODEL"
 echo "ADAPTER=$ADAPTER"
 echo "DATA=$DATA  MAX_DIALOGUES=$MAX_DIALOGUES  PERSPECTIVES=$PERSPECTIVES"
-echo "LAMBDA=$LAMBDA  K=$POSTERIOR_K  T=$POSTERIOR_T  MAX_NEW_TOKENS=$MAX_NEW_TOKENS"
+echo "LAMBDA=$LAMBDA  LAMBDA_FROM_SVO=$LAMBDA_FROM_SVO  K=$POSTERIOR_K  T=$POSTERIOR_T  MAX_NEW_TOKENS=$MAX_NEW_TOKENS"
 echo "ACCEPT_MARGIN=$ACCEPT_MARGIN  ACCEPT_FLOOR=$ACCEPT_FLOOR"
+echo "RUN_REPLAY=$RUN_REPLAY"
 echo "BAYES_OUT=$BAYES_OUT"
 echo "REPLAY_OUT=$REPLAY_OUT"
 echo "========================================================================"
@@ -85,17 +92,26 @@ echo "========================================================================"
 mkdir -p sft_8b/results/lsf
 mkdir -p "$BAYES_OUT" "$REPLAY_OUT"
 
+BAYES_EXTRA=()
+if [[ "$LAMBDA_FROM_SVO" == "1" || "$LAMBDA_FROM_SVO" == "true" || "$LAMBDA_FROM_SVO" == "TRUE" ]]; then
+    BAYES_EXTRA+=(--lambda-from-svo)
+fi
+
 # ── 1. Structured-CoT replay (CPU only; ~1 min) ────────────────────────────
 echo ""
-echo "=== [1/2] Structured-CoT replay through turn_level_eval ==="
-"$CASINO_PY" -m opponent_model.turn_eval_run \
-    --data             "$DATA" \
-    --output-dir       "$REPLAY_OUT" \
-    --agent            structured_cot_replay \
-    --replay-turns-path "$REPLAY_TURNS" \
-    --annotations      "$ANNOTATIONS" \
-    --perspectives     "$PERSPECTIVES" \
-    --max-dialogues    "$MAX_DIALOGUES"
+if [[ "$RUN_REPLAY" == "1" || "$RUN_REPLAY" == "true" || "$RUN_REPLAY" == "TRUE" ]]; then
+    echo "=== [1/2] Structured-CoT replay through turn_level_eval ==="
+    "$CASINO_PY" -m opponent_model.turn_eval_run \
+        --data             "$DATA" \
+        --output-dir       "$REPLAY_OUT" \
+        --agent            structured_cot_replay \
+        --replay-turns-path "$REPLAY_TURNS" \
+        --annotations      "$ANNOTATIONS" \
+        --perspectives     "$PERSPECTIVES" \
+        --max-dialogues    "$MAX_DIALOGUES"
+else
+    echo "=== [1/2] Structured-CoT replay skipped (RUN_REPLAY=$RUN_REPLAY) ==="
+fi
 
 # ── 2. Bayesian teacher (SFT-8B + λ-menu; GPU) ─────────────────────────────
 echo ""
@@ -115,10 +131,12 @@ echo "=== [2/2] Bayesian teacher (λ=$LAMBDA) through turn_level_eval ==="
     --accept-margin    "$ACCEPT_MARGIN" \
     --accept-floor     "$ACCEPT_FLOOR" \
     --max-new-tokens   "$MAX_NEW_TOKENS" \
-    --temperature      0.7
+    --temperature      0.7 \
+    "${BAYES_EXTRA[@]}"
 
 # ── 3. Head-to-head summary ────────────────────────────────────────────────
 echo ""
+if [[ "$RUN_REPLAY" == "1" || "$RUN_REPLAY" == "true" || "$RUN_REPLAY" == "TRUE" ]]; then
 echo "=== Head-to-head: Bayesian vs Structured-CoT replay ==="
 "$CASINO_PY" <<PY
 import json
@@ -171,6 +189,9 @@ if b_f1 < r_f1:
 else:
     print("✅  Bayesian teacher ≥ baseline on accept F1.")
 PY
+else
+echo "=== Head-to-head skipped (RUN_REPLAY=$RUN_REPLAY) ==="
+fi
 
 echo ""
 echo "=== done at $(date) ==="
