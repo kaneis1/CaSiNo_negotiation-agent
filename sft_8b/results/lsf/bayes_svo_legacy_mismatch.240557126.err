@@ -1,0 +1,15 @@
+/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:04<00:14,  4.92s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:09<00:09,  4.90s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:14<00:04,  4.84s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:15<00:00,  3.37s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:15<00:00,  3.93s/it]
+prefs not a permutation of ['Food', 'Water', 'Firewood']: ['Wood', 'Food', 'Water']
+prefs not a permutation of ['Food', 'Water', 'Firewood']: ['Wood', 'Food', 'Water']
+prefs not a permutation of ['Food', 'Water', 'Firewood']: ['Wood', 'Food', 'Water']
+prefs not a permutation of ['Food', 'Water', 'Firewood']: ['Wood', 'Water', 'Food']
+prefs not a permutation of ['Food', 'Water', 'Firewood']: ['Wood', 'Food', 'Water']
+prefs not a permutation of ['Food', 'Water', 'Firewood']: ['Wood', 'Food', 'Water']
+prefs not a permutation of ['Food', 'Water', 'Firewood']: ['Wood', 'Food', 'Water']
+prefs not a permutation of ['Food', 'Water', 'Firewood']: ['Wood', 'Food', 'Water']
+prefs not a permutation of ['Food', 'Water', 'Firewood']: ['Wood', 'Food', 'Water']
+prefs not a permutation of ['Food', 'Water', 'Firewood']: ['Food', 'Wood', 'Water']
+prefs not a permutation of ['Food', 'Water', 'Firewood']: ['Wood', 'Food', 'Water']

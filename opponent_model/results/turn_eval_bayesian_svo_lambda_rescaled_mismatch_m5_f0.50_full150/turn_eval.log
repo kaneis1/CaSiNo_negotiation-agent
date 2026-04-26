@@ -3,3 +3,14 @@
 2026-04-25 23:49:42 | INFO    | Annotations: 396 dialogues with strategy tags (from CaSiNo/data/casino_ann.json).
 2026-04-25 23:50:29 | INFO    | Built agent: BayesianTurnAgent
 2026-04-25 23:50:29 | INFO    | Perspectives scored: ('mturk_agent_1',)
+2026-04-26 00:16:33 | INFO    | Eval finished in 1564.4s
+2026-04-26 00:16:33 | INFO    | 
+turn_level_eval: 1054 per-turn predictions
+
+  accept F1              0.768   (n=87, P=0.960 R=0.640, acc=0.667)
+  bid cosine             0.634   (n=86)
+  strategy macro-F1      0.048   (n=350, |labels|=10)
+  Brier (posterior)      0.087   (n=1054)
+2026-04-26 00:16:33 | INFO    | Agent summary: {'calls': 1054, 'lambda_counts': {'0.6': 504, '0.2': 550}, 'svo_counts': {'proself': 504, 'prosocial': 526, 'unclassified': 24}}
+2026-04-26 00:16:33 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_svo_lambda_rescaled_mismatch_m5_f0.50_full150/turn_summary.json
+2026-04-26 00:16:33 | INFO    | Wrote opponent_model/results/turn_eval_bayesian_svo_lambda_rescaled_mismatch_m5_f0.50_full150/turn_records.jsonl (1054 records)

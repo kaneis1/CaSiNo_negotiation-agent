@@ -1,0 +1,96 @@
+/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:04<00:14,  4.96s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:08<00:07,  3.91s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:10<00:03,  3.42s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:11<00:00,  2.15s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:11<00:00,  2.80s/it]
+Some parameters are on the meta device because they were offloaded to the cpu.
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/sc/arion/projects/lin_lab/complexbehavior/CaSino/opponent_model/turn_eval_run.py", line 450, in <module>
+    "strategy_macro_f1": result["strategy_macro_f1"],
+         ^^^^^^
+  File "/sc/arion/projects/lin_lab/complexbehavior/CaSino/opponent_model/turn_eval_run.py", line 409, in main
+    dialogues = attach_dialogue_ids(dialogues)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/projects/lin_lab/complexbehavior/CaSino/opponent_model/turn_level_metrics.py", line 584, in turn_level_eval
+    pred_full = agent.predict_turn(
+                ^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/projects/lin_lab/complexbehavior/CaSino/sft_8b/bayesian_agent.py", line 300, in predict_turn
+    posterior = get_posterior(
+                ^^^^^^^^^^^^^^
+  File "/sc/arion/projects/lin_lab/complexbehavior/CaSino/sft_8b/posterior.py", line 84, in get_posterior
+    raw_samples = model_fn.generate_raw(prompt, K=K, temperature=temperature)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/projects/lin_lab/complexbehavior/CaSino/sft_8b/predict.py", line 262, in generate_raw
+    output_ids = self.model.generate(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/peft/peft_model.py", line 2122, in generate
+    outputs = self.base_model.generate(*args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/generation/utils.py", line 2566, in generate
+    result = decoding_method(
+             ^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/generation/utils.py", line 2786, in _sample
+    outputs = self(**model_inputs, return_dict=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/accelerate/hooks.py", line 192, in new_forward
+    output = module._old_forward(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/utils/generic.py", line 918, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py", line 459, in forward
+    outputs: BaseModelOutputWithPast = self.model(
+                                       ^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/utils/generic.py", line 1072, in wrapper
+    outputs = func(self, *args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py", line 395, in forward
+    hidden_states = decoder_layer(
+                    ^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/modeling_layers.py", line 94, in __call__
+    return super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/utils/deprecation.py", line 172, in wrapped_func
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py", line 294, in forward
+    hidden_states, _ = self.self_attn(
+                       ^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/utils/deprecation.py", line 172, in wrapped_func
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py", line 252, in forward
+    attn_output, attn_weights = attention_interface(
+                                ^^^^^^^^^^^^^^^^^^^^
+  File "/sc/arion/work/cuiz02/conda-envs/envs/casino/lib/python3.11/site-packages/transformers/integrations/sdpa_attention.py", line 96, in sdpa_attention_forward
+    attn_output = torch.nn.functional.scaled_dot_product_attention(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
