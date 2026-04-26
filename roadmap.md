@@ -1,10 +1,35 @@
-# Roadmap: Bayesian-Distilled Negotiation Agent with Style Conditioning
+# Roadmap: Bayesian-Distilled Negotiation Agent with Auditable Posteriors
 
 **Deadlines**
 - Abstract: **April 30** (10 days from today)
 - Full paper: **May 7** (17 days from today)
 
 **Today: April 20, 2026**
+
+---
+
+## Current Status Reset (Day 10)
+
+The main paper now has two surviving claims and one documented null result. Lead with the clean positive result, then present SVO as a behavioral-fidelity and lambda-sensitivity analysis.
+
+**Locked results**
+- Day 9.1 Brier gate cleared: student-balanced max per-turn Brier is `0.146 < 1/6`; the headline Brier figure is locked.
+- Day 9.2 SVO directional manipulation failed wrong-direction. The human-baseline check showed the original prosocial-joint prediction was wrong, so Claim 2 is reframed as behavioral fidelity plus lambda-scale sensitivity.
+- Day 10 Big Five style gate failed: fixed-style strategy distributions are not distinguishable (`chi^2 p=0.998`), and human Big Five x strategy correlations are near-zero (`max |r|=0.069`).
+- Day 10 SVO accept match-vs-mismatch failed: rescaled runs changed lambda on `84/87` eligible turns but flipped `0/84` accept predictions; legacy runs flipped `9/84` predictions with a non-significant Accept-F1 delta (`0.911` matched vs. `0.904` mismatched, delta `0.007`, Welch p=`0.840`).
+
+**Main-paper results outline**
+- Section 3.1: Brier calibration and posterior exposure headline.
+- Section 3.2: SVO behavioral fidelity, lambda-scale sensitivity, and the match-vs-mismatch accept null.
+- Appendix or limitations: Big Five null and non-load-bearing style-token result.
+- Claim 3 and Claim 4 are cut from the main paper, not delayed.
+
+**Resolved and live risks**
+- Risk A resolved/extinct: Brier headline is locked; no mitigation needed.
+- Risk B triggered and reframed: the SVO manipulation prediction was wrong, not just under-tuned. Do not spend more Day 11 time on same-day lambda retuning.
+- Risk C triggered and resolved: Big Five/style machinery is not load-bearing; cut Claim 3 from the main paper.
+- Risk D remains as robustness: rescaled lambda preserves joint-points but over-prioritizes self-points; legacy brackets the opposite saturation regime.
+- Risk E triggered and resolved: report accept-decision insensitivity to SVO-conditioned lambda, not a matched-condition advantage.
 
 ---
 
@@ -139,19 +164,30 @@
 
 ### Day 10 (Apr 29)
 
-**Abstract writing day**
-- Draft in this structure (300 words):
-  1. Problem: LLM negotiators are fluent but belief-opaque.
-  2. Approach: distill Bayesian policy into LLM with belief exposed as tagged text; condition on style token for controllable behavior.
-  3. Setup: CaSiNo, Llama-3.1-8B student, Llama-3.3-70B Abdelnabi baseline.
-  4. Headline result: distilled student matches baseline on accept F1 while achieving [X] Brier score improvement and demonstrating style-responsive behavior.
-  5. Contribution: first CaSiNo agent with auditable posteriors and controllable style.
-- Internal review with supervisor if possible.
+**Day 10 reset completed**
+- Brier headline locked: student-balanced max per-turn Brier `0.146 < 1/6`.
+- Big Five/style gate failed and is cut from the main paper.
+- SVO match-vs-mismatch accept test failed and is written as a null/sensitivity result.
+- Section 3.2 SVO draft exists; keep its wording mechanism-neutral: "accept-decision insensitivity to SVO-conditioned lambda."
 
 ### Day 11 (Apr 30) — ABSTRACT SUBMISSION
 
-- Final polish, submit.
-- Start afternoon on Phase 3.
+**Morning: rewrite the abstract around surviving claims**
+- Draft the revised 8-sentence abstract around two claims:
+  1. Auditable posterior exposure and Brier calibration for teacher/student.
+  2. SVO behavioral fidelity and lambda-scale sensitivity, including the accept-decision null.
+- Use the same SVO null wording in the abstract and Section 3.2: rescaled `84/87` eligible turns changed lambda, `0/84` accept predictions flipped, and both runs had Accept-F1 `0.768`.
+- Do not claim a matched-condition Accept-F1 advantage.
+
+**Midday: align Section 3.2 with the abstract**
+- Draft or revise the negative-result paragraph at the same time as the abstract.
+- Use legacy rounded values consistently: matched Accept-F1 `0.911`, mismatched Accept-F1 `0.904`, delta `0.007`, Welch p=`0.840`.
+- Do not attribute the null to the margin/floor heuristic unless a separate menu-score-gap diagnostic is run.
+
+**Afternoon: preserve Big Five as a null result**
+- Write 3-4 appendix/limitations sentences: fixed-style strategy distributions are indistinguishable (`chi^2 p=0.998`), and the human Big Five x strategy target matrix is near-zero (`max |r|=0.069`).
+- Remove trait-strategy matching and dissociation regression from Day 11 main work.
+- Final polish and submit.
 
 ---
 
@@ -174,22 +210,22 @@
 ### Day 14 (May 3)
 
 **Full ablation ladder**
-- Run Protocol 3 on: (1) Abdelnabi baseline, (2) SFT without posterior exposure, (3) SFT with posterior exposure, (4) SFT + DPO.
+- Run Protocol 3 on: (1) Abdelnabi baseline, (2) SFT without posterior exposure, (3) SFT with posterior exposure, (4) SFT + DPO if it survives.
 - This is your ablation table. Each row isolates a hypothesis.
 - If any step doesn't help, report it honestly — reviewers respect clean negative results.
 
 ### Day 15 (May 4)
 
-**Protocol 2 full run + style tradeoff curve**
-- Retrieval-augmented opponent negotiation, 100 games × 3 styles = 300 games.
-- Produce the signature figure: scatter plot with self-score on x-axis, predicted opponent satisfaction on y-axis, three points for the three styles with error bars.
+**Protocol 2 full run or SVO robustness**
+- Retrieval-augmented opponent negotiation if the harness is ready; otherwise use the time to polish SVO robustness and failure-mode analysis.
+- Do not build a style tradeoff curve for the main paper unless a new gate shows the style token is load-bearing.
 - Check pre-registered predictions from Day 2. Commit the "predictions met / not met" note.
 
 ### Day 16 (May 5)
 
 **Paper writing: methods + results (full day)**
 - Methods section: Bayesian teacher, distillation objective, menu interface, Q_w and selection, pre-registration.
-- Results section: ablation table, Brier trajectory figure, style tradeoff curve, Protocol 3 metrics table.
+- Results section: Brier trajectory figure, Protocol 3 metrics table, SVO lambda-sensitivity table, and ablation table if ready.
 - Keep figures minimal — three is plenty for an 8-page paper.
 
 ### Day 17 (May 6)
@@ -197,7 +233,7 @@
 **Paper writing: intro, related work, discussion**
 - Intro: lead with the belief-opaqueness problem, then your layered decomposition.
 - Related work: Chen multi-issue self-play (why it doesn't transfer to language), Lewis (language drift), Abdelnabi/Fu/NegotiationArena (prompted baselines), He 2018 (modular precedent), Chawla opponent modeling (you reuse their ranker).
-- Discussion: style as controllable axis, Big Five as future work or as a section if Dirichlet-Big-Five regression actually made it in.
+- Discussion: posterior auditability, SVO lambda-scale sensitivity, and Big Five/style as a documented null or future-work axis.
 - Limitations: teacher noise from ~40% item accuracy, CaSiNo's one-shot setting, English-only.
 
 ### Day 18 (May 7) — PAPER SUBMISSION
@@ -211,8 +247,8 @@
 
 Cut in this order (most cuttable first):
 
-1. **Big Five Dirichlet prior regression.** Use uniform prior. Mention as future work.
-2. **Style variants 2 and 3.** Train and evaluate only the balanced agent. Mention style as future work.
+1. **Big Five / Claim 3 / Claim 4.** Already cut from the main paper; keep only a short appendix or limitations null result.
+2. **Style variants 2 and 3.** Already non-load-bearing in the fixed-style gate; do not spend main-paper time on them.
 3. **DPO stage.** Report SFT-only as main result. DPO becomes appendix experiment.
 4. **Protocol 2 end-to-end evaluation.** Rely on Protocol 3 only. The paper still stands on turn-level agreement.
 5. **Epistemic actions in the menu.** Use only utility-bearing actions (accept, counter-splits). Mention probe/argue as future work.
@@ -234,7 +270,7 @@ Never cut: Abdelnabi baseline, Bayesian teacher, SFT distillation, Protocol 3 ev
 
 - 1 Bayesian teacher producing posteriors + menus per turn
 - 1 distilled student emitting tagged intermediate quantities
-- 1 style token for controllable behavior (3 values if time permits, 1 if not)
+- 1 documented Big Five/style null result outside the main claims
 - 1 Protocol 3 evaluation harness producing 4 metrics
 - 1 Protocol 2 retrieval-opponent experiment (optional but desirable)
 - 1 ablation ladder (up to 4 rows)

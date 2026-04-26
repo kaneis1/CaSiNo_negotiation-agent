@@ -1,0 +1,22 @@
+{
+  "match_records": "opponent_model/results/turn_eval_bayesian_svo_lambda_rescaled_rerun_m5_f0.50_full150/turn_records.jsonl",
+  "mismatch_records": "opponent_model/results/turn_eval_bayesian_svo_lambda_rescaled_mismatch_m5_f0.50_full150/turn_records.jsonl",
+  "match_support": {
+    "records": 1054,
+    "accept_eligible": 87,
+    "accept_pred_true": 50,
+    "accept_pred_false": 37
+  },
+  "mismatch_support": {
+    "records": 1054,
+    "accept_eligible": 87,
+    "accept_pred_true": 50,
+    "accept_pred_false": 37
+  },
+  "joined_records": 1054,
+  "joined_accept_eligible": 87,
+  "eligible_lambda_changed": 84,
+  "eligible_lambda_changed_accept_pred_changed": 0,
+  "eligible_lambda_changed_accept_pred_unchanged": 84,
+  "accept_pred_changed_rows": []
+}
