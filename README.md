@@ -100,15 +100,7 @@ python -m opponent_model.scripts.diagnose_svo_accept_match_mismatch \
   --output-dir opponent_model/results/day10_svo_accept_diagnostic_rescaled
 ```
 
-On the cluster, check GPU availability first:
 
-```bash
-ssh li04e01 "gpuavail"
-```
-
-Use only `gpu` or `gpuexpress`. Prefer `h100nvl` when available; use `h10080g`
-when `h100nvl` is unavailable. Avoid relying on `bsub -env`; recent scripts use
-inline environment variables in the submitted command body.
 
 ## Distillation And Student Evaluation
 
