@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Run & Hardware & Approx. time & Output \\
+\midrule
+70B structured-CoT baseline & 2$\times$ NVIDIA H100 80GB HBM3 (LSF: h100nvl) & 6h 26m 57s & Protocol 3 metrics \\
+Bayesian teacher evaluation & 1$\times$ NVIDIA H100 PCIe 80GB (LSF: h10080g) & 30m 35s & posterior + menu records \\
+8B LoRA distillation & 1$\times$ NVIDIA H100 PCIe 80GB (LSF: h10080g) & 1h 54m 39s & student checkpoint \\
+8B student evaluation & 1$\times$ NVIDIA H100 PCIe 80GB (LSF: h10080g) & 1h 39m 14s & Protocol 3 metrics \\
+\bottomrule
+\end{tabular}
+\caption{Compute resources used for the main experiments. Times are LSF wall-clock run times for the final successful jobs. The 8B student evaluation row reports the uncached generation run; a subsequent cache-only rerun took 1m 37s on 1$\times$ NVIDIA H100 80GB HBM3.}
+\label{tab:compute}
+\end{table}
