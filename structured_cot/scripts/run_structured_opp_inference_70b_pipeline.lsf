@@ -1,0 +1,93 @@
+#!/bin/bash
+#BSUB -J scot_oppinf_70b
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=2"
+#BSUB -R "h100nvl rusage[mem=64000] span[hosts=1]"
+#BSUB -n 4
+#BSUB -W 48:00
+#BSUB -o structured_cot/results/lsf/scot_oppinf_70b.%J.out
+#BSUB -e structured_cot/results/lsf/scot_oppinf_70b.%J.err
+#BSUB -L /bin/bash
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+mkdir -p structured_cot/results/lsf
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE="$HF_HOME/transformers"
+export HUGGINGFACE_HUB_CACHE="$HF_HOME/hub"
+export TRANSFORMERS_OFFLINE=1
+export HF_HUB_OFFLINE=1
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+
+MODEL_ID="${MODEL_ID:-meta-llama/Llama-3.3-70B-Instruct}"
+MODEL_REVISION="${MODEL_REVISION:-6f6073b423013f6a7d4d9f39144961bfbfbc386b}"
+MODEL_PATH="${MODEL_PATH:-/sc/arion/scratch/cuiz02/hf_cache/transformers/models--meta-llama--Llama-3.3-70B-Instruct/snapshots/6f6073b423013f6a7d4d9f39144961bfbfbc386b}"
+DATA="${DATA:-data/casino_test.json}"
+ANNOTATIONS="${ANNOTATIONS:-CaSiNo/data/casino_ann.json}"
+OUTPUT_DIR="${OUTPUT_DIR:-structured_cot/results/structured_opp_inference_70b_pipeline_table12_full150}"
+MATCHED_TURN_RECORDS="${MATCHED_TURN_RECORDS:-opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150/turn_records.jsonl}"
+BASELINE_TURN_RECORDS="${BASELINE_TURN_RECORDS:-opponent_model/results/turn_eval_structured_cot_p3_live_70b_m1_150/turn_records.jsonl}"
+PERSPECTIVE="${PERSPECTIVE:-mturk_agent_1}"
+MAX_DIALOGUES="${MAX_DIALOGUES:-150}"
+SMOKE_DIALOGUES="${SMOKE_DIALOGUES:-10}"
+SMOKE_MIN_PARSE_RATE="${SMOKE_MIN_PARSE_RATE:-0.95}"
+REGIME_A_EXPECTED_EMA_K5="${REGIME_A_EXPECTED_EMA_K5:-0.2222}"
+REGIME_A_EMA_TOLERANCE="${REGIME_A_EMA_TOLERANCE:-0.005}"
+
+echo "=== job ${LSB_JOBID:-manual} on $(hostname) at $(date) ==="
+echo "Interpreter: $CASINO_PY"
+echo "MODEL_ID=$MODEL_ID"
+echo "MODEL_REVISION=$MODEL_REVISION"
+echo "MODEL_PATH=$MODEL_PATH"
+echo "DATA=$DATA"
+echo "OUTPUT_DIR=$OUTPUT_DIR"
+echo "MATCHED_TURN_RECORDS=$MATCHED_TURN_RECORDS"
+echo "BASELINE_TURN_RECORDS=$BASELINE_TURN_RECORDS"
+echo "PERSPECTIVE=$PERSPECTIVE"
+
+"$CASINO_PY" - <<'PY'
+import importlib.metadata as md
+import sys
+print("python", sys.executable)
+for pkg in ("transformers", "accelerate", "torch"):
+    try:
+        print(pkg, md.version(pkg))
+    except md.PackageNotFoundError:
+        print(pkg, "missing")
+PY
+
+echo "GPUs visible:"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+"$CASINO_PY" -m structured_cot.run_structured_opp_inference \
+    --data "$DATA" \
+    --annotations "$ANNOTATIONS" \
+    --output-dir "$OUTPUT_DIR" \
+    --model "$MODEL_ID" \
+    --model-revision "$MODEL_REVISION" \
+    --snapshot-path "$MODEL_PATH" \
+    --matched-turn-records "$MATCHED_TURN_RECORDS" \
+    --baseline-turn-records "$BASELINE_TURN_RECORDS" \
+    --perspective "$PERSPECTIVE" \
+    --max-dialogues "$MAX_DIALOGUES" \
+    --smoke-dialogues "$SMOKE_DIALOGUES" \
+    --smoke-min-parse-rate "$SMOKE_MIN_PARSE_RATE" \
+    --regime-a-expected-ema-k5 "$REGIME_A_EXPECTED_EMA_K5" \
+    --regime-a-ema-tolerance "$REGIME_A_EMA_TOLERANCE"
+
+echo "=== done at $(date) ==="

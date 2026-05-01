@@ -1,0 +1,78 @@
+#!/bin/bash
+#BSUB -J ab_sweep[1-11]%2
+#BSUB -P acc_lin_lab
+#BSUB -q gpu
+#BSUB -gpu "num=1"
+#BSUB -R "h100nvl rusage[mem=40G] span[hosts=1]"
+#BSUB -n 1
+#BSUB -W 04:00
+#BSUB -o /sc/arion/projects/lin_lab/complexbehavior/CaSino/opponent_model/results/ablation_neurips2026/lsf/sweep.%I.%J.out
+#BSUB -e /sc/arion/projects/lin_lab/complexbehavior/CaSino/opponent_model/results/ablation_neurips2026/lsf/sweep.%I.%J.err
+#BSUB -L /bin/bash
+
+set -eo pipefail
+
+REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+cd "$REPO_ROOT"
+
+unset PYTHONPATH
+set +u
+source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+conda activate casino
+set -u
+hash -r
+
+CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+export TRANSFORMERS_NO_ADVISORY_WARNINGS=1
+
+ROOT="${ROOT:-opponent_model/results/ablation_neurips2026}"
+DATA="${DATA:-data/casino_test.json}"
+ANNOTATIONS="${ANNOTATIONS:-CaSiNo/data/casino_ann.json}"
+BASE_MODEL="${BASE_MODEL:-/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct}"
+TEACHER_ADAPTER="${TEACHER_ADAPTER:-sft_8b/results/lora_run/lora_best}"
+MAX_DIALOGUES="${MAX_DIALOGUES:-150}"
+PERSPECTIVES="${PERSPECTIVES:-mturk_agent_1}"
+TASK="${TASK:-1}"
+if [[ "${LSB_JOBINDEX:-}" =~ ^[1-9][0-9]*$ ]]; then
+    TASK="$LSB_JOBINDEX"
+fi
+mkdir -p "$ROOT/lsf"
+
+PROVIDER="incremental_bayes_utterance"
+TEMP="25"
+CLIP="-3,3"
+NAME=""
+case "$TASK" in
+  1) TEMP="1";   NAME="a8_temp_1" ;;
+  2) TEMP="5";   NAME="a8_temp_5" ;;
+  3) TEMP="10";  NAME="a8_temp_10" ;;
+  4) TEMP="25";  NAME="a8_temp_25" ;;
+  5) TEMP="50";  NAME="a8_temp_50" ;;
+  6) TEMP="100"; NAME="a8_temp_100" ;;
+  7) CLIP="-1,1";   NAME="a9_clip_1" ;;
+  8) CLIP="-3,3";   NAME="a9_clip_3" ;;
+  9) CLIP="-5,5";   NAME="a9_clip_5" ;;
+  10) CLIP="-10,10"; NAME="a9_clip_10" ;;
+  11) CLIP="none";  NAME="a9_clip_none" ;;
+  *) echo "unknown TASK=$TASK" >&2; exit 2 ;;
+esac
+
+echo "=== ablation sweep $NAME task $TASK job ${LSB_JOBID:-local} on $(hostname) at $(date) ==="
+nvidia-smi --query-gpu=index,name,memory.total --format=csv || true
+
+"$CASINO_PY" -m sft_8b.ablation \
+  --data "$DATA" --annotations "$ANNOTATIONS" \
+  --output-dir "$ROOT/$NAME" \
+  --provider "$PROVIDER" \
+  --evidence-mode utterance_only \
+  --base-model "$BASE_MODEL" --adapter "$TEACHER_ADAPTER" \
+  --max-dialogues "$MAX_DIALOGUES" --perspectives "$PERSPECTIVES" \
+  --likelihood-temperature "$TEMP" \
+  --likelihood-clip="$CLIP"
+
+echo "=== done at $(date) ==="
