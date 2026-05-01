@@ -27,3 +27,5 @@ sft_8b/results/**/tokenizer.json
 # Structured-CoT run artifacts — keep summaries, ignore bulk traces & logs.
 structured_cot/results/**/*.jsonl
 structured_cot/results/lsf/
+# paper
+Language_as_Likelihood__Bayes_as_Update__A_Hybrid_Account_of_Negotiation_Cognition_with_Auditable_Beliefs.pdf
