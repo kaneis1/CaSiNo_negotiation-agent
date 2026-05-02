@@ -28,4 +28,4 @@ sft_8b/results/**/tokenizer.json
 structured_cot/results/**/*.jsonl
 structured_cot/results/lsf/
 # paper
-Language_as_Likelihood__Bayes_as_Update__A_Hybrid_Account_of_Negotiation_Cognition_with_Auditable_Beliefs.pdf
+Distilling_Bayesian_Belief_States_into_Language_Models_for_Auditable_Negotiation.pdf
