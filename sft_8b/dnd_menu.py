@@ -8,7 +8,13 @@ from typing import Any, Dict, Iterable, List, Mapping, Sequence, Tuple
 
 import numpy as np
 
-from sft_8b.dnd_data import DNDRecord, DND_ITEMS, ordering_to_values_543
+from sft_8b.dnd_data import (
+    DNDRecord,
+    DND_ITEMS,
+    DND_TOTAL_POINTS,
+    context_total_value,
+    ordering_to_values_543,
+)
 
 
 @dataclass
@@ -75,6 +81,37 @@ def empirical_value_map(
     return out
 
 
+def normalize_values_to_budget(
+    values: Sequence[float],
+    counts: Sequence[int],
+    *,
+    total_points: float = DND_TOTAL_POINTS,
+) -> Tuple[float, float, float]:
+    """Scale a value vector so taking all scenario items is worth 10 points."""
+    current = context_total_value(counts, values)
+    if current <= 0:
+        raise ValueError(f"cannot normalize non-positive DND value budget: {values!r}")
+    scale = float(total_points) / current
+    return tuple(float(v) * scale for v in values)  # type: ignore[return-value]
+
+
+def normalize_value_map_for_counts(
+    value_map: Mapping[Tuple[str, str, str], Sequence[float]],
+    counts: Sequence[int],
+    orderings: Sequence[Tuple[str, str, str]],
+    *,
+    total_points: float = DND_TOTAL_POINTS,
+) -> Dict[Tuple[str, str, str], Tuple[float, float, float]]:
+    return {
+        tuple(ordering): normalize_values_to_budget(
+            value_map[tuple(ordering)],
+            counts,
+            total_points=total_points,
+        )
+        for ordering in orderings
+    }
+
+
 def build_dnd_menu(
     *,
     posterior: Sequence[float],
@@ -84,6 +121,7 @@ def build_dnd_menu(
     opp_value_map: Mapping[Tuple[str, str, str], Sequence[float]],
     lambda_: float = 1.0,
     top_k: int = 5,
+    normalize_opp_budget: bool = True,
 ) -> List[DNDScoredAllocation]:
     p = np.asarray(posterior, dtype=float).flatten()
     if p.shape != (len(orderings),):
@@ -92,11 +130,16 @@ def build_dnd_menu(
     total = float(p.sum())
     p = p / total if total > 0 else np.full(len(orderings), 1.0 / len(orderings))
 
+    scenario_opp_value_map = (
+        normalize_value_map_for_counts(opp_value_map, counts, orderings)
+        if normalize_opp_budget
+        else opp_value_map
+    )
     scored: List[DNDScoredAllocation] = []
     for self_alloc, opp_alloc in enumerate_allocations(counts):
         u_self = utility(self_alloc, self_values)
         opp_utils = np.asarray(
-            [utility(opp_alloc, opp_value_map[tuple(ordering)]) for ordering in orderings],
+            [utility(opp_alloc, scenario_opp_value_map[tuple(ordering)]) for ordering in orderings],
             dtype=float,
         )
         exp_opp = float(p @ opp_utils)

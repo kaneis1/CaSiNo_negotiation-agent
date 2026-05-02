@@ -6,11 +6,18 @@ from sft_8b.dnd_data import (
     DND_ITEMS,
     canonical_item,
     compute_stats,
+    context_total_value,
     map_text_names,
     parse_dnd_line,
     values_to_ordering,
 )
-from sft_8b.dnd_menu import build_dnd_menu, build_value_map_543, enumerate_allocations
+from sft_8b.dnd_menu import (
+    build_dnd_menu,
+    build_value_map_543,
+    enumerate_allocations,
+    normalize_value_map_for_counts,
+    utility,
+)
 from sft_8b.dnd_metrics import brier_reference, normalized_brier_sum, summarize_snapshot_metrics
 from sft_8b.dnd_posterior import ORDERINGS, ORDERING_INDEX, parse_posterior_response, parse_prefs_response
 from sft_8b.dnd_rules import posterior_from_evidence, score_utterance
@@ -29,10 +36,10 @@ SAMPLE = (
 )
 
 STRICT_SAMPLE = (
-    "<input> 2 5 2 3 1 2 </input> "
+    "<input> 2 4 2 1 1 0 </input> "
     "<dialogue> YOU: i want one book <eos> THEM: i get all hats <eos> YOU: <selection> </dialogue> "
     "<output> item0=1 item1=0 item2=1 item0=1 item1=2 item2=0 </output> "
-    "<partner_input> 2 1 2 7 1 2 </partner_input>"
+    "<partner_input> 2 0 2 4 1 2 </partner_input>"
 )
 
 
@@ -47,6 +54,13 @@ class DNDTransferTests(unittest.TestCase):
         self.assertEqual(rec.output_self, (2, 3, 0))
         self.assertEqual(rec.output_partner, (0, 0, 1))
         self.assertEqual(rec.selection_speaker, "YOU")
+        self.assertEqual(context_total_value(rec.counts, rec.self_values), 10.0)
+        self.assertEqual(context_total_value(rec.counts, rec.partner_values), 10.0)
+
+    def test_parse_rejects_non_10_point_context(self):
+        bad = SAMPLE.replace("<input> 2 2 3 2 1 0 </input>", "<input> 2 3 3 2 1 0 </input>")
+        with self.assertRaisesRegex(ValueError, "total 10 points"):
+            parse_dnd_line(bad, split="test", line_index=0)
 
     def test_tie_detection_and_stats(self):
         tied = parse_dnd_line(SAMPLE, split="test", line_index=0)
@@ -105,6 +119,12 @@ class DNDTransferTests(unittest.TestCase):
         )
         self.assertTrue(menu)
         self.assertEqual(set(menu[0].self_counts), set(DND_ITEMS))
+
+    def test_opponent_value_map_is_normalized_to_dnd_budget(self):
+        rec = parse_dnd_line(STRICT_SAMPLE, split="test", line_index=1)
+        normalized = normalize_value_map_for_counts(build_value_map_543(ORDERINGS), rec.counts, ORDERINGS)
+        for ordering in ORDERINGS:
+            self.assertAlmostEqual(utility(rec.counts, normalized[ordering]), 10.0)
 
     def test_brier_reference_and_summary(self):
         true = ORDERING_INDEX[("books", "hats", "balls")]

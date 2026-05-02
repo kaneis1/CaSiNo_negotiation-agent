@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 DND_ITEMS: Tuple[str, str, str] = ("books", "hats", "balls")
+DND_TOTAL_POINTS = 10
 CASINO_ITEMS: Tuple[str, str, str] = ("Food", "Water", "Firewood")
 NATIVE_TO_CASINO: Dict[str, str] = {
     "books": "Food",
@@ -150,6 +151,27 @@ def ordering_to_values_543(ordering: Sequence[str]) -> Tuple[float, float, float
     return tuple(weights[it] for it in DND_ITEMS)  # type: ignore[return-value]
 
 
+def context_total_value(counts: Sequence[int], values: Sequence[float]) -> float:
+    if len(counts) != 3 or len(values) != 3:
+        raise ValueError(f"DND counts/values must have length 3, got {counts!r}, {values!r}")
+    return float(sum(int(c) * float(v) for c, v in zip(counts, values)))
+
+
+def validate_total_points(
+    counts: Sequence[int],
+    values: Sequence[float],
+    *,
+    role: str,
+    expected: float = DND_TOTAL_POINTS,
+) -> None:
+    total = context_total_value(counts, values)
+    if abs(total - float(expected)) > 1e-9:
+        raise ValueError(
+            f"DND {role} values must total {expected:g} points under counts {tuple(counts)}, "
+            f"got {total:g} from values {tuple(values)}"
+        )
+
+
 def ordering_index(ordering: Sequence[str]) -> int:
     from itertools import permutations
 
@@ -233,6 +255,8 @@ def parse_dnd_line(line: str, *, split: str, line_index: int) -> DNDRecord:
         raise ValueError(
             f"count mismatch between input and partner_input: {counts} vs {partner_counts}"
         )
+    validate_total_points(counts, self_values, role="self")
+    validate_total_points(counts, partner_values, role="partner")
     output_self, output_partner, output_valid = _parse_output(output_body)
     dialogue, selection_speaker = _parse_dialogue(dialogue_body)
     self_ordering = values_to_ordering(self_values)
