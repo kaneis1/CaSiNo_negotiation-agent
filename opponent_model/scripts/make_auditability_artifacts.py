@@ -510,6 +510,56 @@ def _sort_case_candidates(rows: Iterable[Mapping[str, Any]]) -> List[Mapping[str
     )
 
 
+def _case_identity(row: Mapping[str, Any]) -> Tuple[str, str, int]:
+    return (str(row["dialogue_id"]), str(row["perspective"]), int(row["turn_index"]))
+
+
+def _safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _menu_delta(row: Mapping[str, Any]) -> bool:
+    return (
+        row.get("menu_alignment") != row.get("correct_menu_alignment")
+        or row.get("menu_action_type") != row.get("correct_menu_action_type")
+        or row.get("menu_bid") != row.get("correct_menu_bid")
+    )
+
+
+def _showcase_score(row: Mapping[str, Any], label: str) -> float:
+    confidence = float(row.get("confidence") or 0.0)
+    context = str(row.get("context_snippet") or "")
+    no_recent_reject = "Reject-Deal" not in context and "Walk-Away" not in context
+    action_delta = row.get("menu_action_type") != row.get("correct_menu_action_type")
+    score = confidence
+    if label == "right belief / wrong action (policy failure)":
+        if row.get("student_action_type") == "reject" and row.get("human_action_type") == "accept":
+            score += 20.0
+        if row.get("menu_action_type") == "accept":
+            score += 3.0
+        if no_recent_reject:
+            score += 2.0
+        return score
+    if _menu_delta(row):
+        score += 10.0
+    if action_delta:
+        score += 5.0
+    if label == "wrong belief / lucky action (planner risk)":
+        # Prefer the clean latent-risk cases over generic end-of-dialogue
+        # accepts: wrong posterior says reject, correct posterior says accept.
+        if row.get("menu_action_type") == "reject" and row.get("correct_menu_action_type") == "accept":
+            score += 8.0
+        # Lower-confidence wrong beliefs make the uncertainty visible in text.
+        score += max(0.0, 1.0 - confidence)
+        return score
+    if no_recent_reject:
+        score += 2.0
+    return score
+
+
 def select_belief_policy_cases(
     rows: Sequence[Mapping[str, Any]],
     *,
@@ -517,13 +567,76 @@ def select_belief_policy_cases(
 ) -> List[Dict[str, Any]]:
     selected: List[Dict[str, Any]] = []
     used: set[Tuple[str, str, int]] = set()
+
+    showcase_specs = [
+        (
+            "wrong belief / lucky action (planner risk)",
+            max(1, max_per_tag),
+            lambda r: (
+                r.get("audit_supported")
+                and r.get("belief_correct") is False
+                and r.get("human_agreement") is True
+                and r.get("menu_alignment") is False
+                and r.get("correct_menu_alignment") is True
+            ),
+        ),
+        (
+            "right belief / wrong action (policy failure)",
+            min(2, max(1, max_per_tag)),
+            lambda r: (
+                r.get("audit_supported")
+                and r.get("belief_correct") is True
+                and r.get("human_agreement") is False
+                and r.get("menu_alignment") is False
+            ),
+        ),
+        (
+            "wrong belief / wrong action (belief changes menu)",
+            1,
+            lambda r: (
+                r.get("audit_supported")
+                and r.get("belief_correct") is False
+                and r.get("human_agreement") is False
+                and r.get("menu_alignment") != r.get("correct_menu_alignment")
+            ),
+        ),
+    ]
+
+    for label, quota, predicate in showcase_specs:
+        candidates = [r for r in rows if predicate(r)]
+        candidates = sorted(
+            candidates,
+            key=lambda r: (
+                -_showcase_score(r, label),
+                _safe_int(r.get("dialogue_id")),
+                _safe_int(r.get("turn_index")),
+            ),
+        )
+        count = 0
+        for row in candidates:
+            key = _case_identity(row)
+            if key in used:
+                continue
+            out = dict(row)
+            out["selected_for"] = label
+            selected.append(out)
+            used.add(key)
+            count += 1
+            if count >= quota:
+                break
+
+    if len(selected) >= 2:
+        return selected
+
+    # Tiny synthetic test fixtures may not contain the showcase categories.
+    # Fall back to the broad diagnostic tags so helper behavior remains stable.
     for tag in CASE_TAGS:
         candidates = [
             r for r in rows
             if r.get("audit_supported") and tag in (r.get("case_tags") or ())
         ]
         for row in _sort_case_candidates(candidates):
-            key = (str(row["dialogue_id"]), str(row["perspective"]), int(row["turn_index"]))
+            key = _case_identity(row)
             if key in used:
                 continue
             out = dict(row)
@@ -588,11 +701,23 @@ def select_trajectory_cases(
         first = _first_correct_position(group)
         final_correct = correct[-1]
         confidence = mean(r.get("confidence") for r in group) or 0.0
-        if first is not None and first <= 2 and all(correct[first:]):
-            fast.append((key, group, confidence + len(group) / 100.0))
+        turn_indices = [int(r.get("turn_index")) for r in group]
+        maps = [int(r.get("map_index")) for r in group]
+        if (
+            first is not None
+            and correct[0] is False
+            and turn_indices[first] <= 4
+            and all(correct[first:])
+            and len(set(maps[: first + 1])) > 1
+        ):
+            initial_conf = float(group[0].get("confidence") or 0.0)
+            first_conf = float(group[first].get("confidence") or 0.0)
+            flips = sum(1 for i in range(1, len(maps)) if maps[i] != maps[i - 1])
+            certainty_penalty = 0.7 if first_conf >= 0.999 else 0.0
+            score = flips * 2.0 + first_conf + initial_conf - certainty_penalty
+            fast.append((key, group, score))
         if first is not None and first >= 3 and final_correct:
             slow.append((key, group, confidence + first / 10.0))
-        maps = [int(r.get("map_index")) for r in group]
         if correct[0] is False and final_correct and len(set(maps)) > 1:
             wrong_conf = max(float(r.get("confidence") or 0.0) for r in group if r.get("belief_correct") is False)
             revise.append((key, group, wrong_conf + len(set(maps)) / 10.0))
@@ -750,6 +875,7 @@ def write_belief_policy_cases_md(path: Path, rows: Sequence[Mapping[str, Any]]) 
         "",
         "These examples separate the exposed posterior from the emitted action.",
         "Human agreement is a behavioral reference, while menu alignment is the deterministic Bayesian menu recommendation under the student's own posterior.",
+        "The selector prioritizes turns where the student-posterior menu and the correct-posterior menu disagree, because those are the turns where the belief audit is actionable.",
         "",
     ]
     for row in rows:
@@ -811,7 +937,7 @@ def write_section_draft(
         f"- Belief wrong / lucky action: {tag_counts.get('belief wrong / lucky action', 0)} turns.",
         f"- Full failure: {tag_counts.get('full failure', 0)} turns.",
         "",
-        "Representative cases are listed in `belief_policy_cases.md`; Figure `posterior_trajectories.png` shows three posterior trajectories where the belief converges quickly, converges slowly, or corrects after initially favoring the wrong ordering.",
+        "Representative cases are listed in `belief_policy_cases.md`; the selected cases prioritize turns where the student-posterior menu and the correct-posterior menu disagree. Figure `posterior_trajectories.png` shows three posterior trajectories where the belief converges quickly, converges slowly, or corrects after initially favoring the wrong ordering.",
         "",
         "## Posterior correction reveals weak coupling",
         "",
@@ -1011,7 +1137,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--accept-margin", type=int, default=DEFAULT_ACCEPT_MARGIN)
     parser.add_argument("--accept-floor", type=float, default=DEFAULT_ACCEPT_FLOOR)
     parser.add_argument("--bid-close-threshold", type=float, default=0.90)
-    parser.add_argument("--max-cases-per-tag", type=int, default=2)
+    parser.add_argument("--max-cases-per-tag", type=int, default=3)
     args = parser.parse_args(argv)
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -1104,7 +1230,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "entropy_bits", "brier", "student_action_type",
         "human_action_type", "human_agreement", "menu_action_type",
         "menu_alignment", "correct_menu_action_type",
-        "correct_menu_alignment", "primary_case_tag",
+        "correct_menu_alignment", "primary_case_tag", "context_snippet",
     ]
 
     outputs = {

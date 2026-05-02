@@ -15,6 +15,7 @@ from opponent_model.scripts.make_auditability_artifacts import (
     prefix_change_rows,
     record_key,
     select_belief_policy_cases,
+    select_trajectory_cases,
 )
 
 
@@ -155,6 +156,23 @@ class AuditabilityArtifactTests(unittest.TestCase):
         bins = confidence_bins(rows)
         self.assertEqual(len(bins), 6)
         self.assertEqual(sum(row["n"] for row in bins), 2)
+
+    def test_trajectory_selection_prefers_dynamic_fast_correction(self):
+        dynamic = [
+            {"dialogue_id": "289", "perspective": "p", "turn_index": 0, "belief_correct": False, "map_index": 3, "true_index": 0, "confidence": 0.375},
+            {"dialogue_id": "289", "perspective": "p", "turn_index": 2, "belief_correct": False, "map_index": 1, "true_index": 0, "confidence": 0.625},
+            {"dialogue_id": "289", "perspective": "p", "turn_index": 4, "belief_correct": True, "map_index": 0, "true_index": 0, "confidence": 0.875},
+            {"dialogue_id": "289", "perspective": "p", "turn_index": 6, "belief_correct": True, "map_index": 0, "true_index": 0, "confidence": 0.875},
+            {"dialogue_id": "289", "perspective": "p", "turn_index": 8, "belief_correct": True, "map_index": 0, "true_index": 0, "confidence": 1.0},
+        ]
+        static = [
+            {"dialogue_id": "648", "perspective": "p", "turn_index": 1, "belief_correct": True, "map_index": 1, "true_index": 1, "confidence": 1.0},
+            {"dialogue_id": "648", "perspective": "p", "turn_index": 3, "belief_correct": True, "map_index": 1, "true_index": 1, "confidence": 1.0},
+            {"dialogue_id": "648", "perspective": "p", "turn_index": 5, "belief_correct": True, "map_index": 1, "true_index": 1, "confidence": 1.0},
+        ]
+        cases = select_trajectory_cases(dynamic + static, {"289": {}, "648": {}})
+        self.assertEqual(cases[0]["label"], "fast correct")
+        self.assertEqual(cases[0]["dialogue_id"], "289")
 
 
 if __name__ == "__main__":
