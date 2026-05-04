@@ -1,27 +1,27 @@
 #!/bin/bash
 #BSUB -J dnd_prepare
-#BSUB -P acc_lin_lab
+#BSUB -P anonymous_project
 #BSUB -q premium
 #BSUB -R "rusage[mem=20G] span[hosts=1]"
 #BSUB -n 1
 #BSUB -W 01:00
-#BSUB -o /sc/arion/projects/lin_lab/complexbehavior/CaSino/artifacts/results/dnd_transfer/main/lsf/prepare.%J.out
-#BSUB -e /sc/arion/projects/lin_lab/complexbehavior/CaSino/artifacts/results/dnd_transfer/main/lsf/prepare.%J.err
+#BSUB -o /path/to/CaSino/artifacts/results/dnd_transfer/main/lsf/prepare.%J.out
+#BSUB -e /path/to/CaSino/artifacts/results/dnd_transfer/main/lsf/prepare.%J.err
 #BSUB -L /bin/bash
 
 set -eo pipefail
 
-REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+REPO_ROOT="/path/to/CaSino"
 cd "$REPO_ROOT"
 
 unset PYTHONPATH
 set +u
-source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+source /path/to/conda.sh
 conda activate casino
 set -u
 hash -r
 
-CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+CASINO_PY="${CASINO_PY:-python}"
 ROOT="${ROOT:-artifacts/results/dnd_transfer/main}"
 mkdir -p "$ROOT/lsf"
 

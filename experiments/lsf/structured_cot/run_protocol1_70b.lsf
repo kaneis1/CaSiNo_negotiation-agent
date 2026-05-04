@@ -1,6 +1,6 @@
 #!/bin/bash
 #BSUB -J scot_p1_70b
-#BSUB -P acc_lin_lab
+#BSUB -P anonymous_project
 #BSUB -q gpu
 #BSUB -gpu "num=2"
 # Llama-3.3-70B in bf16 needs ~140 GB; 2×H100-NVL (2×80 = 160 GB HBM3 with
@@ -42,21 +42,21 @@
 # `set -u` across conda activation (MKL activate hooks read unset vars).
 set -eo pipefail
 
-REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+REPO_ROOT="/path/to/CaSino"
 cd "$REPO_ROOT"
 
 mkdir -p artifacts/training_metadata/lsf/structured_cot
 
 unset PYTHONPATH
 set +u
-source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+source /path/to/conda.sh
 conda activate casino
 set -u
 hash -r
 
-CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+CASINO_PY="${CASINO_PY:-python}"
 
-export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export HF_HOME="${HF_HOME:-/path/to/hf_cache}"
 export TRANSFORMERS_CACHE=$HF_HOME/transformers
 export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
 export TOKENIZERS_PARALLELISM=false
@@ -69,7 +69,7 @@ echo "GPUs visible:"
 nvidia-smi --query-gpu=index,name,memory.total --format=csv
 
 # Default to the full held-out test set. Override at submit time via the
-# heredoc-wrapper pattern in submit_all_folds.sh (Minerva's LSF silently
+# heredoc-wrapper pattern in submit_all_folds.sh (some LSF installations silently
 # drops `bsub -env` for user-defined vars; see that script's comments).
 NUM_DIALOGUES="${NUM_DIALOGUES:-150}"
 DATA="${DATA:-data/casino/casino_test.json}"

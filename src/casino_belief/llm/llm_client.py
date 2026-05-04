@@ -18,13 +18,13 @@ logger = logging.getLogger("casino_belief.llm.llm_client")
 
 
 LLAMA_33_70B_DEFAULT = (
-    "/sc/arion/scratch/cuiz02/hf_cache/transformers/"
+    ""
     "models--meta-llama--Llama-3.3-70B-Instruct/snapshots/"
     "6f6073b423013f6a7d4d9f39144961bfbfbc386b"
 )
 
 LLAMA_31_8B_DEFAULT = (
-    "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct"
+    "meta-llama/Meta-Llama-3.1-8B-Instruct"
 )
 
 

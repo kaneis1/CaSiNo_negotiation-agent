@@ -2,7 +2,7 @@
 # Submit all K folds of the CV pipeline as independent LSF jobs.
 #
 # We DON'T use `bsub -env` to pass FOLD/N_SPLITS/SEED — on some LSF
-# installations (including Minerva) `-env` silently fails to propagate
+# installations `-env` silently fails to propagate
 # user-defined variables, leaving the job's `${FOLD:-}` empty and tripping
 # the safety guard in run_cv_fold.lsf. Instead, we generate a tiny per-fold
 # wrapper LSF script via heredoc that:
@@ -30,7 +30,7 @@
 
 set -euo pipefail
 
-REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+REPO_ROOT="/path/to/CaSino"
 cd "$REPO_ROOT"
 
 N_SPLITS=${N_SPLITS:-5}
@@ -47,7 +47,7 @@ for ((k=0; k<N_SPLITS; k++)); do
     OUT=$(bsub <<EOF
 #!/bin/bash
 #BSUB -J sft8b_cv_fold_${k}
-#BSUB -P acc_lin_lab
+#BSUB -P anonymous_project
 #BSUB -q gpu
 #BSUB -gpu "num=1"
 #BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"

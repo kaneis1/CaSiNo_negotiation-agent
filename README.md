@@ -8,10 +8,12 @@ The current paper direction is:
 3. Evaluate turn-level decisions with Protocol 3: accept/reject, bid similarity, strategy labels, and posterior Brier score.
 4. Report SVO-conditioned lambda as a sensitivity/null-result analysis rather than a positive matched-SVO accept result.
 
-The main surviving result is the Brier calibration story. The student-balanced
-run stays below the uniform posterior reference at every turn
-(`max per-turn Brier = 0.146 < 1/6`), while prompted baselines expose no
-posterior to score.
+The main surviving result is the Brier calibration story. The balanced student
+achieves mean Brier `0.114`, below the CaSiNo six-ordering uniform reference
+`5/36 ~= 0.139`. At supported turn indices 0, 2, and 13, per-turn Brier
+slightly exceeds the reference. The 70B structured-CoT baseline does not
+natively expose a posterior, so we elicit one by self-consistency; its elicited
+Brier is `0.194`.
 
 ## Repository Layout
 
@@ -37,10 +39,11 @@ conda activate casino
 pip install -e .
 ```
 
-On Minerva, the canonical Python used in recent runs is:
+On an institutional LSF cluster, set the Python interpreter explicitly when
+submitting batch jobs, for example:
 
 ```bash
-/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+python
 ```
 
 Run tests:
@@ -144,10 +147,12 @@ Key artifacts:
 
 Locked Day 9/10 findings:
 
-- Student-balanced max per-turn Brier is `0.146`, below the uniform reference
-  `1/6 = 0.167`.
-- Baseline Structured-CoT has strong Accept-F1 but no posterior distribution,
-  so Brier is undefined for that baseline.
+- Student-balanced mean Brier is `0.114`, below the CaSiNo six-ordering
+  uniform reference `5/36 ~= 0.139`; supported turns 0, 2, and 13 are slightly
+  above the reference.
+- Baseline Structured-CoT has strong Accept-F1 but no native posterior
+  distribution; the paper reports an elicited self-consistency posterior Brier
+  of `0.194`.
 - Rescaled SVO match-vs-mismatch changed lambda on `84/87` accept-eligible
   turns and flipped `0/84` accept predictions; Accept-F1 is `0.768` in both
   runs.

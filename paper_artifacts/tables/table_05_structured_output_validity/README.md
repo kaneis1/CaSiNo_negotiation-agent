@@ -10,7 +10,7 @@ Local alias:
 
 Current test command:
 ```bash
-/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python -m unittest discover -s tests -v
+python -m unittest discover -s tests -v
 ```
 
 The manifest is authoritative for provenance.

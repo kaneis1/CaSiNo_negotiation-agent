@@ -45,7 +45,7 @@ DEFAULT_OUTPUT_DIR = Path(
 DEFAULT_MODEL = "meta-llama/Llama-3.3-70B-Instruct"
 DEFAULT_REVISION = "6f6073b423013f6a7d4d9f39144961bfbfbc386b"
 DEFAULT_SNAPSHOT_PATH = Path(
-    "/sc/arion/scratch/cuiz02/hf_cache/transformers/"
+    ""
     "models--meta-llama--Llama-3.3-70B-Instruct/snapshots/"
     "6f6073b423013f6a7d4d9f39144961bfbfbc386b"
 )

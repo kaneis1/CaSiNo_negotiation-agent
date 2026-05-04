@@ -1,6 +1,6 @@
 #!/bin/bash
 #BSUB -J day9_student_p3
-#BSUB -P acc_lin_lab
+#BSUB -P anonymous_project
 #BSUB -q gpu
 #BSUB -gpu "num=1"
 #BSUB -R "h10080g rusage[mem=40000] span[hosts=1]"
@@ -27,31 +27,31 @@
 #   MAX_DIALOGUES=150 PERSPECTIVES=mturk_agent_1 \
 #        bsub < experiments/lsf/evaluation/run_day9_student_eval.lsf
 #
-# On Minerva LSF, avoid relying on `bsub -env "all,VAR=value"` for these
+# On some LSF installations, avoid relying on `bsub -env "all,VAR=value"` for these
 # knobs; a Day 9.2 check showed that pattern can silently fall back to
 # the script defaults.
 
 set -eo pipefail
 
-REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+REPO_ROOT="/path/to/CaSino"
 cd "$REPO_ROOT"
 
 unset PYTHONPATH
 set +u
-source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+source /path/to/conda.sh
 conda activate casino
 set -u
 hash -r
 
-CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+CASINO_PY="${CASINO_PY:-python}"
 
-export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export HF_HOME="${HF_HOME:-/path/to/hf_cache}"
 export TRANSFORMERS_CACHE=$HF_HOME/transformers
 export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
 export TOKENIZERS_PARALLELISM=false
 export PYTHONUNBUFFERED=1
 
-BASE_MODEL="${BASE_MODEL:-/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct}"
+BASE_MODEL="${BASE_MODEL:-meta-llama/Meta-Llama-3.1-8B-Instruct}"
 ADAPTER="${ADAPTER:-artifacts/training_metadata/day8_lora_run/lora_best}"
 DATA="${DATA:-data/casino/casino_test.json}"
 ANNOTATIONS="${ANNOTATIONS:-external/casino_original/data/casino_ann.json}"

@@ -1,6 +1,6 @@
 #!/bin/bash
 #BSUB -J scot_p2_70b
-#BSUB -P acc_lin_lab
+#BSUB -P anonymous_project
 #BSUB -q gpu
 #BSUB -gpu "num=2"
 #BSUB -R "h100nvl rusage[mem=40000] span[hosts=1]"
@@ -32,21 +32,21 @@
 # See the other experiment launchers re: `set -u` + conda.
 set -eo pipefail
 
-REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+REPO_ROOT="/path/to/CaSino"
 cd "$REPO_ROOT"
 
 mkdir -p artifacts/training_metadata/lsf/structured_cot
 
 unset PYTHONPATH
 set +u
-source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+source /path/to/conda.sh
 conda activate casino
 set -u
 hash -r
 
-CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+CASINO_PY="${CASINO_PY:-python}"
 
-export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export HF_HOME="${HF_HOME:-/path/to/hf_cache}"
 export TRANSFORMERS_CACHE=$HF_HOME/transformers
 export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
 export TOKENIZERS_PARALLELISM=false

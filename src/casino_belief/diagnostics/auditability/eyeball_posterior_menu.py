@@ -47,7 +47,7 @@ logger = logging.getLogger("casino_belief.diagnostics.auditability.eyeball_poste
 
 
 DEFAULT_BASE_MODEL = (
-    "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct"
+    "meta-llama/Meta-Llama-3.1-8B-Instruct"
 )
 DEFAULT_ADAPTER = "artifacts/training_metadata/teacher_lora_run/lora_best"
 DEFAULT_DATA = "external/casino_original/data/split/casino_test.json"

@@ -51,7 +51,7 @@ from casino_belief.student.student_prompts import format_posterior
 logger = logging.getLogger("casino_belief.diagnostics.ablation.ablation")
 
 DEFAULT_BASE_MODEL = (
-    "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct"
+    "meta-llama/Meta-Llama-3.1-8B-Instruct"
 )
 DEFAULT_TEACHER_ADAPTER = "artifacts/training_metadata/teacher_lora_run/lora_best"
 DEFAULT_OUTPUT_ROOT = Path("artifacts/results/ablation/main")

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eo pipefail
 
-REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+REPO_ROOT="/path/to/CaSino"
 cd "$REPO_ROOT"
 
 ROOT="${ROOT:-artifacts/results/ablation/main}"

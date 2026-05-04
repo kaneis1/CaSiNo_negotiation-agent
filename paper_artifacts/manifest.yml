@@ -3,14 +3,14 @@
     "manuscript_pdf": {
       "paper_section": "manuscript",
       "paper_item": "PDF",
-      "claim": "The paper overlay points to the current manuscript PDF without duplicating it.",
-      "alias_path": "paper_artifacts/00_manuscript/paper.pdf",
-      "source_path": "Distilling_Bayesian_Belief_States_into_Language_Models_for_Auditable_Negotiation.pdf",
-      "artifact_type": "data_file",
+      "claim": "The manuscript PDF is submitted separately through the review system; this overlay records the paper-artifact crosswalk.",
+      "alias_path": "paper_artifacts/00_manuscript/README.md",
+      "source_path": "submitted_separately_via_review_system",
+      "artifact_type": "external_reference",
       "generated_by": [],
       "reproduction_command": null,
-      "status": "symlinked",
-      "notes": "Relative symlink to the manuscript PDF."
+      "status": "manual_paper_only",
+      "notes": "The submitted manuscript PDF is not duplicated inside the lightweight supplementary repository."
     },
     "section_file_map": {
       "paper_section": "manuscript",
@@ -43,7 +43,9 @@
       "alias_path": "paper_artifacts/01_data/casino_splits",
       "source_path": "data/casino/casino_test.json",
       "artifact_type": "data_file",
-      "generated_by": ["src/casino_belief/training/build_quality_subdataset.py"],
+      "generated_by": [
+        "src/casino_belief/training/build_quality_subdataset.py"
+      ],
       "reproduction_command": "python -m casino_belief.training.build_quality_subdataset",
       "status": "existing",
       "notes": "Folder contains symlinks to full/train/test splits and quality subsets."
@@ -55,7 +57,9 @@
       "alias_path": "paper_artifacts/01_data/dnd_transfer_data",
       "source_path": "data/dnd/dnd_data_stats.json",
       "artifact_type": "data_file",
-      "generated_by": ["src/casino_belief/transfer/dnd/dnd_data.py"],
+      "generated_by": [
+        "src/casino_belief/transfer/dnd/dnd_data.py"
+      ],
       "reproduction_command": "python -m casino_belief.transfer.dnd.dnd_data",
       "status": "existing",
       "notes": "Folder contains DND stats and strict-partner test snapshot aliases."
@@ -187,7 +191,9 @@
       "alias_path": "paper_artifacts/shared_results/bayesian_teacher_full150",
       "source_path": "artifacts/results/protocol3/bayesian_teacher_full150",
       "artifact_type": "result_directory",
-      "generated_by": ["experiments/lsf/evaluation/run_bayesian_protocol3.lsf"],
+      "generated_by": [
+        "experiments/lsf/evaluation/run_bayesian_protocol3.lsf"
+      ],
       "reproduction_command": "bsub < experiments/lsf/evaluation/run_bayesian_protocol3.lsf",
       "status": "symlinked",
       "notes": "Shared alias to avoid repeated paper-facing aliases."
@@ -199,7 +205,9 @@
       "alias_path": "paper_artifacts/shared_results/distilled_student_balanced_full150",
       "source_path": "artifacts/results/protocol3/distilled_student_balanced_full150",
       "artifact_type": "result_directory",
-      "generated_by": ["experiments/lsf/evaluation/run_day9_student_eval.lsf"],
+      "generated_by": [
+        "experiments/lsf/evaluation/run_day9_student_eval.lsf"
+      ],
       "reproduction_command": "bsub < experiments/lsf/evaluation/run_day9_student_eval.lsf",
       "status": "symlinked",
       "notes": "Shared alias to avoid repeated paper-facing aliases."
@@ -211,7 +219,9 @@
       "alias_path": "paper_artifacts/shared_results/structured_cot_70b_full150",
       "source_path": "artifacts/results/protocol3/structured_cot_70b_full150",
       "artifact_type": "result_directory",
-      "generated_by": ["experiments/lsf/structured_cot/run_p3_baseline_70b.lsf"],
+      "generated_by": [
+        "experiments/lsf/structured_cot/run_p3_baseline_70b.lsf"
+      ],
       "reproduction_command": "bsub < experiments/lsf/structured_cot/run_p3_baseline_70b.lsf",
       "status": "symlinked",
       "notes": "Shared alias to avoid repeated paper-facing aliases."
@@ -223,7 +233,9 @@
       "alias_path": "paper_artifacts/shared_results/structured_cot_70b_elicited_posterior",
       "source_path": "artifacts/results/posterior_quality/structured_cot_elicited_posterior",
       "artifact_type": "result_directory",
-      "generated_by": ["experiments/lsf/structured_cot/run_structured_opp_inference_70b_pipeline.lsf"],
+      "generated_by": [
+        "experiments/lsf/structured_cot/run_structured_opp_inference_70b_pipeline.lsf"
+      ],
       "reproduction_command": "bsub < experiments/lsf/structured_cot/run_structured_opp_inference_70b_pipeline.lsf",
       "status": "symlinked",
       "notes": "Shared alias to avoid repeated paper-facing aliases."
@@ -235,10 +247,12 @@
       "alias_path": "paper_artifacts/shared_results/ablation_results",
       "source_path": "artifacts/results/ablation/main",
       "artifact_type": "result_directory",
-      "generated_by": ["experiments/lsf/ablation/run_ablation_aggregate.lsf"],
+      "generated_by": [
+        "experiments/lsf/ablation/run_ablation_aggregate.lsf"
+      ],
       "reproduction_command": "bsub < experiments/lsf/ablation/run_ablation_aggregate.lsf",
-      "status": "symlinked",
-      "notes": "Alias avoids exposing submission-specific naming in paper-facing paths."
+      "status": "manual_paper_only",
+      "notes": "Full ablation run directory is large; lightweight reviewer supplement includes aggregate/table artifacts and regeneration scripts instead of the full generated directory."
     },
     "shared_dnd_transfer_results": {
       "paper_section": "4.4, Appendix P/W/X",
@@ -247,7 +261,9 @@
       "alias_path": "paper_artifacts/shared_results/dnd_transfer_results",
       "source_path": "artifacts/results/dnd_transfer/main",
       "artifact_type": "result_directory",
-      "generated_by": ["experiments/lsf/dnd_transfer/run_dnd_aggregate.lsf"],
+      "generated_by": [
+        "experiments/lsf/dnd_transfer/run_dnd_aggregate.lsf"
+      ],
       "reproduction_command": "bsub < experiments/lsf/dnd_transfer/run_dnd_aggregate.lsf",
       "status": "symlinked",
       "notes": "Shared alias to DND transfer runs and aggregate tables."
@@ -259,7 +275,9 @@
       "alias_path": "paper_artifacts/shared_results/auditability_artifacts",
       "source_path": "artifacts/results/auditability/main",
       "artifact_type": "result_directory",
-      "generated_by": ["src/casino_belief/diagnostics/auditability/make_auditability_artifacts.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/auditability/make_auditability_artifacts.py"
+      ],
       "reproduction_command": "python -m casino_belief.diagnostics.auditability.make_auditability_artifacts",
       "status": "symlinked",
       "notes": "Alias avoids day-based source naming in paper-facing paths."
@@ -343,7 +361,9 @@
       "alias_path": "paper_artifacts/figures/figure_02_brier_trajectory.png",
       "source_path": "artifacts/results/posterior_quality/brier_trajectory.png",
       "artifact_type": "figure",
-      "generated_by": ["src/casino_belief/diagnostics/posterior_quality/make_headline_artifacts.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/posterior_quality/make_headline_artifacts.py"
+      ],
       "reproduction_command": "python -m casino_belief.diagnostics.posterior_quality.make_headline_artifacts",
       "status": "symlinked",
       "notes": "Figure alias only; original result remains source of truth."
@@ -355,7 +375,9 @@
       "alias_path": "paper_artifacts/figures/figure_03_bigfive_strategy_heatmap.png",
       "source_path": "artifacts/results/personality/human_bigfive_strategy_matrix/bigfive_strategy_pearson_heatmap.png",
       "artifact_type": "figure",
-      "generated_by": ["src/casino_belief/diagnostics/personality/make_human_bigfive_strategy_matrix.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/personality/make_human_bigfive_strategy_matrix.py"
+      ],
       "reproduction_command": "python -m casino_belief.diagnostics.personality.make_human_bigfive_strategy_matrix",
       "status": "symlinked",
       "notes": "Figure alias only; original result remains source of truth."
@@ -367,7 +389,9 @@
       "alias_path": "paper_artifacts/figures/figure_05_likelihood_sensitivity_heatmap.png",
       "source_path": "artifacts/results/ablation/main/aggregate/a8_a9_brier_heatmap.png",
       "artifact_type": "figure",
-      "generated_by": ["src/casino_belief/diagnostics/ablation/ablation_aggregate.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/ablation/ablation_aggregate.py"
+      ],
       "reproduction_command": "bsub < experiments/lsf/ablation/run_ablation_aggregate.lsf",
       "status": "symlinked",
       "notes": "Figure alias only; original result remains source of truth."
@@ -379,7 +403,9 @@
       "alias_path": "paper_artifacts/figures/figure_06_posterior_trajectories.png",
       "source_path": "artifacts/results/auditability/main/posterior_trajectories.png",
       "artifact_type": "figure",
-      "generated_by": ["src/casino_belief/diagnostics/auditability/make_auditability_artifacts.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/auditability/make_auditability_artifacts.py"
+      ],
       "reproduction_command": "python -m casino_belief.diagnostics.auditability.make_auditability_artifacts",
       "status": "symlinked",
       "notes": "Figure alias only; original result remains source of truth."
@@ -391,7 +417,9 @@
       "alias_path": "paper_artifacts/tables/table_01_belief_policy_decomposition",
       "source_path": "artifacts/results/auditability/main/auditability_metrics_summary.json",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/diagnostics/auditability/make_auditability_artifacts.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/auditability/make_auditability_artifacts.py"
+      ],
       "reproduction_command": "python -m casino_belief.diagnostics.auditability.make_auditability_artifacts",
       "status": "existing",
       "notes": "Table folder contains source symlink and README; manifest remains authoritative."
@@ -403,7 +431,9 @@
       "alias_path": "paper_artifacts/tables/table_02_ablation_results",
       "source_path": "artifacts/results/ablation/main/aggregate/ablation_results.md",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/diagnostics/ablation/ablation_aggregate.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/ablation/ablation_aggregate.py"
+      ],
       "reproduction_command": "bsub < experiments/lsf/ablation/run_ablation_aggregate.lsf",
       "status": "existing",
       "notes": "Table folder contains source symlink and README; manifest remains authoritative."
@@ -415,7 +445,9 @@
       "alias_path": "paper_artifacts/tables/table_03_main_protocol3_metrics",
       "source_path": "artifacts/results/posterior_quality/headline_numbers.csv",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/diagnostics/posterior_quality/make_headline_artifacts.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/posterior_quality/make_headline_artifacts.py"
+      ],
       "reproduction_command": "python -m casino_belief.diagnostics.posterior_quality.make_headline_artifacts",
       "status": "existing",
       "notes": "Also depends on shared teacher, student, and 70B result aliases."
@@ -427,7 +459,10 @@
       "alias_path": "paper_artifacts/tables/table_04_distillation_data_audit",
       "source_path": "artifacts/training_metadata/distill/day7/day7_summary.json",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/training/build_distill_data.py", "src/casino_belief/training/build_day8_sft_data.py"],
+      "generated_by": [
+        "src/casino_belief/training/build_distill_data.py",
+        "src/casino_belief/training/build_day8_sft_data.py"
+      ],
       "reproduction_command": "python -m casino_belief.training.build_day8_sft_data",
       "status": "existing",
       "notes": "Table folder links both Day 7 and Day 8 summaries."
@@ -439,7 +474,9 @@
       "alias_path": "paper_artifacts/tables/table_05_structured_output_validity",
       "source_path": "artifacts/results/protocol3/distilled_student_balanced_full150/turn_summary.json",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/evaluation/turn_eval_run.py"],
+      "generated_by": [
+        "src/casino_belief/evaluation/turn_eval_run.py"
+      ],
       "reproduction_command": "bsub < experiments/lsf/evaluation/run_day9_student_eval.lsf",
       "status": "existing",
       "notes": "Unit-test count is checked by current unittest discovery."
@@ -451,7 +488,9 @@
       "alias_path": "paper_artifacts/tables/table_06_brier_by_turn",
       "source_path": "artifacts/results/posterior_quality/headline_numbers.csv",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/diagnostics/posterior_quality/make_headline_artifacts.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/posterior_quality/make_headline_artifacts.py"
+      ],
       "reproduction_command": "python -m casino_belief.diagnostics.posterior_quality.make_headline_artifacts",
       "status": "existing",
       "notes": "Table folder links the headline artifact directory."
@@ -463,7 +502,9 @@
       "alias_path": "paper_artifacts/tables/table_07_lora_training_details",
       "source_path": "artifacts/training_metadata/day8_lora_run/lora_best/sft_run_meta.json",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/training/train.py"],
+      "generated_by": [
+        "src/casino_belief/training/train.py"
+      ],
       "reproduction_command": "bsub < experiments/lsf/training/run_day8_sft_train.lsf",
       "status": "existing",
       "notes": "Table folder links training args and run metadata."
@@ -487,7 +528,9 @@
       "alias_path": "paper_artifacts/tables/table_09_dnd_transfer_headline",
       "source_path": "artifacts/results/dnd_transfer/main/aggregate/dnd_transfer_results.md",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/transfer/dnd/dnd_aggregate.py"],
+      "generated_by": [
+        "src/casino_belief/transfer/dnd/dnd_aggregate.py"
+      ],
       "reproduction_command": "bsub < experiments/lsf/dnd_transfer/run_dnd_aggregate.lsf",
       "status": "existing",
       "notes": "Table folder links aggregate DND transfer results."
@@ -499,7 +542,9 @@
       "alias_path": "paper_artifacts/tables/table_10_svo_match_mismatch_accept",
       "source_path": "artifacts/results/svo/accept_diagnostic_rescaled/summary.json",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/diagnostics/svo/diagnose_svo_accept_match_mismatch.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/svo/diagnose_svo_accept_match_mismatch.py"
+      ],
       "reproduction_command": "python -m casino_belief.diagnostics.svo.diagnose_svo_accept_match_mismatch",
       "status": "existing",
       "notes": "Table folder links rescaled and legacy summaries."
@@ -511,7 +556,9 @@
       "alias_path": "paper_artifacts/tables/table_11_svo_legacy_integrative_potential",
       "source_path": "artifacts/results/svo/ip_table/table1_svo_ip.md",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/diagnostics/svo/make_svo_ip_table.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/svo/make_svo_ip_table.py"
+      ],
       "reproduction_command": "python -m casino_belief.diagnostics.svo.make_svo_ip_table",
       "status": "existing",
       "notes": "Table folder links the SVO x integrative-potential table."
@@ -523,7 +570,9 @@
       "alias_path": "paper_artifacts/tables/table_12_svo_rescaled_subgroup",
       "source_path": "artifacts/results/svo/subgroup_rescaled/table1_svo_subgroup.md",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/diagnostics/svo/make_svo_subgroup_table.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/svo/make_svo_subgroup_table.py"
+      ],
       "reproduction_command": "python -m casino_belief.diagnostics.svo.make_svo_subgroup_table",
       "status": "existing",
       "notes": "Table folder links rescaled SVO subgroup output."
@@ -535,7 +584,9 @@
       "alias_path": "paper_artifacts/tables/table_13_likelihood_sweep",
       "source_path": "artifacts/results/ablation/main/aggregate/ablation_results.md",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/diagnostics/ablation/ablation_aggregate.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/ablation/ablation_aggregate.py"
+      ],
       "reproduction_command": "bsub < experiments/lsf/ablation/run_ablation_aggregate.lsf",
       "status": "existing",
       "notes": "Table folder links aggregate ablation output."
@@ -547,7 +598,9 @@
       "alias_path": "paper_artifacts/tables/table_14_posterior_prefix_injection",
       "source_path": "artifacts/results/ablation/main/aggregate/ablation_interventions.csv",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/diagnostics/ablation/ablation_interventions.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/ablation/ablation_interventions.py"
+      ],
       "reproduction_command": "bsub < experiments/lsf/ablation/run_ablation_interventions.lsf",
       "status": "existing",
       "notes": "Table folder links prefix-intervention aggregate output."
@@ -559,7 +612,9 @@
       "alias_path": "paper_artifacts/tables/table_15_auditability_cases",
       "source_path": "artifacts/results/auditability/main/belief_policy_cases.md",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/diagnostics/auditability/make_auditability_artifacts.py"],
+      "generated_by": [
+        "src/casino_belief/diagnostics/auditability/make_auditability_artifacts.py"
+      ],
       "reproduction_command": "python -m casino_belief.diagnostics.auditability.make_auditability_artifacts",
       "status": "existing",
       "notes": "Table folder links selected case markdown."
@@ -571,7 +626,9 @@
       "alias_path": "paper_artifacts/tables/table_16_external_casino_comparison",
       "source_path": "artifacts/results/external_comparison/cv/cv_summary.json",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/training/cv_aggregate.py"],
+      "generated_by": [
+        "src/casino_belief/training/cv_aggregate.py"
+      ],
       "reproduction_command": "python -m casino_belief.training.cv_aggregate",
       "status": "existing",
       "notes": "Some rows are external citation values; local rows come from CV summaries and 70B elicited posterior output."
@@ -583,7 +640,9 @@
       "alias_path": "paper_artifacts/tables/table_17_dnd_transfer_full",
       "source_path": "artifacts/results/dnd_transfer/main/aggregate/dnd_transfer_results.csv",
       "artifact_type": "table_source",
-      "generated_by": ["src/casino_belief/transfer/dnd/dnd_aggregate.py"],
+      "generated_by": [
+        "src/casino_belief/transfer/dnd/dnd_aggregate.py"
+      ],
       "reproduction_command": "bsub < experiments/lsf/dnd_transfer/run_dnd_aggregate.lsf",
       "status": "existing",
       "notes": "Table folder links full DND transfer CSV."

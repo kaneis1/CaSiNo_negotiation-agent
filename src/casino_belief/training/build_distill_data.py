@@ -73,7 +73,7 @@ EPISTEMIC_JUSTIFICATION = (
 )
 
 DEFAULT_BASE_MODEL = (
-    "/sc/arion/scratch/cuiz02/hf_cache/transformers/Meta-Llama-3.1-8B-Instruct"
+    "meta-llama/Meta-Llama-3.1-8B-Instruct"
 )
 DEFAULT_ADAPTER = "artifacts/training_metadata/teacher_lora_run/lora_best"
 DEFAULT_OUTPUT_DIR = Path("artifacts/training_metadata/distill/day7")

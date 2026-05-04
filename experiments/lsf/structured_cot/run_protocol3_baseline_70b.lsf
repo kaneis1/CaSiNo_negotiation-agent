@@ -1,6 +1,6 @@
 #!/bin/bash
 #BSUB -J scot_p3_70b
-#BSUB -P acc_lin_lab
+#BSUB -P anonymous_project
 #BSUB -q gpu
 #BSUB -gpu "num=2"
 # Llama-3.3-70B bf16 ≈ 140 GB; 2×H100-NVL (2×80 = 160 GB HBM3 with NVLink)
@@ -31,28 +31,28 @@
 # Submit:
 #   bsub < experiments/lsf/structured_cot/run_protocol3_baseline_70b.lsf
 #
-# Override at submit time via the heredoc wrapper pattern (Minerva drops
+# Override at submit time via the heredoc wrapper pattern (some LSF installations drop
 # user-defined vars from bsub -env), e.g. the full test set:
 #   NUM_DIALOGUES=150 RUN_NAME=protocol3_70b_decision_only \
 #       bsub < experiments/lsf/structured_cot/run_protocol3_baseline_70b.lsf
 
 set -eo pipefail
 
-REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"
+REPO_ROOT="/path/to/CaSino"
 cd "$REPO_ROOT"
 
 mkdir -p artifacts/training_metadata/lsf/structured_cot
 
 unset PYTHONPATH
 set +u
-source /hpc/packages/minerva-rocky9/miniforge3/26.1.1-3/miniforge/etc/profile.d/conda.sh
+source /path/to/conda.sh
 conda activate casino
 set -u
 hash -r
 
-CASINO_PY=/sc/arion/work/cuiz02/conda-envs/envs/casino/bin/python
+CASINO_PY="${CASINO_PY:-python}"
 
-export HF_HOME=/sc/arion/scratch/cuiz02/hf_cache
+export HF_HOME="${HF_HOME:-/path/to/hf_cache}"
 export TRANSFORMERS_CACHE=$HF_HOME/transformers
 export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
 export TOKENIZERS_PARALLELISM=false

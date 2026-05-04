@@ -6,12 +6,12 @@ set -euo pipefail
 # dependencies: eval waits for training DONE, interventions wait for eval DONE,
 # aggregate waits for everything it summarizes.
 
-REPO_ROOT="${REPO_ROOT:-/sc/arion/projects/lin_lab/complexbehavior/CaSino}"
+REPO_ROOT="${REPO_ROOT:-/path/to/CaSino}"
 cd "$REPO_ROOT"
 
 ROOT="${ROOT:-artifacts/results/ablation/main}"
 QUEUE="${QUEUE:-gpu}"
-PROJECT="${PROJECT:-acc_lin_lab}"
+PROJECT="${PROJECT:-anonymous_project}"
 GPU_MODELS="${GPU_MODELS:-h100nvl}"
 POLL_SECONDS="${POLL_SECONDS:-30}"
 START_TIMEOUT_SECONDS="${START_TIMEOUT_SECONDS:-120}"

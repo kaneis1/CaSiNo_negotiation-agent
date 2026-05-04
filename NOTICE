@@ -1,0 +1,9 @@
+Anonymous NeurIPS 2026 Supplementary Material Notice
+
+This package supports anonymous peer review of the accompanying paper. It
+contains code, paper-facing result summaries, figures, tables, split/data
+artifacts, and scripts for reproducing or auditing the reported experiments.
+
+No full Llama base-model weights are redistributed in this package. External
+datasets and model families are acknowledged in ASSET_LICENSES.md and remain
+subject to their original licenses and access terms.
