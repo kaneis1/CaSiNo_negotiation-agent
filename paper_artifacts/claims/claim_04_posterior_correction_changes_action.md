@@ -13,9 +13,9 @@ Evidence:
 - `paper_artifacts/tables/table_15_auditability_cases/`
 
 Main source:
-- `opponent_model/results/ablation_neurips2026/a2d_correct_prefix`
-- `opponent_model/results/ablation_neurips2026/a2d_adversarial_prefix`
-- `opponent_model/results/day11_auditability/posterior_correction_cases.csv`
+- `artifacts/results/ablation/main/a2d_correct_prefix`
+- `artifacts/results/ablation/main/a2d_adversarial_prefix`
+- `artifacts/results/auditability/main/posterior_correction_cases.csv`
 
 What this proves:
 - When the posterior is corrected or adversarially replaced, the selected action or bid changes for a measurable subset of evaluated turns.

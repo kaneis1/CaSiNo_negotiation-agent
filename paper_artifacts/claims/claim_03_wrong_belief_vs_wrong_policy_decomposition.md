@@ -11,7 +11,7 @@ Evidence:
 - `paper_artifacts/tables/table_15_auditability_cases/`
 
 Main source:
-- `opponent_model/results/day11_auditability`
+- `artifacts/results/auditability/main`
 
 What this proves:
 - The audit can distinguish belief-correct/menu-consistent, belief-correct/menu-inconsistent, belief-wrong/menu-consistent, and belief-wrong/menu-inconsistent cases.

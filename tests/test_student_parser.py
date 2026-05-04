@@ -2,8 +2,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from opponent_model.turn_agents import DistilledStudentTurnAgent
-from sft_8b.student_parser import parse_student_response
+from casino_belief.evaluation.turn_agents import DistilledStudentTurnAgent
+from casino_belief.student.student_parser import parse_student_response
 
 
 class _FakeStudentModel:

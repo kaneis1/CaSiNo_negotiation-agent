@@ -3,7 +3,7 @@
 Manifest ID: `table_06_brier_by_turn`
 
 Primary source:
-- `opponent_model/results/day9_headline_artifacts`
+- `artifacts/results/posterior_quality`
 
 Local alias:
 - `source`

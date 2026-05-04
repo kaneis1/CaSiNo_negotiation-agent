@@ -3,7 +3,7 @@
 Manifest ID: `table_03_main_protocol3_metrics`
 
 Primary source:
-- `opponent_model/results/day9_headline_artifacts/headline_numbers.csv`
+- `artifacts/results/posterior_quality/headline_numbers.csv`
 
 Related shared aliases:
 - `paper_artifacts/shared_results/bayesian_teacher_full150`

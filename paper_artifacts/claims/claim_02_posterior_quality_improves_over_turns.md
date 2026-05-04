@@ -12,7 +12,7 @@ Evidence:
 - `paper_artifacts/shared_results/distilled_student_balanced_full150`
 
 Main source:
-- `opponent_model/results/day9_headline_artifacts`
+- `artifacts/results/posterior_quality`
 
 What this proves:
 - The Brier trajectory can be audited turn by turn against the teacher, student, and uniform reference.

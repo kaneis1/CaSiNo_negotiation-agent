@@ -17,13 +17,14 @@ posterior to score.
 
 | Path | Purpose |
 |---|---|
-| `CaSiNo/` | Local copy of the CaSiNo data and annotation files. |
-| `data/` | Train/test splits and quality-filtered training subsets. |
-| `structured_cot/` | Abdelnabi-style structured-CoT baseline, replay/live adapters, and baseline weakness notes. |
-| `opponent_model/` | Turn-level evaluation harness, agents, bid extraction, metrics, and Day 9/10 analysis scripts. |
-| `sft_8b/` | Bayesian teacher, SFT/distillation data builders, student parser/model code, and LSF job scripts. |
-| `results/` | Earlier benchmark results for strategy and preference prediction. |
-| `tests/` | Unit tests for parsers, bid extraction, and SFT data builders. |
+| `src/casino_belief/` | Active Python package organized by paper workflow: belief, policy, student, training, evaluation, baselines, diagnostics, transfer, and LLM utilities. |
+| `experiments/lsf/` | Paper experiment launchers grouped by training, evaluation, ablation, DND transfer, and structured-CoT baseline. |
+| `data/casino/` | Local CaSiNo splits and quality-filtered subsets. Large JSON files are ignored for GitHub. |
+| `data/dnd/` | Local Deal-or-No-Deal transfer data. Large JSONL/raw files are ignored for GitHub. |
+| `artifacts/` | Local generated results, tables, figures, logs, and training metadata. This is ignored; paper-facing aliases live in `paper_artifacts/`. |
+| `external/` | Local copies of upstream CaSiNo and prior-baseline materials used for comparison. This is ignored. |
+| `paper_artifacts/` | Tracked reviewer overlay with manifest-first provenance for every paper table, figure, claim, and shared result. |
+| `tests/` | Unit tests for parsers, bid extraction, DND transfer, auditability, and data builders. |
 | `roadmap.md` | Current project plan and paper-status reset. |
 
 ## Setup
@@ -45,7 +46,7 @@ On Minerva, the canonical Python used in recent runs is:
 Run tests:
 
 ```bash
-python -m pytest tests
+python -m unittest discover -s tests -v
 ```
 
 ## Core Evaluation
@@ -53,12 +54,12 @@ python -m pytest tests
 The main entry point for turn-level evaluation is:
 
 ```bash
-python -m opponent_model.turn_eval_run \
-  --data data/casino_test.json \
-  --output-dir opponent_model/results/turn_eval_smoke_uniform \
+python -m casino_belief.evaluation.turn_eval_run \
+  --data data/casino/casino_test.json \
+  --output-dir artifacts/results/protocol3/turn_eval_smoke_uniform \
   --max-dialogues 5 \
   --agent uniform \
-  --annotations CaSiNo/data/casino_ann.json
+  --annotations external/casino_original/data/casino_ann.json
 ```
 
 Important agents:
@@ -88,16 +89,16 @@ Useful scripts:
 
 ```bash
 # Full Protocol 3 Bayesian teacher job wrapper.
-bash sft_8b/scripts/run_bayesian_protocol3.lsf
+bash experiments/lsf/evaluation/run_bayesian_protocol3.lsf
 
 # SVO integrity smoke.
-python -m opponent_model.scripts.check_svo_integrity_smoke
+python -m casino_belief.diagnostics.svo.check_svo_integrity_smoke
 
 # SVO match-vs-mismatch accept diagnostic.
-python -m opponent_model.scripts.diagnose_svo_accept_match_mismatch \
-  --match-records opponent_model/results/turn_eval_bayesian_svo_lambda_rescaled_rerun_m5_f0.50_full150/turn_records.jsonl \
-  --mismatch-records opponent_model/results/turn_eval_bayesian_svo_lambda_rescaled_mismatch_m5_f0.50_full150/turn_records.jsonl \
-  --output-dir opponent_model/results/day10_svo_accept_diagnostic_rescaled
+python -m casino_belief.diagnostics.svo.diagnose_svo_accept_match_mismatch \
+  --match-records artifacts/results/svo/turn_eval_bayesian_svo_lambda_rescaled_rerun_m5_f0.50_full150/turn_records.jsonl \
+  --mismatch-records artifacts/results/svo/turn_eval_bayesian_svo_lambda_rescaled_mismatch_m5_f0.50_full150/turn_records.jsonl \
+  --output-dir artifacts/results/svo/accept_diagnostic_rescaled
 ```
 
 
@@ -108,23 +109,23 @@ Distillation data is built from quality-filtered training subsets and Bayesian
 teacher outputs:
 
 ```bash
-bash sft_8b/scripts/run_distill_data.lsf
+bash experiments/lsf/training/run_distill_data.lsf
 ```
 
 SFT training:
 
 ```bash
-bash sft_8b/scripts/run_day8_sft_train.lsf
+bash experiments/lsf/training/run_day8_sft_train.lsf
 ```
 
 Student Protocol 3 evaluation:
 
 ```bash
-bash sft_8b/scripts/run_day9_student_eval.lsf
+bash experiments/lsf/evaluation/run_day9_student_eval.lsf
 ```
 
-The student output parser lives in `sft_8b/student_parser.py`; bid canonical
-extraction for free-text utterances lives in `opponent_model/bid_extractor.py`.
+The student output parser lives in `src/casino_belief/student/student_parser.py`; bid canonical
+extraction for free-text utterances lives in `src/casino_belief/evaluation/bid_extractor.py`.
 
 ## Current Locked Results
 
@@ -132,14 +133,14 @@ Key artifacts:
 
 | Result | Artifact |
 |---|---|
-| Headline Brier numbers and plots | `opponent_model/results/day9_headline_artifacts/` |
-| Balanced student full150 eval | `opponent_model/results/turn_eval_student_balanced_full150/turn_summary.json` |
-| Structured-CoT P3 live baseline | `opponent_model/results/turn_eval_structured_cot_p3_live_70b_m1_150/turn_summary.json` |
-| Bayesian teacher full150 eval | `opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150/turn_summary.json` |
-| SVO subgroup tables | `opponent_model/results/day10_svo_subgroup_legacy/` and `opponent_model/results/day10_svo_subgroup_rescaled/` |
-| SVO accept diagnostics | `opponent_model/results/day10_svo_accept_diagnostic_*` |
-| Big Five/style null checks | `opponent_model/results/day10_style_variant_strategy_distributions/` and `opponent_model/results/day10_human_bigfive_strategy_matrix/` |
-| Current Section 3.2 draft | `opponent_model/results/day10_svo_subgroup_section3_1_draft.md` |
+| Headline Brier numbers and plots | `artifacts/results/posterior_quality/` |
+| Balanced student full150 eval | `artifacts/results/protocol3/distilled_student_balanced_full150/turn_summary.json` |
+| Structured-CoT P3 live baseline | `artifacts/results/protocol3/structured_cot_70b_full150/turn_summary.json` |
+| Bayesian teacher full150 eval | `artifacts/results/protocol3/bayesian_teacher_full150/turn_summary.json` |
+| SVO subgroup tables | `artifacts/results/svo/subgroup_legacy/` and `artifacts/results/svo/subgroup_rescaled/` |
+| SVO accept diagnostics | `artifacts/results/svo/accept_diagnostic_*` |
+| Big Five/style null checks | `artifacts/results/personality/style_variant_strategy_distributions/` and `artifacts/results/personality/human_bigfive_strategy_matrix/` |
+| Current SVO draft | `artifacts/results/svo/svo_subgroup_section3_1_draft.md` |
 
 Locked Day 9/10 findings:
 

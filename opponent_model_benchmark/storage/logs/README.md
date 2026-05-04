@@ -1,1 +1,0 @@
-Training logs and checkpoints are saved here

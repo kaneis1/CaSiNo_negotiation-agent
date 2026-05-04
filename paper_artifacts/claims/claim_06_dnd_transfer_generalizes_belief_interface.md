@@ -13,7 +13,7 @@ Evidence:
 - `paper_artifacts/tables/table_17_dnd_transfer_full/`
 
 Main source:
-- `opponent_model/results/dnd_transfer`
+- `artifacts/results/dnd_transfer/main`
 - `data/dnd`
 
 What this proves:

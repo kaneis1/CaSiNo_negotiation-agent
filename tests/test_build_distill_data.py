@@ -1,6 +1,6 @@
 import unittest
 
-from sft_8b.build_distill_data import (
+from casino_belief.training.build_distill_data import (
     max_prior_opp_submit_age_turns,
     submit_is_response_to_opp_offer,
 )

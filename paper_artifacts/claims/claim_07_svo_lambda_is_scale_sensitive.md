@@ -11,10 +11,10 @@ Evidence:
 - `paper_artifacts/tables/table_12_svo_rescaled_subgroup/`
 
 Main source:
-- `opponent_model/results/day10_svo_accept_diagnostic_rescaled`
-- `opponent_model/results/day10_svo_accept_diagnostic_legacy`
-- `opponent_model/results/day10_svo_ip_table`
-- `opponent_model/results/day10_svo_subgroup_rescaled`
+- `artifacts/results/svo/accept_diagnostic_rescaled`
+- `artifacts/results/svo/accept_diagnostic_legacy`
+- `artifacts/results/svo/ip_table`
+- `artifacts/results/svo/subgroup_rescaled`
 
 What this proves:
 - SVO-as-lambda is useful as a scale-sensitivity diagnostic, but the paper should not claim a positive SVO matching effect.

@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from sft_8b.dnd_data import (
+from casino_belief.transfer.dnd.dnd_data import (
     DND_ITEMS,
     canonical_item,
     compute_stats,
@@ -11,16 +11,16 @@ from sft_8b.dnd_data import (
     parse_dnd_line,
     values_to_ordering,
 )
-from sft_8b.dnd_menu import (
+from casino_belief.transfer.dnd.dnd_menu import (
     build_dnd_menu,
     build_value_map_543,
     enumerate_allocations,
     normalize_value_map_for_counts,
     utility,
 )
-from sft_8b.dnd_metrics import brier_reference, normalized_brier_sum, summarize_snapshot_metrics
-from sft_8b.dnd_posterior import ORDERINGS, ORDERING_INDEX, parse_posterior_response, parse_prefs_response
-from sft_8b.dnd_rules import posterior_from_evidence, score_utterance
+from casino_belief.transfer.dnd.dnd_metrics import brier_reference, normalized_brier_sum, summarize_snapshot_metrics
+from casino_belief.transfer.dnd.dnd_posterior import ORDERINGS, ORDERING_INDEX, parse_posterior_response, parse_prefs_response
+from casino_belief.transfer.dnd.dnd_rules import posterior_from_evidence, score_utterance
 
 
 SAMPLE = (

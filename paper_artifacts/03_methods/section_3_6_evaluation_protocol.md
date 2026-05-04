@@ -3,10 +3,10 @@
 Manifest ID: `method_evaluation_protocol`
 
 Core source files:
-- `opponent_model/turn_eval_run.py`
-- `opponent_model/turn_level_metrics.py`
-- `opponent_model/metrics.py`
-- `structured_cot/P1_VS_P3_BASELINE_FRAMING.md`
+- `src/casino_belief/evaluation/turn_eval_run.py`
+- `src/casino_belief/evaluation/turn_level_metrics.py`
+- `src/casino_belief/evaluation/metrics.py`
+- `src/casino_belief/baselines/structured_cot/P1_VS_P3_BASELINE_FRAMING.md`
 
 Primary result aliases:
 - `paper_artifacts/shared_results/bayesian_teacher_full150`

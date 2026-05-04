@@ -5,8 +5,8 @@ from pathlib import Path
 
 import numpy as np
 
-from opponent_model.hypotheses import HYPOTHESES
-from structured_cot.opponent_inference import (
+from casino_belief.evaluation.hypotheses import HYPOTHESES
+from casino_belief.baselines.structured_cot.opponent_inference import (
     brier_from_sample_indices,
     loose_action_consistent,
     parse_opponent_inference_response,
@@ -14,7 +14,7 @@ from structured_cot.opponent_inference import (
     posterior_from_sample_indices,
     strict_action_consistent,
 )
-from structured_cot.run_structured_opp_inference import (
+from casino_belief.baselines.structured_cot.run_structured_opp_inference import (
     iter_regime_a_snapshots,
     iter_regime_b_snapshots,
     load_turn_record_keys,
@@ -116,7 +116,7 @@ class StructuredOpponentInferenceMetricTests(unittest.TestCase):
 class StructuredOpponentInferenceSnapshotTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        with Path("data/casino_test.json").open() as f:
+        with Path("data/casino/casino_test.json").open() as f:
             cls.dialogues = json.load(f)
 
     def test_regime_a_prefix_support_matches_split(self):
@@ -135,7 +135,7 @@ class StructuredOpponentInferenceSnapshotTests(unittest.TestCase):
 
     def test_regime_b_matches_teacher_turn_records(self):
         path = Path(
-            "opponent_model/results/turn_eval_bayesian_lambda1.0_m5_f0.50_full150/"
+            "artifacts/results/protocol3/bayesian_teacher_full150/"
             "turn_records.jsonl"
         )
         if not path.exists():

@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from opponent_model.scripts.make_auditability_artifacts import (
+from casino_belief.diagnostics.auditability.make_auditability_artifacts import (
     action_alignment,
     action_or_bid_changed,
     canonical_action_type,

@@ -5,19 +5,19 @@ from pathlib import Path
 
 import numpy as np
 
-from sft_8b.ablation import (
+from casino_belief.diagnostics.ablation.ablation import (
     EvidenceRenderer,
     RuleLikelihoodProvider,
     UniformProvider,
     normalize_posterior,
     parse_probability_response,
 )
-from sft_8b.ablation_student import (
+from casino_belief.diagnostics.ablation.ablation_student import (
     AblationStudentTurnAgent,
     parse_student_response_schema,
     posterior_prefix,
 )
-from sft_8b.posterior import N_ORDERINGS, ORDERINGS
+from casino_belief.belief.posterior import N_ORDERINGS, ORDERINGS
 
 
 class AblationHarnessTests(unittest.TestCase):

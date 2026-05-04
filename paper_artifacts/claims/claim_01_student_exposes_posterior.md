@@ -10,7 +10,7 @@ Evidence:
 - `paper_artifacts/tables/table_05_structured_output_validity/`
 
 Main source:
-- `opponent_model/results/turn_eval_student_balanced_full150`
+- `artifacts/results/protocol3/distilled_student_balanced_full150`
 
 What this proves:
 - The distilled student emits parseable posterior and intent fields for the full 1054-turn balanced-student evaluation.

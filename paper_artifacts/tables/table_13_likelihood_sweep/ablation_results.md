@@ -1,1 +1,1 @@
-../../../opponent_model/results/ablation_neurips2026/aggregate/ablation_results.md
+../../../artifacts/results/ablation/main/aggregate/ablation_results.md

@@ -6,9 +6,9 @@ Primary source:
 - `compute_resources_table.tex`
 
 Supporting LSF logs:
-- `structured_cot/results/lsf/p3_baseline_70b.240396097.out`
-- `sft_8b/results/lsf/bayes_p3.240396199.out`
-- `sft_8b/results/lsf/day8_sft.239276962.out`
-- `sft_8b/results/lsf/day9_student_p3.240396201.out`
+- `artifacts/results/external_comparison/structured_cot/lsf/p3_baseline_70b.240396097.out`
+- `artifacts/training_metadata/lsf/bayes_p3.240396199.out`
+- `artifacts/training_metadata/lsf/day8_sft.239276962.out`
+- `artifacts/training_metadata/lsf/casino_belief/day9_student_p3.240396201.out`
 
 The manifest is authoritative for provenance.

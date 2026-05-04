@@ -3,11 +3,11 @@
 Manifest ID: `method_architecture`
 
 Core source files:
-- `sft_8b/posterior.py`
-- `sft_8b/bayesian_agent.py`
-- `sft_8b/menu.py`
-- `sft_8b/student_model.py`
-- `opponent_model/turn_agents.py`
-- `opponent_model/turn_eval_run.py`
+- `src/casino_belief/belief/posterior.py`
+- `src/casino_belief/belief/bayesian_agent.py`
+- `src/casino_belief/policy/menu.py`
+- `src/casino_belief/student/student_model.py`
+- `src/casino_belief/evaluation/turn_agents.py`
+- `src/casino_belief/evaluation/turn_eval_run.py`
 
 The manifest is authoritative for provenance.

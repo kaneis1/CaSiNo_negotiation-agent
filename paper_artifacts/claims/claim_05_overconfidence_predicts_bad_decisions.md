@@ -8,8 +8,8 @@ Evidence:
 - `paper_artifacts/shared_results/auditability_artifacts`
 
 Main source:
-- `opponent_model/results/day11_auditability/entropy_confidence_diagnostic.csv`
-- `opponent_model/results/day11_auditability/auditability_metrics_summary.json`
+- `artifacts/results/auditability/main/entropy_confidence_diagnostic.csv`
+- `artifacts/results/auditability/main/auditability_metrics_summary.json`
 
 What this proves:
 - Confidence, entropy, and Brier can be inspected alongside action alignment to find overconfident wrong-belief or wrong-policy cases.

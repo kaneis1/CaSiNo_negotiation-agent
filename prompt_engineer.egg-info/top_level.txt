@@ -1,2 +1,0 @@
-opponent_model
-prompt_engineer

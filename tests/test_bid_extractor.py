@@ -2,8 +2,8 @@ import json
 import unittest
 from pathlib import Path
 
-from opponent_model.bid_extractor import extract_bid_from_utterance
-from opponent_model.hypotheses import ITEMS
+from casino_belief.evaluation.bid_extractor import extract_bid_from_utterance
+from casino_belief.evaluation.hypotheses import ITEMS
 
 
 def _opp_counts(self_counts):
@@ -91,7 +91,7 @@ class BidExtractorManualTests(unittest.TestCase):
 class BidExtractorProtocol1FixtureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.turns_path = Path("structured_cot/results/protocol1_70b_full/turns.jsonl")
+        cls.turns_path = Path("artifacts/results/external_comparison/structured_cot_protocol1_full/turns.jsonl")
         if not cls.turns_path.exists():
             cls.rows_by_key = None
             return

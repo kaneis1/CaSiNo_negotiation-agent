@@ -1,1 +1,1 @@
-../../../opponent_model/results/day10_svo_ip_table/table1_svo_ip.md
+../../../artifacts/results/svo/ip_table/table1_svo_ip.md

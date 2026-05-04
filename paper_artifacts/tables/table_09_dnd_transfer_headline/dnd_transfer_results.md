@@ -1,1 +1,1 @@
-../../../opponent_model/results/dnd_transfer/aggregate/dnd_transfer_results.md
+../../../artifacts/results/dnd_transfer/main/aggregate/dnd_transfer_results.md

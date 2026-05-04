@@ -1,1 +1,0 @@
-If processed data is stored, it can appear here. Currently, since processing is very past, this folder is not used.

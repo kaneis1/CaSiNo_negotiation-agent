@@ -1,1 +1,1 @@
-../../../opponent_model/results/day10_svo_subgroup_rescaled/table1_svo_subgroup.md
+../../../artifacts/results/svo/subgroup_rescaled/table1_svo_subgroup.md

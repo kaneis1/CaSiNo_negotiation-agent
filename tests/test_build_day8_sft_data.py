@@ -1,11 +1,11 @@
 import unittest
 
-from sft_8b.build_day8_sft_data import (
+from casino_belief.training.build_day8_sft_data import (
     compute_repeat_map,
     row_to_student_messages,
     stable_eval_split,
 )
-from sft_8b.student_prompts import extract_tagged_section
+from casino_belief.student.student_prompts import extract_tagged_section
 
 
 class Day8DataTests(unittest.TestCase):

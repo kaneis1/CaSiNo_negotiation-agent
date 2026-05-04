@@ -3,11 +3,11 @@
 Manifest ID: `method_student_distillation`
 
 Core source files:
-- `sft_8b/build_distill_data.py`
-- `sft_8b/build_day8_sft_data.py`
-- `sft_8b/student_prompts.py`
-- `sft_8b/student_parser.py`
-- `sft_8b/train.py`
+- `src/casino_belief/training/build_distill_data.py`
+- `src/casino_belief/training/build_day8_sft_data.py`
+- `src/casino_belief/student/student_prompts.py`
+- `src/casino_belief/student/student_parser.py`
+- `src/casino_belief/training/train.py`
 
 Primary result aliases:
 - `paper_artifacts/shared_results/distilled_student_balanced_full150`

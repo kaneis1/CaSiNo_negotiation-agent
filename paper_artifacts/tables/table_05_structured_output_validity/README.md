@@ -3,7 +3,7 @@
 Manifest ID: `table_05_structured_output_validity`
 
 Primary source:
-- `opponent_model/results/turn_eval_student_balanced_full150`
+- `artifacts/results/protocol3/distilled_student_balanced_full150`
 
 Local alias:
 - `source`
