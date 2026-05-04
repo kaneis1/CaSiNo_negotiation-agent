@@ -170,24 +170,55 @@ def _plot_brier(
         if t in student and t in teacher and not (teacher[t] <= student[t] <= BRIER_REFERENCE)
     ]
 
-    plt.figure(figsize=(7.2, 4.2))
-    plt.plot(turns, [teacher.get(t, float("nan")) for t in turns], marker="o", linewidth=2.0, label="Bayesian teacher")
-    plt.plot(turns, [student.get(t, float("nan")) for t in turns], marker="s", linewidth=2.0, label="Distilled student")
-    plt.axhline(
+    fig, ax = plt.subplots(figsize=(7.2, 4.2))
+    teacher_color = "#1f1f1f"
+    student_color = "#8a4f7d"
+    reference_color = "#9a9a9a"
+
+    ax.plot(
+        turns,
+        [teacher.get(t, float("nan")) for t in turns],
+        color=teacher_color,
+        linewidth=2.4,
+        label="Bayesian teacher",
+    )
+    ax.plot(
+        turns,
+        [student.get(t, float("nan")) for t in turns],
+        color=student_color,
+        linewidth=2.4,
+        label="Distilled student",
+    )
+    ax.axhline(
         BRIER_REFERENCE,
-        color="black",
+        color=reference_color,
         linestyle="--",
-        linewidth=1.6,
+        linewidth=1.3,
         label="Uniform reference (5/36)",
     )
-    plt.xlabel("Turn index")
-    plt.ylabel("Normalized Brier score")
-    plt.ylim(0.0, 0.18)
-    plt.grid(alpha=0.25)
-    plt.legend(frameon=False)
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=220)
-    plt.close()
+    ax.set_xlabel("Turn index")
+    ax.set_ylabel("Normalized Brier score")
+    ax.set_ylim(0.0, 0.18)
+    ax.grid(axis="y", color="#e6e6e6", linewidth=0.8)
+    ax.grid(axis="x", color="#f1f1f1", linewidth=0.6)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_color("#bcbcbc")
+    ax.spines["bottom"].set_color("#bcbcbc")
+    ax.tick_params(axis="both", colors="#3a3a3a", labelsize=9)
+    legend = ax.legend(
+        loc="upper right",
+        frameon=True,
+        framealpha=0.96,
+        facecolor="white",
+        edgecolor="#dddddd",
+        fontsize=9,
+    )
+    for line in legend.get_lines():
+        line.set_linewidth(2.6)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=300)
+    plt.close(fig)
 
     return {
         "min_support": min_support,
