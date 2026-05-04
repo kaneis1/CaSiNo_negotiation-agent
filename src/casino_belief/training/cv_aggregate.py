@@ -10,8 +10,8 @@ held-out prediction per dialogue across the full corpus (1030 rows-ish).
 
 Usage
 -----
-    python -m casino_belief.cv_aggregate                     # default cv_root
-    python -m casino_belief.cv_aggregate --cv-root artifacts/results/external_comparison/cv
+    python -m casino_belief.training.cv_aggregate                     # default cv_root
+    python -m casino_belief.training.cv_aggregate --cv-root artifacts/results/external_comparison/cv
 """
 
 from __future__ import annotations

@@ -4,7 +4,7 @@
 
 The first Abdelnabi-style baseline number (**Accept F1 ≈ 0.81, n = 28**) came from
 `structured_cot_replay`: replaying the **Protocol 1** self-play log through
-`opponent_model.turn_level_eval`. Protocol 1 stops the simulation as soon as the
+`casino_belief.evaluation.turn_level_eval`. Protocol 1 stops the simulation as soon as the
 agent emits `action=accept` (132 / 150 dialogues in the 70B full run). The human
 gold trace often continues for several more turns before the recorded
 `Accept-Deal`. So the replay adapter has **no baseline prediction** on most
@@ -86,9 +86,9 @@ the harness).
 | Bayesian P3 | `artifacts/results/protocol3/bayesian_teacher_full150/` |
 | LSF transcript (239149741) | `artifacts/results/external_comparison/structured_cot/lsf/p3_baseline_70b.239149741.out` / `.err` |
 
-**LSF:** `bsub < structured_cot/scripts/run_p3_baseline_70b.lsf`
+**LSF:** `bsub < experiments/lsf/structured_cot/run_p3_baseline_70b.lsf`
 
-**Code:** `--agent structured_cot_live` in `opponent_model.turn_eval_run` uses
+**Code:** `--agent structured_cot_live` in `casino_belief.evaluation.turn_eval_run` uses
 `structured_cot.live_turn_agent.StructuredCoTLiveTurnAgent`. The harness stamps
 `dialogue_id` on every history entry so agents see a stable dialogue boundary
 even when the first perspective turn has empty prefix history.

@@ -1,6 +1,6 @@
 """Build LoRA SFT data for ablation variants.
 
-The output is regular chat JSONL consumed by ``sft_8b.train``.  Variants:
+The output is regular chat JSONL consumed by ``casino_belief.training.train``.  Variants:
 
 * ``direct_posterior`` / ``direct_posterior_groundtruth``:
   context -> smoothed one-hot posterior.

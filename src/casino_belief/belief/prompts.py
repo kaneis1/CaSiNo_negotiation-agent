@@ -1,6 +1,6 @@
 """Prompt + target templates for the SFT'd 8B opponent model.
 
-Used at *both* train time (sft_8b/data.py builds the chat rows) and
+Used at *both* train time (casino_belief.training.data builds the chat rows) and
 inference time (casino_belief.student.predict renders the same prompt for a fresh
 dialogue prefix). Keeping a single source of truth here is critical:
 any drift between train and inference distributions silently destroys

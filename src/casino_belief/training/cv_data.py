@@ -16,7 +16,7 @@ Per dialogue ID assignment:
 
 Outputs (under ``--cv-root artifacts/results/external_comparison/cv/`` by default):
 
-    fold_{K}/dialogues_heldout.json     full dialogues, ready for sft_8b.eval_run --data
+    fold_{K}/dialogues_heldout.json     full dialogues, ready for casino_belief.evaluation.eval_run --data
     fold_{K}/sft_data/sft_train_rows.jsonl
     fold_{K}/sft_data/sft_test_rows.jsonl   (= in-loop early-stopping signal)
     fold_{K}/sft_data/data_build_summary.json
@@ -25,10 +25,10 @@ Outputs (under ``--cv-root artifacts/results/external_comparison/cv/`` by defaul
 Usage
 -----
     # build ONE fold (used by run_cv_fold.lsf):
-    python -m casino_belief.cv_data --fold 0 --n-splits 5
+    python -m casino_belief.training.cv_data --fold 0 --n-splits 5
 
     # build ALL folds at once (useful for sanity checking the splits):
-    python -m casino_belief.cv_data --all --n-splits 5
+    python -m casino_belief.training.cv_data --all --n-splits 5
 """
 
 from __future__ import annotations
@@ -117,7 +117,7 @@ def build_fold(
 
     stats: Dict[str, Any] = {"fold": fold_plan["fold"]}
 
-    # 1) Dump held-out dialogues for sft_8b.eval_run --data ...
+    # 1) Dump held-out dialogues for casino_belief.evaluation.eval_run --data ...
     held_out = [dialogues_by_id[d] for d in fold_plan["held_out"]]
     held_path = fold_dir / "dialogues_heldout.json"
     with held_path.open("w") as f:

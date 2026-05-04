@@ -8,13 +8,13 @@ satisfaction-metrics block at the bottom of ``summary.json``.
 Usage
 -----
     # smoke run on 3 dialogues from valid
-    python -m casino_belief.eval_run --max-dialogues 3
+    python -m casino_belief.evaluation.eval_run --max-dialogues 3
 
     # full run on the 30-dialogue valid split (default)
-    python -m casino_belief.eval_run
+    python -m casino_belief.evaluation.eval_run
 
     # zero-shot baseline (no LoRA adapter; same prompt/parser)
-    python -m casino_belief.eval_run --no-adapter
+    python -m casino_belief.evaluation.eval_run --no-adapter
 """
 
 from __future__ import annotations

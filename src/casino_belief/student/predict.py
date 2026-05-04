@@ -8,7 +8,7 @@ Two outputs per prediction:
     * ``ordering`` (returned to satisfy ``OpponentModelFn``): the
       predicted [top, mid, low] over Food/Water/Firewood.
     * ``last_satisfaction`` (stashed on the callable instance): the
-      predicted satisfaction label, picked up by ``sft_8b/eval_run.py``
+      predicted satisfaction label, picked up by ``casino_belief.evaluation.eval_run``
       via the prediction callback.
 """
 

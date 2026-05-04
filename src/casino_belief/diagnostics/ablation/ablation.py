@@ -1,4 +1,4 @@
-"""Ablation harness for the current ``sft_8b`` CaSiNo paper stack.
+"""Ablation harness for the current ``casino_belief`` CaSiNo paper stack.
 
 This module keeps the ablation variants out of the main Protocol-3 runner.
 It exposes a generic turn-level teacher whose posterior can come from MC

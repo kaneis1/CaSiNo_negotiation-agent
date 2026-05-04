@@ -5,7 +5,7 @@ The new ``turn_level_eval`` harness expects a single
 ``accept`` / ``bid`` / ``strategy`` / ``posterior`` keys. None of the
 existing agents have that shape natively:
 
-    * :class:`opponent_model.HybridAgent` exposes a 6-class posterior and
+    * :class:`casino_belief.belief.hybrid.HybridAgent` exposes a 6-class posterior and
       can ``speak()`` (utterance + offer) but doesn't classify strategy
       or decide accept/reject directly.
 

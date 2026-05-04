@@ -6,7 +6,7 @@ Structured-CoT template (`<observation>`, `<opponent_inference>`,
 `<plan>`, `<utterance>`, `<decision>`). Log:
 `artifacts/results/external_comparison/structured_cot_protocol1_full/` (784 agent-turns,
 4 parse retries, 0 unrecoverable parse failures, 0 illegal counter-offers).
-Quantitative scan: `structured_cot/scripts/baseline_weakness_scan.py`.
+Quantitative scan: `src/casino_belief/baselines/structured_cot/scripts/baseline_weakness_scan.py`.
 
 This document catalogs four systematic failure modes in that corpus. All
 point estimates are against the ground-truth opponent priorities recorded
@@ -185,7 +185,7 @@ splits — not just the one the LLM happens to narrate.
 
 ## Head-to-head evidence that the weaknesses matter
 
-Scored through the same `opponent_model.turn_level_eval` harness under
+Scored through the same `casino_belief.evaluation.turn_level_eval` harness under
 Protocol 3 live, the Structured-CoT baseline and Bayesian teacher are now
 on the same 150-dialogue gold-prefix test set:
 

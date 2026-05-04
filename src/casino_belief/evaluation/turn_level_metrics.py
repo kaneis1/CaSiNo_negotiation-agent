@@ -1,6 +1,6 @@
 """Per-turn evaluation harness for CaSiNo agents.
 
-Where ``opponent_model.metrics.evaluate_opponent_model`` snapshots an
+Where ``casino_belief.evaluation.metrics.evaluate_opponent_model`` snapshots an
 agent's *priority ordering* every k=1..5 opponent utterances, this module
 walks every dialogue turn-by-turn and asks the agent four questions
 whenever the perspective agent is the one speaking:

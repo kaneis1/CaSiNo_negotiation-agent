@@ -38,7 +38,7 @@
 #   NUM_DIALOGUES=150 RUN_NAME=protocol1_70b_full \
 #       bsub < experiments/lsf/structured_cot/run_protocol1_70b.lsf
 
-# See opponent_model/scripts/run_hybrid_eval.lsf for rationale on why we skip
+# See the other experiment launchers for rationale on why we skip
 # `set -u` across conda activation (MKL activate hooks read unset vars).
 set -eo pipefail
 
@@ -78,6 +78,8 @@ MAX_TOKENS="${MAX_TOKENS:-800}"
 TEMPERATURE="${TEMPERATURE:-0.3}"
 SEED="${SEED:-2024}"
 RUN_NAME="${RUN_NAME:-protocol1_70b_${LSB_JOBID}}"
+OUTPUT_ROOT="${OUTPUT_ROOT:-artifacts/results/external_comparison/structured_cot}"
+RUN_DIR="${OUTPUT_ROOT}/${RUN_NAME}"
 
 echo "NUM_DIALOGUES=$NUM_DIALOGUES  AGENT_ROLE=$AGENT_ROLE  RUN_NAME=$RUN_NAME"
 
@@ -89,18 +91,19 @@ echo "NUM_DIALOGUES=$NUM_DIALOGUES  AGENT_ROLE=$AGENT_ROLE  RUN_NAME=$RUN_NAME"
     --max-tokens     "$MAX_TOKENS" \
     --temperature    "$TEMPERATURE" \
     --seed           "$SEED" \
+    --output-root    "$OUTPUT_ROOT" \
     --run-name       "$RUN_NAME"
 
 echo "=== validation summary ==="
 "$CASINO_PY" -m casino_belief.baselines.structured_cot.validate_run \
-    --run-dir "artifacts/results/external_comparison/"
+    --run-dir "$RUN_DIR"
 
 # Protocol 3: score the trace we just produced against human ground truth.
 # Reads turns.jsonl + casino_ann.json, writes protocol3_metrics.json and
 # protocol3_turn_detail.jsonl inside the same run dir. Pure-CPU / seconds.
 echo "=== protocol 3 scoring ==="
 "$CASINO_PY" -m casino_belief.baselines.structured_cot.run_protocol3 \
-    --run-dir     "artifacts/results/external_comparison/" \
+    --run-dir     "$RUN_DIR" \
     --annotations "external/casino_original/data/casino_ann.json" \
     --data        "$DATA"
 

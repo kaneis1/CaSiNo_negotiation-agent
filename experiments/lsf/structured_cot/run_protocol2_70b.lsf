@@ -29,7 +29,7 @@
 #   NUM_DIALOGUES=20 RUN_NAME=protocol2_70b_smoke \
 #       bsub < experiments/lsf/structured_cot/run_protocol2_70b.lsf
 
-# See opponent_model/scripts/run_hybrid_eval.lsf re: `set -u` + conda.
+# See the other experiment launchers re: `set -u` + conda.
 set -eo pipefail
 
 REPO_ROOT="/sc/arion/projects/lin_lab/complexbehavior/CaSino"

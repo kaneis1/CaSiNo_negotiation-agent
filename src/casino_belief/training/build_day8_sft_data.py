@@ -4,7 +4,7 @@ Inputs:
     * Day 7 distillation corpus (teacher posterior + human move)
 
 Outputs:
-    * train/eval chat rows for `sft_8b.train`
+    * train/eval chat rows for `casino_belief.training.train`
     * config + summary with deterministic split and oversampling metadata
 
 Design choices:

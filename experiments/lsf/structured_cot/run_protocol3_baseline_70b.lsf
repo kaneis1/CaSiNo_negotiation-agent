@@ -71,6 +71,8 @@ MAX_TOKENS="${MAX_TOKENS:-800}"
 TEMPERATURE="${TEMPERATURE:-0.3}"
 SEED="${SEED:-2024}"
 RUN_NAME="${RUN_NAME:-protocol3_70b_decision_only_${LSB_JOBID}}"
+OUTPUT_ROOT="${OUTPUT_ROOT:-artifacts/results/protocol3}"
+RUN_DIR="${OUTPUT_ROOT}/${RUN_NAME}"
 
 echo "NUM_DIALOGUES=$NUM_DIALOGUES  AGENT_ROLE=$AGENT_ROLE  RUN_NAME=$RUN_NAME"
 
@@ -88,8 +90,8 @@ echo "=== turn_level_eval scoring (replay adapter, matched support) ==="
 "$CASINO_PY" -m casino_belief.evaluation.turn_eval_run \
     --data               "$DATA" \
     --agent              structured_cot_replay \
-    --replay-turns-path  "artifacts/results/external_comparison//turns.jsonl" \
-    --output-dir         "artifacts/results/external_comparison//turn_level_eval" \
+    --replay-turns-path  "$RUN_DIR/turns.jsonl" \
+    --output-dir         "$RUN_DIR/turn_level_eval" \
     --max-dialogues      "$NUM_DIALOGUES" \
     --perspectives       mturk_agent_1 \
     --annotations        "external/casino_original/data/casino_ann.json"

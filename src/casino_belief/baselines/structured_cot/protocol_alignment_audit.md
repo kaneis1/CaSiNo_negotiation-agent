@@ -9,7 +9,7 @@
 
 ## 1. The headline discrepancy
 
-When we scored both agents through the shared `opponent_model.turn_level_eval` harness on the 150-dialogue held-out test set, the evaluation support sizes came out very different even though the data set was identical:
+When we scored both agents through the shared `casino_belief.evaluation.turn_level_eval` harness on the 150-dialogue held-out test set, the evaluation support sizes came out very different even though the data set was identical:
 
 | Metric              | Bayesian teacher (λ=1.0) | Structured-CoT baseline (Protocol-1 log) |
 |---------------------|-------------------------:|-----------------------------------------:|
@@ -91,5 +91,5 @@ The accept-F1 comparison remains important, but it is now a constraint on the cl
 - Diagnostic script: `python -c` block at the top of this document; reruns against `artifacts/results/external_comparison/structured_cot_protocol1_full/turns.jsonl` + `data/casino/casino_test.json` and prints every number in §2.
 - Baseline Protocol-1 metrics: `artifacts/results/protocol3/structured_cot_replay_full150/turn_summary.json`.
 - Bayesian Protocol-3 metrics: `artifacts/results/protocol3/bayesian_teacher_full150/turn_summary.json`.
-- Baseline Protocol-3 rerun driver: `src/casino_belief/baselines/structured_cot/run_protocol3_baseline.py` + `structured_cot/scripts/run_protocol3_baseline_70b.lsf`.
+- Baseline Protocol-3 rerun driver: `src/casino_belief/baselines/structured_cot/run_protocol3_baseline.py` + `experiments/lsf/structured_cot/run_protocol3_baseline_70b.lsf`.
 - Baseline Protocol-3 live metrics: `artifacts/results/protocol3/structured_cot_70b_full150/turn_summary.json`.

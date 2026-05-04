@@ -12,13 +12,13 @@ Runs the main (non-CV) SFT adapter by default, whose held-out set is
 Usage
 -----
     # 5 dialogues, agent_1 perspective, k=1..5, K=16 samples per k:
-    python -m casino_belief.eyeball_posterior_menu
+    python -m casino_belief.diagnostics.auditability.eyeball_posterior_menu
 
     # pick a specific subset by dialogue_id:
-    python -m casino_belief.eyeball_posterior_menu --dialogue-ids 100,101,102
+    python -m casino_belief.diagnostics.auditability.eyeball_posterior_menu --dialogue-ids 100,101,102
 
     # quick CPU-free check (uses uniform posterior):
-    python -m casino_belief.eyeball_posterior_menu --no-model
+    python -m casino_belief.diagnostics.auditability.eyeball_posterior_menu --no-model
 """
 
 from __future__ import annotations

@@ -64,7 +64,7 @@ UTILITY_SCALE: Dict[str, int] = {
     "items_per_issue": ITEMS_COUNT,
 }
 
-POSTERIOR_MODEL_NAME = "sft_8b_lora_posterior"
+POSTERIOR_MODEL_NAME = "casino_belief_lora_posterior"
 EPISTEMIC_MENU_METHOD = "opp_utility_variance_proxy"
 EPISTEMIC_JUSTIFICATION = (
     "High variance in opponent utility across priority hypotheses identifies "

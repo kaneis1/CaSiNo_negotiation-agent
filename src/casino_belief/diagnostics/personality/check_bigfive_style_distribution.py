@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Report Big Five -> style bucket counts for the Day 9.2 gate.
 
-The active rule is imported from ``sft_8b.bigfive_to_style``. The legacy rule
+The active rule is imported from ``casino_belief.diagnostics.personality.bigfive_to_style``. The legacy rule
 is kept here only to document the failed pre-retune distribution.
 """
 

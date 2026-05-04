@@ -1,6 +1,6 @@
 """Bayesian negotiation agent: SFT posterior → menu → argmax action.
 
-Wires together the three pieces built earlier in the ``sft_8b`` stack:
+Wires together the three pieces in the ``casino_belief`` stack:
 
 1. ``casino_belief.belief.posterior.get_posterior`` — Monte-Carlo posterior over the
    6 opponent priority orderings (SFT-8B, K=16 samples at T=0.7).
@@ -82,7 +82,7 @@ MAX_SELF_POINTS = 36       # 3×(5+4+3), same constant as in casino_belief.polic
 
 
 # ── Ordering alignment sanity check ───────────────────────────────────────
-# We need sft_8b.ORDERINGS to match opponent_model.HYPOTHESES so the
+# We need belief ORDERINGS to match evaluation HYPOTHESES so the
 # posterior we return can be scored by turn_level_eval's Brier without
 # silently shuffling probability mass. Assert at import time; cheap.
 assert tuple(tuple(h) for h in HYPOTHESES) == tuple(tuple(o) for o in ORDERINGS), (

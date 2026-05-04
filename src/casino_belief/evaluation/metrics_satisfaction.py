@@ -6,7 +6,7 @@ CaSiNo's satisfaction is a 5-class ordinal label
     * ``accuracy``  — exact 5-class match rate.
     * ``mae``       — mean absolute error on the ordinal scale (0..4).
     * ``kpenalty``  — same 5/4/3/2/1 weighted average over k=1..5
-                      that ``opponent_model.metrics.summarize`` uses for
+                      that ``casino_belief.evaluation.metrics.summarize`` uses for
                       prefs metrics, so the two summaries are directly
                       comparable.
 
@@ -56,7 +56,7 @@ def summarize_satisfaction(
     """Compute per-k satisfaction metrics + k-penalty.
 
     Each input record must carry ``pred_satisfaction`` and
-    ``true_satisfaction`` (records emitted by ``sft_8b.eval_run``). Rows
+    ``true_satisfaction`` (records emitted by ``casino_belief.evaluation.eval_run``). Rows
     missing either are skipped from the count entirely.
 
     Returned dict:
