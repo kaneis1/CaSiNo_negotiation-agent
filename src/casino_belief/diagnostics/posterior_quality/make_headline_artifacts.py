@@ -7,8 +7,9 @@ import argparse
 import csv
 import json
 import math
+import random
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping
+from typing import Any, Dict, Iterable, List, Mapping, Sequence
 
 import matplotlib.pyplot as plt
 
@@ -18,15 +19,26 @@ MODEL_PATHS = {
     "teacher": Path("artifacts/results/protocol3/bayesian_teacher_full150/turn_summary.json"),
     "student": Path("artifacts/results/protocol3/distilled_student_balanced_full150/turn_summary.json"),
 }
+TURN_RECORD_PATHS = {
+    "teacher": Path("artifacts/results/protocol3/bayesian_teacher_full150/turn_records.jsonl"),
+    "student": Path("artifacts/results/protocol3/distilled_student_balanced_full150/turn_records.jsonl"),
+}
 EXTRACTED_PATH = Path("artifacts/results/bid_coverage/extracted_bid_analysis/summary.json")
 # turn_level_metrics.normalized_brier uses the class-mean multiclass Brier:
 # mean_k (p_k - 1{k=true})^2. For a uniform six-way posterior this is 5/36.
 BRIER_REFERENCE = 5.0 / 36.0
+BOOTSTRAP_SEED = 20260504
+BOOTSTRAP_REPLICATES = 2000
 
 
 def _load_json(path: Path) -> Dict[str, Any]:
     with path.open() as f:
         return json.load(f)
+
+
+def _load_jsonl(path: Path) -> List[Dict[str, Any]]:
+    with path.open(encoding="utf-8") as f:
+        return [json.loads(line) for line in f if line.strip()]
 
 
 def _safe(value: Any) -> Any:
@@ -147,8 +159,106 @@ def _support_by_turn(summary: Mapping[str, Any]) -> Dict[int, int]:
     }
 
 
+def _normalized_brier(posterior: Sequence[float], true_index: int) -> float:
+    n = len(posterior)
+    if n == 0 or true_index < 0 or true_index >= n:
+        return float("nan")
+    total = 0.0
+    for i, prob in enumerate(posterior):
+        target = 1.0 if i == true_index else 0.0
+        total += (float(prob) - target) ** 2
+    return total / n
+
+
+def _brier_by_dialogue(records: Iterable[Mapping[str, Any]]) -> Dict[Any, Dict[int, List[float]]]:
+    by_dialogue: Dict[Any, Dict[int, List[float]]] = {}
+    for record in records:
+        pred = record.get("pred") or {}
+        true = record.get("true") or {}
+        posterior = pred.get("posterior")
+        true_index = true.get("true_hypothesis_index")
+        if posterior is None or true_index is None:
+            continue
+        brier = _normalized_brier(posterior, int(true_index))
+        if math.isnan(brier):
+            continue
+        dialogue_id = record.get("dialogue_id")
+        turn_index = int(record["turn_index"])
+        by_dialogue.setdefault(dialogue_id, {}).setdefault(turn_index, []).append(brier)
+    return by_dialogue
+
+
+def _percentile(values: Sequence[float], q: float) -> float | None:
+    clean = sorted(v for v in values if not math.isnan(v))
+    if not clean:
+        return None
+    if len(clean) == 1:
+        return clean[0]
+    rank = (len(clean) - 1) * q
+    lo = math.floor(rank)
+    hi = math.ceil(rank)
+    if lo == hi:
+        return clean[int(rank)]
+    weight = rank - lo
+    return clean[lo] * (1.0 - weight) + clean[hi] * weight
+
+
+def _bootstrap_brier_ci(
+    records_by_model: Mapping[str, Dict[Any, Dict[int, List[float]]]],
+    turns: Sequence[int],
+    *,
+    n_replicates: int = BOOTSTRAP_REPLICATES,
+    seed: int = BOOTSTRAP_SEED,
+) -> Dict[str, Any]:
+    model_dialogue_sets = [set(by_dialogue) for by_dialogue in records_by_model.values()]
+    dialogue_ids = sorted(set.intersection(*model_dialogue_sets))
+    rng = random.Random(seed)
+    bootstrap_values: Dict[str, Dict[int, List[float]]] = {
+        model: {turn: [] for turn in turns}
+        for model in records_by_model
+    }
+
+    for _ in range(n_replicates):
+        sampled_dialogue_ids = [rng.choice(dialogue_ids) for _ in dialogue_ids]
+        for model, by_dialogue in records_by_model.items():
+            sums = {turn: 0.0 for turn in turns}
+            counts = {turn: 0 for turn in turns}
+            for dialogue_id in sampled_dialogue_ids:
+                for turn, values in by_dialogue.get(dialogue_id, {}).items():
+                    if turn not in sums:
+                        continue
+                    sums[turn] += sum(values)
+                    counts[turn] += len(values)
+            for turn in turns:
+                if counts[turn]:
+                    bootstrap_values[model][turn].append(sums[turn] / counts[turn])
+
+    intervals: Dict[str, Dict[int, Dict[str, Any]]] = {}
+    for model, by_turn in bootstrap_values.items():
+        intervals[model] = {}
+        for turn, values in by_turn.items():
+            intervals[model][turn] = {
+                "lower": _percentile(values, 0.025),
+                "upper": _percentile(values, 0.975),
+                "valid_replicates": len(values),
+            }
+
+    return {
+        "intervals": intervals,
+        "metadata": {
+            "seed": seed,
+            "n_replicates": n_replicates,
+            "bootstrap_unit": "dialogue_id",
+            "n_dialogues": len(dialogue_ids),
+            "ci_method": "percentile",
+            "ci_level": 0.95,
+        },
+    }
+
+
 def _plot_brier(
     summaries: Mapping[str, Mapping[str, Any]],
+    records_by_model: Mapping[str, Dict[Any, Dict[int, List[float]]]],
     out_path: Path,
     *,
     min_support: int = 1,
@@ -169,11 +279,34 @@ def _plot_brier(
         for t in turns
         if t in student and t in teacher and not (teacher[t] <= student[t] <= BRIER_REFERENCE)
     ]
+    bootstrap = _bootstrap_brier_ci(records_by_model, turns)
+    intervals = bootstrap["intervals"]
 
     fig, ax = plt.subplots(figsize=(7.2, 4.2))
     teacher_color = "#1f1f1f"
-    student_color = "#8a4f7d"
+    student_color = "#b33a3a"
     reference_color = "#9a9a9a"
+    teacher_ci = intervals["teacher"]
+    student_ci = intervals["student"]
+
+    ax.fill_between(
+        turns,
+        [teacher_ci[t]["lower"] for t in turns],
+        [teacher_ci[t]["upper"] for t in turns],
+        color=teacher_color,
+        alpha=0.12,
+        linewidth=0,
+        label="_nolegend_",
+    )
+    ax.fill_between(
+        turns,
+        [student_ci[t]["lower"] for t in turns],
+        [student_ci[t]["upper"] for t in turns],
+        color=student_color,
+        alpha=0.14,
+        linewidth=0,
+        label="_nolegend_",
+    )
 
     ax.plot(
         turns,
@@ -198,7 +331,13 @@ def _plot_brier(
     )
     ax.set_xlabel("Turn index")
     ax.set_ylabel("Normalized Brier score")
-    ax.set_ylim(0.0, 0.18)
+    max_ci = max(
+        value["upper"]
+        for model_intervals in (teacher_ci, student_ci)
+        for value in model_intervals.values()
+        if value["upper"] is not None
+    )
+    ax.set_ylim(0.0, max(0.18, math.ceil((max_ci + 0.005) / 0.02) * 0.02))
     ax.grid(axis="y", color="#e6e6e6", linewidth=0.8)
     ax.grid(axis="x", color="#f1f1f1", linewidth=0.6)
     ax.spines["top"].set_visible(False)
@@ -231,6 +370,18 @@ def _plot_brier(
         "student_between_teacher_and_reference_all_turns": not not_between,
         "student_worse_than_reference_turns": bad_student,
         "student_not_between_teacher_and_reference_turns": not_between,
+        "bootstrap": bootstrap["metadata"],
+        "bootstrap_ci_by_turn": {
+            model: {
+                str(turn): {
+                    "lower": intervals[model][turn]["lower"],
+                    "upper": intervals[model][turn]["upper"],
+                    "valid_replicates": intervals[model][turn]["valid_replicates"],
+                }
+                for turn in turns
+            }
+            for model in ("teacher", "student")
+        },
     }
 
 
@@ -241,6 +392,10 @@ def main() -> int:
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     summaries = {name: _load_json(path) for name, path in MODEL_PATHS.items()}
+    records_by_model = {
+        name: _brier_by_dialogue(_load_jsonl(path))
+        for name, path in TURN_RECORD_PATHS.items()
+    }
 
     rows: List[Dict[str, Any]] = []
     for name, path in MODEL_PATHS.items():
@@ -268,8 +423,8 @@ def main() -> int:
     all_turn_figure_path = args.output_dir / "brier_trajectory_all_turns.png"
     checks_path = args.output_dir / "headline_checks.json"
     _write_spreadsheet(rows, spreadsheet_path)
-    trimmed_checks = _plot_brier(summaries, figure_path, min_support=10)
-    all_turn_checks = _plot_brier(summaries, all_turn_figure_path, min_support=1)
+    trimmed_checks = _plot_brier(summaries, records_by_model, figure_path, min_support=10)
+    all_turn_checks = _plot_brier(summaries, records_by_model, all_turn_figure_path, min_support=1)
     checks = {
         "main_plot": trimmed_checks,
         "diagnostic_all_turns": all_turn_checks,

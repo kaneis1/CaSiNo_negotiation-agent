@@ -354,6 +354,18 @@
       "status": "existing",
       "notes": "Navigation summary; manifest remains authoritative."
     },
+    "figure_01_architecture": {
+      "paper_section": "3.2",
+      "paper_item": "Figure 1",
+      "claim": "The system architecture separates Bayesian teacher inference from the distilled auditable student.",
+      "alias_path": "paper_artifacts/figures/figure_01_architecture.png",
+      "source_path": "paper_artifacts/figures/figure_01_architecture.png",
+      "artifact_type": "figure",
+      "generated_by": [],
+      "reproduction_command": null,
+      "status": "existing",
+      "notes": "Manual paper figure stored directly in the paper-facing overlay."
+    },
     "figure_02_brier_trajectory": {
       "paper_section": "4.1, Appendix E",
       "paper_item": "Figure 2",
@@ -381,6 +393,18 @@
       "reproduction_command": "python -m casino_belief.diagnostics.personality.make_human_bigfive_strategy_matrix",
       "status": "symlinked",
       "notes": "Figure alias only; original result remains source of truth."
+    },
+    "figure_04_negotiation_pipeline_with_ai_agent": {
+      "paper_section": "3.2, 3.4",
+      "paper_item": "Figure 4",
+      "claim": "The distilled negotiation student emits an auditable posterior, intent, selected content, and final utterance.",
+      "alias_path": "paper_artifacts/figures/figure_04_negotiation_pipeline_with_ai_agent.png",
+      "source_path": "paper_artifacts/figures/figure_04_negotiation_pipeline_with_ai_agent.png",
+      "artifact_type": "figure",
+      "generated_by": [],
+      "reproduction_command": null,
+      "status": "existing",
+      "notes": "Manual paper figure stored directly in the paper-facing overlay."
     },
     "figure_05_likelihood_sensitivity_heatmap": {
       "paper_section": "Appendix S",
